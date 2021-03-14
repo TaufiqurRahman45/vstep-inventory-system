@@ -1,2 +1,2 @@
 # inventory-management
-This is a inventory management system
+This is an inventory management system
