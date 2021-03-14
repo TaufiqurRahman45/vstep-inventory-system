@@ -1,0 +1,76 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Buyer List{% endblock title %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <div class="breadcrumbs-inner">
+        <div class="row m-0">
+            <div class="col-sm-4">
+                <div class="page-header float-left">
+                    <div class="page-title">
+                        <h1>Dashboard</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8">
+                <div class="page-header float-right">
+                    <div class="page-title">
+                        <ol class="breadcrumb text-right">
+                            <li><a href="#">Dashboard</a></li>
+                            <li><a href="#">Purchase Order</a></li>
+                            <li class="active">List</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock breadcrumbs %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="col-xl-3 box-title">Purcashe Order List </h4> 
+                <a href="{% url 'create-purchase' %}" class="col-xl-2 btn btn-primary" style="float: right;">Add New</a>
+            </div>
+            <div class="card-body--">
+                <div class="table-stats order-table ov-h">
+                    <table class="table ">
+                        <thead>
+                            <tr>
+                                <th class="serial">#</th>
+                                <th>Part no</th>
+                                <th>Description</th>
+                                <th>Quantity</th>
+                                <th>PIC</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if purchaseorder %}
+                            {% for purchaseorder in purchaseorder %}
+                            <tr>
+                                <td class="serial">{{ forloop.counter }}</td>
+                                <td>{{ purchaseorder.name }}</td>
+                                <td>{{ purchaseorder.address }}</td>
+                                <td>{{ purchaseorder.user.email }}</td>
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                                <tr><td>No purchase Data</td></tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div> <!-- /.table-stats -->
+            </div>
+        </div> <!-- /.card -->
+    </div>  <!-- /.col-lg-8 -->
+
+    
+</div>
+{% endblock content %}
