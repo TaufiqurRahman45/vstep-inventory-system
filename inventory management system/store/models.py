@@ -13,14 +13,6 @@ class Supplier(models.Model):
         return self.name
 
 
-class Purchaseorder(models.Model):
-    name = models.CharField(max_length=120, unique=True)
-    partno  = models.CharField(max_length=120)
-
-    def __str__(self):
-        return self.name
-
-
 class Season(models.Model):
     name = models.CharField(max_length=120, unique=True)
     description = models.CharField(max_length=220)

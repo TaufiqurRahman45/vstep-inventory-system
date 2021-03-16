@@ -5,7 +5,6 @@ from django.contrib.auth.decorators import login_required
 from users.models import User
 from .models import (
     Supplier,
-    Purchaseorder,
     Season,
     Drop,
     Product,
@@ -14,7 +13,6 @@ from .models import (
 )
 from .forms import (
     SupplierForm,
-    PurchaseorderForm,
     SeasonForm,
     DropForm,
     ProductForm,
@@ -49,26 +47,6 @@ class SupplierListView(ListView):
     model = Supplier
     template_name = 'store/supplier_list.html'
     context_object_name = 'supplier'
-
-
-# Buyer views
-@login_required(login_url='login')
-def create_purchase(request):
-    forms = PurchaseorderForm()
-    if request.method == 'POST':
-        forms = PurchaseorderForm(request.POST)
-        if forms.is_valid():
-            forms.save()
-            return redirect('purchase-list')
-    context = {
-        'form': forms
-    }
-    return render(request, 'store/addPurchase.html',context)
-
-class PurchaseOrderView(ListView):
-    model = Purchaseorder
-    template_name = 'store/purchase_list.html'
-    context_object_name = 'purchaseorder'
 
 
 # Season views

@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Season, Drop, Product, Order, Delivery, Purchaseorder
+from .models import Season, Drop, Product, Order, Delivery
 
 
 class SupplierForm(forms.Form):
@@ -71,15 +71,6 @@ class ProductForm(forms.ModelForm):
             'sortno': forms.NumberInput(attrs={'class': 'form-control', 'id': 'sortno'})
         }
 
-class PurchaseorderForm(forms.ModelForm):
-    class Meta:
-        model = Purchaseorder
-        fields = ['name', 'partno']
-        widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'id': 'name'}),
-            'partno': forms.TextInput(attrs={'class': 'form-control', 'id': 'partno'})
-            
-        }
 
 class OrderForm(forms.ModelForm):
     class Meta:

@@ -2,7 +2,6 @@ from django.urls import path
 
 from .views import (
     create_supplier,
-    create_purchase,
     create_season,
     create_drop,
     create_product,
@@ -10,7 +9,6 @@ from .views import (
     create_delivery,
 
     SupplierListView,
-    PurchaseOrderView,
     SeasonListView,
     DropListView,
     ProductListView,
@@ -20,7 +18,6 @@ from .views import (
 
 urlpatterns = [
     path('create-supplier/', create_supplier, name='create-supplier'),
-    path('create-purchase/', create_purchase, name='create-purchase'),
     path('create-season/', create_season, name='create-season'),
     path('create-drop/', create_drop, name='create-drop'),
     path('create-product/', create_product, name='create-product'),
@@ -28,7 +25,6 @@ urlpatterns = [
     path('create-delivery/', create_delivery, name='create-delivery'),
 
     path('supplier-list/', SupplierListView.as_view(), name='supplier-list'),
-    path('purchase-list/', PurchaseOrderView.as_view(), name='purchase-list'),
     path('season-list/', SeasonListView.as_view(), name='season-list'),
     path('drop-list/', DropListView.as_view(), name='drop-list'),
     path('product-list/', ProductListView.as_view(), name='product-list'),
