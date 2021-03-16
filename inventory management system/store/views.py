@@ -58,20 +58,16 @@ def create_purchase(request):
     if request.method == 'POST':
         forms = PurchaseorderForm(request.POST)
         if forms.is_valid():
-            name = forms.cleaned_data['name']
-            address = forms.cleaned_data['address']
-            email = forms.cleaned_data['email']
-            username = forms.cleaned_data['username']
-            password = forms.cleaned_data['password']
-            retype_password = forms.cleaned_data['retype_password']
+            forms.save()
+            return redirect('purchase-list')
     context = {
         'form': forms
     }
-    return render(request, 'store/addPurchase.html', context)
+    return render(request, 'store/addPurchase.html',context)
 
 class PurchaseOrderView(ListView):
     model = Purchaseorder
-    template_name = 'store/buyer_list.html'
+    template_name = 'store/purchase_list.html'
     context_object_name = 'purchaseorder'
 
 

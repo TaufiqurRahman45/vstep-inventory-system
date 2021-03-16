@@ -14,10 +14,8 @@ class Supplier(models.Model):
 
 
 class Purchaseorder(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=120, unique=True)
-    address = models.CharField(max_length=220)
-    created_date = models.DateField(auto_now_add=True)
+    partno  = models.CharField(max_length=120)
 
     def __str__(self):
         return self.name

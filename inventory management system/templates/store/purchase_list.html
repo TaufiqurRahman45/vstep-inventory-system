@@ -56,9 +56,8 @@
                             {% for purchaseorder in purchaseorder %}
                             <tr>
                                 <td class="serial">{{ forloop.counter }}</td>
+                                <td>{{ purchaseorder.partno }}</td>
                                 <td>{{ purchaseorder.name }}</td>
-                                <td>{{ purchaseorder.address }}</td>
-                                <td>{{ purchaseorder.user.email }}</td>
                             </tr>
                             {% endfor %}
                             {% else %}
