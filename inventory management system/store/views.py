@@ -122,19 +122,24 @@ def create_order(request):
         if forms.is_valid():
             supplier = forms.cleaned_data['supplier']
             product = forms.cleaned_data['product']
-            design = forms.cleaned_data['design']
-            color = forms.cleaned_data['color']
+            partno = forms.cleaned_data['partno']
+            description = forms.cleaned_data['description']
             season = forms.cleaned_data['season']
-            drop = forms.cleaned_data['drop']
+            style = forms.cleaned_data['style']
+            quantity = forms.cleaned_data['quantity']
+            standard =forms.cleaned_data['standard']
+            limit = forms.cleaned_data['limit']
             Order.objects.create(
                 supplier=supplier,
                 product=product,
-                design=design,
-                color=color,
+                partno=partno,
+                description=description,
+                style=style,
+                standard=standard,
+                quantity=quantity,
+                limit=limit,
             
                 season=season,
-                drop=drop,
-                status='pending'
             )
             return redirect('order-list')
     context = {

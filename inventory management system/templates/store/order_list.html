@@ -43,13 +43,14 @@
                         <thead>
                             <tr>
                                 <th class="serial">#</th>
-                                <th>Supplier</th>
-                                <th>Product</th>
-                                <th>Design</th>
-                                <th>Color</th>
-                                <th>Buyer</th>
+                                <!-- <th>Supplier</th> -->
+                                <!-- <th>Product</th> -->
+                                <th>Part No</th>
+                                <th>Description</th>
+                                <th>Style Packaging</th>
+                                <th>Standard</th>
+                                <th>Quantity PCS</th>
                                 <th>Season</th>
-                                <th>Category</th>
                                 <th>Date</th>
                                 <th>Status</th>
                             </tr>
@@ -59,28 +60,17 @@
                             {% for order in order %}
                             <tr>
                                 <td class="serial">{{ forloop.counter }}</td>
-                                <td>{{ order.supplier }}</td>
-                                <td>{{ order.product }}</td>
-                                <td>{{ order.design }}</td>
-                                <td>{{ order.color }}</td>
-                                <td>{{ order.buyer }}</td>
+                                <!-- <td>{{ order.supplier }}</td> -->
+                                <!-- <td>{{ order.product }}</td> -->
+                                <td>{{ order.partno }}</td>
+                                <td>{{ order.description }}</td>
+                                <td>{{ order.style }}</td>
+                                <td>{{ order.standard }}</td>
+                                <td>{{ order.quantity }}</td>
                                 <td>{{ order.season }}</td>
-                                <td>{{ order.drop }}</td>
                                 <td>{{ order.created_date }}</td>
-                                <td>
-                                    {% if order.status == 'pending' %}
-                                        <a class="btn btn-warning" href="">{{ order.status }}</a>
-                                    {% elif order.status == 'decline' %}
-                                        <a class="btn btn-danger" href="">{{ order.status }}</a>
-                                    {% elif order.status == 'complete' %}
-                                        <a class="btn btn-success" href="">{{ order.status }}</a>
-                                    {% elif order.status == 'approved' %}
-                                        <a class="btn btn-primary" href="">{{ order.status }}</a>
-                                    {% elif order.status == 'bulk' %}
-                                        <a class="btn btn-secondary" href="">{{ order.status }}</a>
-                                    {% else %}
-                                        <a class="btn btn-info" href="">{{ order.status }}</a>
-                                    {% endif %}
+                                <td>   
+                                <a class="btn btn-warning" href="">Update</a>         
                                 </td>
                             </tr>
                             {% endfor %}

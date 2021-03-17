@@ -39,21 +39,15 @@ class Product(models.Model):
 
 
 class Order(models.Model):
-    STATUS_CHOICE = (
-        ('pending', 'Pending'),
-        ('decline', 'Decline'),
-        ('approved', 'Approved'),
-        ('processing', 'Processing'),
-        ('complete', 'Complete'),
-        ('bulk', 'Bulk'),
-    )
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    design = models.CharField(max_length=50)
-    color = models.CharField(max_length=50)
+    partno = models.CharField(max_length=50)
+    description = models.CharField(max_length=50)
     season = models.ForeignKey(Season, on_delete=models.CASCADE, null=True)
-    drop = models.ForeignKey(Drop, on_delete=models.CASCADE, null=True)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICE)
+    style = models.CharField(max_length=50, blank= True)
+    standard = models.PositiveIntegerField(default= 0)
+    quantity = models.PositiveIntegerField(default= 0)
+    limit = models.PositiveIntegerField(default= 0)
     created_date = models.DateField(auto_now_add=True)
 
 
