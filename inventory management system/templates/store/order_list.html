@@ -53,6 +53,7 @@
                                 <th>Season</th>
                                 <th>Date</th>
                                 <th>Status</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -69,9 +70,22 @@
                                 <td>{{ order.quantity }}</td>
                                 <td>{{ order.season }}</td>
                                 <td>{{ order.created_date }}</td>
-                                <td>   
-                                <a class="btn btn-warning" href="">Update</a>         
+                                <td> 
+                                {% if order.quantity < order.limit   %}
+                                    <p style="color: #FF0000">
+                                          Reorder
+                                    </p>
+                                 {% elif order.quantity  > order.limit  %}
+                                     <p style="color:#008000">
+                                         Available
+                                     </p>
+                                  {% endif %}
                                 </td>
+                                <td>
+                                    <a class="btn btn-warning" href="">Update</a> 
+                                </td>
+                                        
+                                
                             </tr>
                             {% endfor %}
                             {% else %}
