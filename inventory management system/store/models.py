@@ -2,7 +2,6 @@ from django.db import models
 
 from users.models import User
 
-
 class Supplier(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=120, unique=True)
@@ -49,6 +48,7 @@ class Order(models.Model):
     quantity = models.PositiveIntegerField(default= 0)
     limit = models.PositiveIntegerField(default= 0)
     created_date = models.DateField(auto_now_add=True)
+    is_ppc = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True,)
 
 
     def __str__(self):

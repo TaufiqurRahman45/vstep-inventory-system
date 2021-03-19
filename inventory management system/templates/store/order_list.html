@@ -51,6 +51,7 @@
                                 <th>Standard</th>
                                 <th>Quantity PCS</th>
                                 <th>Season</th>
+                                <th>PIC</th>
                                 <th>Date</th>
                                 <th>Status</th>
                                 <th>Action</th>
@@ -69,6 +70,7 @@
                                 <td>{{ order.standard }}</td>
                                 <td>{{ order.quantity }}</td>
                                 <td>{{ order.season }}</td>
+                                <td>{{ order.is_ppc}}</td>
                                 <td>{{ order.created_date }}</td>
                                 <td> 
                                 {% if order.quantity < order.limit   %}
