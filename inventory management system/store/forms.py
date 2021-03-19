@@ -75,7 +75,7 @@ class ProductForm(forms.ModelForm):
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['supplier', 'product', 'partno', 'description', 'season', 'style', 'standard', 'quantity', 'limit', 'is_ppc']
+        fields = ['supplier', 'product', 'partno', 'description', 'style', 'standard', 'quantity', 'limit', 'is_ppc']
 
         widgets = {
             'supplier': forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),
@@ -86,8 +86,7 @@ class OrderForm(forms.ModelForm):
             'standard': forms.NumberInput(attrs={'class': 'form-control', 'id': 'standard'}),
             'quantity': forms.NumberInput(attrs={'class': 'form-control', 'id': 'quantity'}),
             'limit' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'limit'}),
-            'season': forms.Select(attrs={'class': 'form-control', 'id': 'season'}),
-            'is_ppc' : forms.Select(attrs={'class': 'fonr-control', 'id': 'is_ppc'})
+            'is_ppc' : forms.Select(attrs={'class': 'form-control', 'id': 'is_ppc'}),
         }
 
 
@@ -100,3 +99,8 @@ class DeliveryForm(forms.ModelForm):
             'order': forms.Select(attrs={'class': 'form-control', 'id': 'order'}),
             'courier_name': forms.TextInput(attrs={'class': 'form-control', 'id': 'courier_name'}),
         }
+
+class PurchaseUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ("limit", "new_stock")

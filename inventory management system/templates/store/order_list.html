@@ -2,39 +2,12 @@
 
 {% block title %}Order List{% endblock title %}
 
-{% block breadcrumbs %}
-<div class="breadcrumbs">
-    <div class="breadcrumbs-inner">
-        <div class="row m-0">
-            <div class="col-sm-4">
-                <div class="page-header float-left">
-                    <div class="page-title">
-                        <h1>Dashboard</h1>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-8">
-                <div class="page-header float-right">
-                    <div class="page-title">
-                        <ol class="breadcrumb text-right">
-                            <li><a href="#">Dashboard</a></li>
-                            <li><a href="#">Order</a></li>
-                            <li class="active">List</li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock breadcrumbs %}
-
 {% block content %}
 <div class="row">
     <div class="col-xl-12">
         <div class="card">
             <div class="card-body">
-                <h4 class="col-xl-3 box-title">Order List </h4> 
+                <h4 class="col-xl-3 box-title">Purchase Order List </h4> 
                 <a href="{% url 'create-order' %}" class="col-xl-2 btn btn-primary" style="float: right;">Add New</a>
             </div>
             <div class="card-body--">
@@ -43,18 +16,15 @@
                         <thead>
                             <tr>
                                 <th class="serial">#</th>
-                                <!-- <th>Supplier</th> -->
-                                <!-- <th>Product</th> -->
                                 <th>Part No</th>
                                 <th>Description</th>
                                 <th>Style Packaging</th>
                                 <th>Standard</th>
                                 <th>Quantity PCS</th>
-                                <th>Season</th>
                                 <th>PIC</th>
                                 <th>Date</th>
                                 <th>Status</th>
-                                <th>Action</th>
+                                <th>Action</th>                     
                             </tr>
                         </thead>
                         <tbody>
@@ -62,14 +32,11 @@
                             {% for order in order %}
                             <tr>
                                 <td class="serial">{{ forloop.counter }}</td>
-                                <!-- <td>{{ order.supplier }}</td> -->
-                                <!-- <td>{{ order.product }}</td> -->
                                 <td>{{ order.partno }}</td>
                                 <td>{{ order.description }}</td>
                                 <td>{{ order.style }}</td>
                                 <td>{{ order.standard }}</td>
                                 <td>{{ order.quantity }}</td>
-                                <td>{{ order.season }}</td>
                                 <td>{{ order.is_ppc}}</td>
                                 <td>{{ order.created_date }}</td>
                                 <td> 
@@ -84,7 +51,10 @@
                                   {% endif %}
                                 </td>
                                 <td>
-                                    <a class="btn btn-warning" href="">Update</a> 
+                                    <a class="btn btn-sm btn-warning" href="{% url 'update_order' order.id %}">Update</a> 
+                                </td>
+                                <td>
+                                    <a class="btn btn-sm btn-danger" style="margin-left:-20px ;" href="{% url 'delete_order' order.id %}">Delete</a> 
                                 </td>
                                         
                                 

@@ -17,7 +17,8 @@ from .forms import (
     DropForm,
     ProductForm,
     OrderForm,
-    DeliveryForm
+    DeliveryForm,
+    PurchaseUpdateForm,
 )
 
 # Supplier views
@@ -117,6 +118,7 @@ class ProductListView(ListView):
 @login_required(login_url='login')
 def create_order(request):
     forms = OrderForm()
+    
     if request.method == 'POST':
         forms = OrderForm(request.POST)
         if forms.is_valid():
@@ -124,12 +126,12 @@ def create_order(request):
             product = forms.cleaned_data['product']
             partno = forms.cleaned_data['partno']
             description = forms.cleaned_data['description']
-            season = forms.cleaned_data['season']
             style = forms.cleaned_data['style']
             quantity = forms.cleaned_data['quantity']
             standard =forms.cleaned_data['standard']
             limit = forms.cleaned_data['limit']
             is_ppc = forms.cleaned_data['is_ppc']
+            
             Order.objects.create(
                 supplier=supplier,
                 product=product,
@@ -139,9 +141,8 @@ def create_order(request):
                 standard=standard,
                 quantity=quantity,
                 limit=limit,
-                is_ppc=is_ppc,
-            
-                season=season,
+                is_ppc=is_ppc, 
+               
             )
             return redirect('order-list')
     context = {
@@ -159,6 +160,10 @@ class OrderListView(ListView):
         context['order'] = Order.objects.all().order_by('-id')
         return context
 
+@login_required(login_url='login')
+def update_Order(request):
+
+    return render(request, 'store/updateOrder.html')
 
 # Delivery views
 @login_required(login_url='login')
@@ -179,3 +184,28 @@ class DeliveryListView(ListView):
     model = Delivery
     template_name = 'store/delivery_list.html'
     context_object_name = 'delivery'
+
+
+@login_required(login_url="/login")
+def updateOrder(request, pk):
+	action = 'update'
+	order = Order.objects.get(id=pk)
+	form = OrderForm(instance=order)
+
+	if request.method == 'POST':
+		form = OrderForm(request.POST, instance=order)
+		if form.is_valid():
+			form.save()
+			return redirect('order-list')
+
+	context =  {'action':action, 'form':form}
+	return render(request, 'store/update_order.html', context)
+
+def deleteOrder(request, pk):
+	order = Order.objects.get(id=pk)
+	if request.method == 'POST':
+		order_id = order.partno
+		order.delete()
+		return redirect('order-list')
+		
+	return render(request, 'store/delete.html', {'item':order})

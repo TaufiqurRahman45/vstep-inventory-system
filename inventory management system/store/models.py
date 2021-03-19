@@ -42,13 +42,13 @@ class Order(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     partno = models.CharField(max_length=50)
     description = models.CharField(max_length=50)
-    season = models.ForeignKey(Season, on_delete=models.CASCADE, null=True)
     style = models.CharField(max_length=50, blank= True)
     standard = models.PositiveIntegerField(default= 0)
     quantity = models.PositiveIntegerField(default= 0)
     limit = models.PositiveIntegerField(default= 0)
     created_date = models.DateField(auto_now_add=True)
     is_ppc = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True,)
+    new_stock = models.PositiveIntegerField(default= 0)
 
 
     def __str__(self):

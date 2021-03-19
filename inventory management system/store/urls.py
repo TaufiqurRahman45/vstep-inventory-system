@@ -1,4 +1,6 @@
 from django.urls import path
+from django.contrib.auth import views as auth_views
+from . import views
 
 from .views import (
     create_supplier,
@@ -14,6 +16,7 @@ from .views import (
     ProductListView,
     OrderListView,
     DeliveryListView,
+    update_Order,
 )
 
 urlpatterns = [
@@ -29,5 +32,8 @@ urlpatterns = [
     path('drop-list/', DropListView.as_view(), name='drop-list'),
     path('product-list/', ProductListView.as_view(), name='product-list'),
     path('order-list/', OrderListView.as_view(), name='order-list'),
+    path('update_order/<str:pk>/', views.updateOrder, name="update_order"),
     path('delivery-list/', DeliveryListView.as_view(), name='delivery-list'),
+    path('delete_order/<str:pk>/', views.deleteOrder, name="delete_order"),
+
 ]
