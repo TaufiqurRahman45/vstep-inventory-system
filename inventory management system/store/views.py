@@ -31,9 +31,9 @@ def create_supplier(request):
             name = forms.cleaned_data['name']
             address = forms.cleaned_data['address']
             email = forms.cleaned_data['email']
-            username = forms.cleaned_data['username']
-            user = User.objects.create_user(username=username, email=email, is_supplier=True)
-            Supplier.objects.create(user=user, name=name, address=address)
+            # username = forms.cleaned_data['username']
+            # user = User.objects.create_user(username=username, email=email, is_supplier=True)
+            Supplier.objects.create( name=name, email=email, address=address)
         return redirect('supplier-list')
     context = {
         'form': forms
