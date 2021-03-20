@@ -31,9 +31,8 @@ class Order(models.Model):
     quantity = models.PositiveIntegerField(default= 0)
     limit = models.PositiveIntegerField(default= 0)
     created_date = models.DateField(auto_now_add=True)
-    is_ppc = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True,)
-    new_stock = models.PositiveIntegerField(default= 0)
-
+    is_ppc = models.ForeignKey(User, on_delete=models.CASCADE, null=True,)
+    new_stock = models.PositiveIntegerField(default= 0, blank=True)
 
     def __str__(self):
         return self.product.name
