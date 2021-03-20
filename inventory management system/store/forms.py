@@ -28,18 +28,18 @@ class SupplierForm(forms.Form):
         'data-val': 'true',
         'data-val-required': 'Please enter username',
     }))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={
-        'class': 'form-control',
-        'id': 'password',
-        'data-val': 'true',
-        'data-val-required': 'Please enter password',
-    }))
-    retype_password = forms.CharField(widget=forms.PasswordInput(attrs={
-        'class': 'form-control',
-        'id': 'retype_password',
-        'data-val': 'true',
-        'data-val-required': 'Please enter retype_password',
-    }))
+    # password = forms.CharField(widget=forms.PasswordInput(attrs={
+    #     'class': 'form-control',
+    #     'id': 'password',
+    #     'data-val': 'true',
+    #     'data-val-required': 'Please enter password',
+    # }))
+    # retype_password = forms.CharField(widget=forms.PasswordInput(attrs={
+    #     'class': 'form-control',
+    #     'id': 'retype_password',
+    #     'data-val': 'true',
+    #     'data-val-required': 'Please enter retype_password',
+    # }))
 
 class SeasonForm(forms.ModelForm):
     class Meta:

@@ -32,12 +32,9 @@ def create_supplier(request):
             address = forms.cleaned_data['address']
             email = forms.cleaned_data['email']
             username = forms.cleaned_data['username']
-            password = forms.cleaned_data['password']
-            retype_password = forms.cleaned_data['retype_password']
-            if password == retype_password:
-                user = User.objects.create_user(username=username, password=password, email=email, is_supplier=True)
-                Supplier.objects.create(user=user, name=name, address=address)
-                return redirect('supplier-list')
+            user = User.objects.create_user(username=username, email=email, is_supplier=True)
+            Supplier.objects.create(user=user, name=name, address=address)
+        return redirect('supplier-list')
     context = {
         'form': forms
     }
