@@ -10,7 +10,7 @@ from .models import (
 )
 
 class SupplierAdmin(admin.ModelAdmin):
-    list_display = ['user', 'name', 'address', 'created_date']
+    list_display = [ 'name', 'address', 'email', 'created_date']
 
 
 
