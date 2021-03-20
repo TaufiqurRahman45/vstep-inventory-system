@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Season, Drop, Product, Order, Delivery, Purchaseorder
+from .models import Season, Drop, Product, Order, Delivery
 
 
 class SupplierForm(forms.Form):
@@ -71,28 +71,22 @@ class ProductForm(forms.ModelForm):
             'sortno': forms.NumberInput(attrs={'class': 'form-control', 'id': 'sortno'})
         }
 
-class PurchaseorderForm(forms.ModelForm):
-    class Meta:
-        model = Purchaseorder
-        fields = ['name', 'partno']
-        widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'id': 'name'}),
-            'partno': forms.TextInput(attrs={'class': 'form-control', 'id': 'partno'})
-            
-        }
 
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['supplier', 'product', 'design', 'color', 'season', 'drop']
+        fields = ['supplier', 'product', 'partno', 'description', 'style', 'standard', 'quantity', 'limit', 'is_ppc']
 
         widgets = {
             'supplier': forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),
             'product': forms.Select(attrs={'class': 'form-control', 'id': 'product'}),
-            'design': forms.TextInput(attrs={'class': 'form-control', 'id': 'design'}),
-            'color': forms.TextInput(attrs={'class': 'form-control', 'id': 'color'}),
-            'season': forms.Select(attrs={'class': 'form-control', 'id': 'season'}),
-            'drop': forms.Select(attrs={'class': 'form-control', 'id': 'drop'}),
+            'partno': forms.TextInput(attrs={'class': 'form-control', 'id': 'partno'}),
+            'description': forms.TextInput(attrs={'class': 'form-control', 'id': 'description'}),
+            'style': forms.TextInput(attrs={'class': 'form-control', 'id': 'description'}),
+            'standard': forms.NumberInput(attrs={'class': 'form-control', 'id': 'standard'}),
+            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'id': 'quantity'}),
+            'limit' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'limit'}),
+            'is_ppc' : forms.Select(attrs={'class': 'form-control', 'id': 'is_ppc'}),
         }
 
 
@@ -105,3 +99,8 @@ class DeliveryForm(forms.ModelForm):
             'order': forms.Select(attrs={'class': 'form-control', 'id': 'order'}),
             'courier_name': forms.TextInput(attrs={'class': 'form-control', 'id': 'courier_name'}),
         }
+
+class PurchaseUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ("limit", "new_stock")
