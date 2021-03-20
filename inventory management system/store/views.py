@@ -75,6 +75,7 @@ def create_order(request):
             standard =forms.cleaned_data['standard']
             limit = forms.cleaned_data['limit']
             is_ppc = forms.cleaned_data['is_ppc']
+            new_stock = forms.cleaned_data['new_stock']
             
             Order.objects.create(
                 supplier=supplier,
@@ -86,6 +87,7 @@ def create_order(request):
                 quantity=quantity,
                 limit=limit,
                 is_ppc=is_ppc, 
+                new_stock = new_stock,
                
             )
             return redirect('order-list')
