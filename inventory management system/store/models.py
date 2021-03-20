@@ -34,6 +34,5 @@ class Order(models.Model):
     is_ppc = models.ForeignKey(User, on_delete=models.CASCADE, null=True,)
     new_stock = models.PositiveIntegerField(default= 0, blank=True)
 
-
     def __str__(self):
         return self.product.name
