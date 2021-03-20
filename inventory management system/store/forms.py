@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Season, Drop, Product, Order, Delivery
+from .models import Product, Order
 
 
 class SupplierForm(forms.Form):
@@ -22,27 +22,6 @@ class SupplierForm(forms.Form):
         'data-val': 'true',
         'data-val-required': 'Please enter email',
     }))
-
-class SeasonForm(forms.ModelForm):
-    class Meta:
-        model = Season
-        fields = ['name', 'description']
-
-        widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'id': 'name'}),
-            'description': forms.TextInput(attrs={'class': 'form-control', 'id': 'description'})
-        }
-
-
-class DropForm(forms.ModelForm):
-    class Meta:
-        model = Drop
-        fields = ['name']
-        widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'id': 'name'})
-        }
-
-
 
 class ProductForm(forms.ModelForm):
     class Meta:
@@ -71,18 +50,3 @@ class OrderForm(forms.ModelForm):
             'is_ppc' : forms.Select(attrs={'class': 'form-control', 'id': 'is_ppc'}),
         }
 
-
-class DeliveryForm(forms.ModelForm):
-    class Meta:
-        model = Delivery
-        fields = '__all__'
-
-        widgets = {
-            'order': forms.Select(attrs={'class': 'form-control', 'id': 'order'}),
-            'courier_name': forms.TextInput(attrs={'class': 'form-control', 'id': 'courier_name'}),
-        }
-
-class PurchaseUpdateForm(forms.ModelForm):
-    class Meta:
-        model = Order
-        fields = ("limit", "new_stock")
