@@ -13,11 +13,14 @@
                 </li>
                 <li class="menu-item-has-children dropdown" >
                     <a href="{% url 'supplier-list' %}"> <i class="menu-icon fa fa-user"></i>Supplier</a>
-
                 </li>
 
                 <li class="menu-item-has-children dropdown" >
-                    <a href="{% url 'create-order' %}" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-plus"></i>Add Purchase Order</a> 
+                    <a href="{% url 'order-list' %}" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-plus"></i>Purchase Order List</a>
+                </li>
+
+                <li class="menu-item-has-children dropdown" >
+                    <a href="{% url 'create-order' %}" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-plus"></i>Add Purchase Order</a>
                 </li>
 
             </ul>

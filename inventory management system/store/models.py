@@ -2,6 +2,7 @@ from django.db import models
 
 from users.models import User
 
+
 class Supplier(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=120, unique=True)
@@ -19,6 +20,7 @@ class Season(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class Drop(models.Model):
     name = models.CharField(max_length=120, unique=True)
@@ -42,14 +44,13 @@ class Order(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     partno = models.CharField(max_length=50)
     description = models.CharField(max_length=50)
-    style = models.CharField(max_length=50, blank= True)
-    standard = models.PositiveIntegerField(default= 0)
-    quantity = models.PositiveIntegerField(default= 0)
-    limit = models.PositiveIntegerField(default= 0)
+    style = models.CharField(max_length=50, blank=True)
+    standard = models.PositiveIntegerField(default=0)
+    quantity = models.PositiveIntegerField(default=0)
+    limit = models.PositiveIntegerField(default=0)
     created_date = models.DateField(auto_now_add=True)
-    is_ppc = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True,)
-    new_stock = models.PositiveIntegerField(default= 0)
-
+    is_ppc = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, )
+    new_stock = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.product.name

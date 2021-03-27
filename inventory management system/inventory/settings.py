@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'widget_tweaks',
+    'anymail',
 
     # local
     'store.apps.StoreConfig',
@@ -127,3 +128,11 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 AUTH_USER_MODEL = 'users.User'
+
+EMAIL_SUBJECT_PREFIX = "[Platform]"
+
+# setup mandrill API https://stackoverflow.com/questions/65232548/why-got-error-invalid-key-from-the-metadata-api-of-mailchimp
+EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
+ANYMAIL = {
+    "MAILGUN_API_KEY": "b98019ddd799ac1f72ef5dd14faa6a75-1553bd45-2316167d",
+}
