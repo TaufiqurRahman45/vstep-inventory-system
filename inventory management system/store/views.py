@@ -1,8 +1,8 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views.generic import ListView
 from django.contrib.auth.decorators import login_required
+
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_LEFT, TA_RIGHT, TA_CENTER
 from reportlab.lib.pagesizes import A4
@@ -14,121 +14,16 @@ from six import BytesIO
 from users.models import User
 from .models import (
     Supplier,
-    Season,
-    Drop,
     Product,
     Order,
-    Delivery
 )
 from .forms import (
     SupplierForm,
-    SeasonForm,
-    DropForm,
     ProductForm,
     OrderForm,
-    DeliveryForm,
-    PurchaseUpdateForm,
 )
-from utils.user_log import create_log
 
 
-# Supplier views
-@login_required(login_url='login')
-def create_supplier(request):
-    forms = SupplierForm()
-    if request.method == 'POST':
-        forms = SupplierForm(request.POST)
-        if forms.is_valid():
-            name = forms.cleaned_data['name']
-            address = forms.cleaned_data['address']
-            email = forms.cleaned_data['email']
-            username = forms.cleaned_data['username']
-            password = forms.cleaned_data['password']
-            retype_password = forms.cleaned_data['retype_password']
-            if password == retype_password:
-                user = User.objects.create_user(username=username, password=password, email=email, is_supplier=True)
-                supplier = Supplier.objects.create(user=user, name=name, address=address)
-                create_log(request, supplier)
-                return redirect('supplier-list')
-    context = {
-        'form': forms
-    }
-    return render(request, 'store/addSupplier.html', context)
-
-
-class SupplierListView(ListView):
-    model = Supplier
-    template_name = 'store/supplier_list.html'
-    context_object_name = 'supplier'
-
-
-# Season views
-@login_required(login_url='login')
-def create_season(request):
-    forms = SeasonForm()
-    if request.method == 'POST':
-        forms = SeasonForm(request.POST)
-        if forms.is_valid():
-            season = forms.save()
-            create_log(request, season)
-            return redirect('season-list')
-    context = {
-        'form': forms
-    }
-    return render(request, 'store/addSeason.html', context)
-
-
-class SeasonListView(ListView):
-    model = Season
-    template_name = 'store/season_list.html'
-    context_object_name = 'season'
-
-
-# Drop views
-@login_required(login_url='login')
-def create_drop(request):
-    forms = DropForm()
-    if request.method == 'POST':
-        forms = DropForm(request.POST)
-        if forms.is_valid():
-            drop = forms.save()
-            create_log(request, drop)
-            return redirect('drop-list')
-    context = {
-        'form': forms
-    }
-    return render(request, 'store/addCategory.html', context)
-
-
-class DropListView(ListView):
-    model = Drop
-    template_name = 'store/category_list.html'
-    context_object_name = 'drop'
-
-
-# Product views
-@login_required(login_url='login')
-def create_product(request):
-    forms = ProductForm()
-    if request.method == 'POST':
-        forms = ProductForm(request.POST)
-        if forms.is_valid():
-            product = forms.save()
-            create_log(request, product)
-            return redirect('product-list')
-    context = {
-        'form': forms
-    }
-    return render(request, 'store/addProduct.html', context)
-
-
-class ProductListView(ListView):
-    model = Product
-    template_name = 'store/product_list.html'
-    context_object_name = 'product'
-
-
-# Order views
 @login_required(login_url='login')
 def generate_pdf(request):
     response = HttpResponse(content_type='application/pdf')
@@ -198,10 +93,55 @@ def generate_pdf(request):
     return response
 
 
+# Supplier views
+@login_required(login_url='login')
+def create_supplier(request):
+    forms = SupplierForm()
+    if request.method == 'POST':
+        forms = SupplierForm(request.POST)
+        if forms.is_valid():
+            name = forms.cleaned_data['name']
+            address = forms.cleaned_data['address']
+            email = forms.cleaned_data['email']
+            Supplier.objects.create(name=name, email=email, address=address)
+        return redirect('supplier-list')
+    context = {
+        'form': forms
+    }
+    return render(request, 'store/addSupplier.html', context)
+
+
+class SupplierListView(ListView):
+    model = Supplier
+    template_name = 'store/supplier_list.html'
+    context_object_name = 'supplier'
+
+
+# Product views
+@login_required(login_url='login')
+def create_product(request):
+    forms = ProductForm()
+    if request.method == 'POST':
+        forms = ProductForm(request.POST)
+        if forms.is_valid():
+            forms.save()
+            return redirect('product-list')
+    context = {
+        'form': forms
+    }
+    return render(request, 'store/addProduct.html', context)
+
+
+class ProductListView(ListView):
+    model = Product
+    template_name = 'store/product_list.html'
+    context_object_name = 'product'
+
+
+# Order views
 @login_required(login_url='login')
 def create_order(request):
     forms = OrderForm()
-    forms.fields['is_ppc'].queryset = User.objects.filter(is_ppc=True)
 
     if request.method == 'POST':
         forms = OrderForm(request.POST)
@@ -215,8 +155,9 @@ def create_order(request):
             standard = forms.cleaned_data['standard']
             limit = forms.cleaned_data['limit']
             is_ppc = forms.cleaned_data['is_ppc']
+            new_stock = forms.cleaned_data['new_stock']
 
-            order = Order.objects.create(
+            Order.objects.create(
                 supplier=supplier,
                 product=product,
                 partno=partno,
@@ -226,9 +167,9 @@ def create_order(request):
                 quantity=quantity,
                 limit=limit,
                 is_ppc=is_ppc,
+                new_stock=new_stock,
 
             )
-            create_log(request, order)
             return redirect('order-list')
     context = {
         'form': forms
@@ -236,7 +177,7 @@ def create_order(request):
     return render(request, 'store/addOrder.html', context)
 
 
-class OrderListView(LoginRequiredMixin, ListView):
+class OrderListView(ListView):
     model = Order
     template_name = 'store/order_list.html'
 
@@ -251,28 +192,6 @@ def update_Order(request):
     return render(request, 'store/updateOrder.html')
 
 
-# Delivery views
-@login_required(login_url='login')
-def create_delivery(request):
-    forms = DeliveryForm()
-    if request.method == 'POST':
-        forms = DeliveryForm(request.POST)
-        if forms.is_valid():
-            delivery = forms.save()
-            create_log(request, delivery)
-            return redirect('delivery-list')
-    context = {
-        'form': forms
-    }
-    return render(request, 'store/addelivery.html', context)
-
-
-class DeliveryListView(ListView):
-    model = Delivery
-    template_name = 'store/delivery_list.html'
-    context_object_name = 'delivery'
-
-
 @login_required(login_url="/login")
 def updateOrder(request, pk):
     action = 'update'
@@ -282,20 +201,19 @@ def updateOrder(request, pk):
     if request.method == 'POST':
         form = OrderForm(request.POST, instance=order)
         if form.is_valid():
-            order = form.save()
-            create_log(request, order)
+            form.save()
             return redirect('order-list')
 
     context = {'action': action, 'form': form}
     return render(request, 'store/update_order.html', context)
 
 
+@login_required(login_url="/login")
 def deleteOrder(request, pk):
     order = Order.objects.get(id=pk)
     if request.method == 'POST':
         order_id = order.partno
         order.delete()
-        create_log(request, order, 3)
         return redirect('order-list')
 
     return render(request, 'store/delete.html', {'item': order})

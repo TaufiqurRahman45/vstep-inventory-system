@@ -1,18 +1,18 @@
-<aside id="left-panel" class="left-panel" style="background: black">
-    <nav class="navbar navbar-expand-sm navbar-default" style="background: black">
-        <div id="main-menu" class="main-menu collapse navbar-collapse" style="background: black">
+<aside id="left-panel" class="left-panel" style="background: #afafaf">
+    <nav class="navbar navbar-expand-sm navbar-default" style="background: #afafaf">
+        <div id="main-menu" class="main-menu collapse navbar-collapse" style="background: #afafaf">
             <ul class="nav navbar-nav">
-                <li class="active" style="background: black" >
-                    <a href="{% url 'product-list' %}"><i class="menu-icon fa fa-laptop"></i>Dashboard </a>
+                <li class="active" style="background: #afafaf" >
+                    <a href="/"><i class="menu-icon fa fa-laptop"></i>Dashboard </a>
                 </li>
-                <li class="menu-title" style="color: white">My Store</li><!-- /.menu-title -->
+                <li class="menu-title" style="color: black">My Store</li><!-- /.menu-title -->
 
                 
                 <li class="menu-item-has-children dropdown">
-                    <a href="{% url 'product-list' %}" > <i class="menu-icon fa fa-list"></i>Product</a>
+                    <a href="{% url 'product-list' %}" style="color: black" > <i class="menu-icon fa fa-list"></i>Product</a>
                 </li>
                 <li class="menu-item-has-children dropdown" >
-                    <a href="{% url 'supplier-list' %}"> <i class="menu-icon fa fa-user"></i>Supplier</a>
+                    <a href="{% url 'supplier-list' %}" style="color: black"> <i class="menu-icon fa fa-user"></i>Supplier</a>
                 </li>
 
                 <li class="menu-item-has-children dropdown" >
@@ -20,7 +20,7 @@
                 </li>
 
                 <li class="menu-item-has-children dropdown" >
-                    <a href="{% url 'create-order' %}" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-plus"></i>Add Purchase Order</a>
+                    <a href="{% url 'create-order' %}" style="color: black"> <i class="menu-icon fa fa-plus"></i>Add Purchase Order</a>
                 </li>
 
             </ul>
