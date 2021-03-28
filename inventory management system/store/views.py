@@ -201,6 +201,7 @@ def generate_pdf(request):
 @login_required(login_url='login')
 def create_order(request):
     forms = OrderForm()
+    forms.fields['is_ppc'].queryset = User.objects.filter(is_ppc=True)
 
     if request.method == 'POST':
         forms = OrderForm(request.POST)
