@@ -32,7 +32,7 @@ class Order(models.Model):
     limit = models.PositiveIntegerField(default= 0)
     created_date = models.DateField(auto_now_add=True)
     is_ppc = models.ForeignKey(User, on_delete=models.CASCADE, null=True,)
-    new_stock = models.PositiveIntegerField(default= 0, blank=True)
+    new_stock = models.PositiveIntegerField(default=0, blank=True, null=True)
 
     def __str__(self):
         return self.product.name

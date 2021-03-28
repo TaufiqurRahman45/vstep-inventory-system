@@ -10,6 +10,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Spacer, Table, TableStyle
 from reportlab.platypus.para import Paragraph
 from six import BytesIO
+from utils.user_log import create_log
 
 from users.models import User
 from .models import (
@@ -103,7 +104,8 @@ def create_supplier(request):
             name = forms.cleaned_data['name']
             address = forms.cleaned_data['address']
             email = forms.cleaned_data['email']
-            Supplier.objects.create(name=name, email=email, address=address)
+            supplier = Supplier.objects.create(name=name, email=email, address=address)
+            create_log(request, supplier)
         return redirect('supplier-list')
     context = {
         'form': forms
@@ -124,7 +126,8 @@ def create_product(request):
     if request.method == 'POST':
         forms = ProductForm(request.POST)
         if forms.is_valid():
-            forms.save()
+            product = forms.save()
+            create_log(request, product)
             return redirect('product-list')
     context = {
         'form': forms
@@ -141,7 +144,10 @@ class ProductListView(ListView):
 # Order views
 @login_required(login_url='login')
 def create_order(request):
-    forms = OrderForm()
+    from django import forms
+    form = OrderForm()
+    form.fields['is_ppc'].queryset = User.objects.filter(is_ppc=True)
+    form.fields['new_stock'].widget = forms.HiddenInput()
 
     if request.method == 'POST':
         forms = OrderForm(request.POST)
@@ -157,7 +163,7 @@ def create_order(request):
             is_ppc = forms.cleaned_data['is_ppc']
             new_stock = forms.cleaned_data['new_stock']
 
-            Order.objects.create(
+            order = Order.objects.create(
                 supplier=supplier,
                 product=product,
                 partno=partno,
@@ -168,11 +174,11 @@ def create_order(request):
                 limit=limit,
                 is_ppc=is_ppc,
                 new_stock=new_stock,
-
             )
+            create_log(request, order)
             return redirect('order-list')
     context = {
-        'form': forms
+        'form': form
     }
     return render(request, 'store/addOrder.html', context)
 
@@ -201,7 +207,10 @@ def updateOrder(request, pk):
     if request.method == 'POST':
         form = OrderForm(request.POST, instance=order)
         if form.is_valid():
-            form.save()
+            order = form.save()
+            order.quantity += order.new_stock
+            order.save()
+            create_log(request, order)
             return redirect('order-list')
 
     context = {'action': action, 'form': form}
@@ -214,6 +223,7 @@ def deleteOrder(request, pk):
     if request.method == 'POST':
         order_id = order.partno
         order.delete()
+        create_log(request, order, 3)
         return redirect('order-list')
 
     return render(request, 'store/delete.html', {'item': order})
