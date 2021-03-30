@@ -64,7 +64,7 @@ def generate_pdf(request):
     orders = Order.objects.all()
     for tr in orders:
         status = ''
-        if tr.quantity < tr.limit:
+        if tr.quantity <= tr.limit:
             status = 'Reorder'
         elif tr.quantity > tr.limit:
             status = 'Available'
@@ -209,8 +209,24 @@ def updateOrder(request, pk):
         form = OrderForm(request.POST, instance=order)
         if form.is_valid():
             order = form.save()
-            order.quantity += order.new_stock
-            order.save()
+            try:
+                order.quantity += order.new_stock
+                order.save()
+            except:
+                pass
+            if order.quantity <= order.limit:
+                from django.core.mail import EmailMessage
+
+                to = order.is_ppc.email
+
+                msg = EmailMessage(subject="Status: Reorder", from_email="Webmaster@victoriousstep.com",
+                                   to=[to])
+                msg.template_name = 'REORDER'
+                msg.template_content = {
+                    'ORDER_ID': order.id,
+                    'PRODUCT_ID': order.product_id,
+                }
+                msg.send(fail_silently=True)
             create_log(request, order)
             return redirect('order-list')
 

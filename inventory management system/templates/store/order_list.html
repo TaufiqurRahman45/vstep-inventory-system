@@ -8,9 +8,8 @@
         <div class="card">
             <div class="card-body">
                 <h4 class="col-xl-3 box-title">Purchase Order List </h4> 
-                <a href="#" class="col-xl-1 btn btn-success ml-2" style="float: right;">Export</a>
                 <a href="{% url 'create-order' %}" class="col-xl-2 btn btn-primary" style="float: right;">Add New</a>
-                <a href="{% url 'generate-pdf' %}" class="col-xl-2 btn btn-success mx-2" style="float: right;">Generate PDF</a>
+                <a href="{% url 'generate-pdf' %}" class="col-xl-2 btn btn-success mx-2" style="float: right;">Export</a>
             </div>
             <div class="card-body--">
                 <div class="table-stats order-table ov-h">
@@ -42,7 +41,7 @@
                                 <td>{{ order.is_ppc}}</td>
                                 <td>{{ order.created_date }}</td>
                                 <td> 
-                                {% if order.quantity < order.limit   %}
+                                {% if order.quantity <= order.limit   %}
                                     <p style="color: #FF0000">
                                           Reorder
                                     </p>
