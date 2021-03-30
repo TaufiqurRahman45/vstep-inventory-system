@@ -8,7 +8,8 @@ from store.models import Product, Supplier, Order
 @login_required(login_url='login')
 def dashboard(request):
     # send_mail("It works!", "This will get sent through Mandrill",
-    #           "Djrill Sender <Webmaster@victoriousstep.com>", ["manzurulhoquerumi@gmail.com"])
+    #           "Djrill Sender <Webmaster@victoriousstep.com>", ["Webmaster@victoriousstep.com"])
+    # print('sent')
 
     total_product = Product.objects.count()
     total_supplier = Supplier.objects.count()

@@ -10,7 +10,7 @@ from .views import (
     SupplierListView,
     ProductListView,
     OrderListView,
-    update_Order,
+    logs,
     generate_pdf
 )
 
@@ -18,6 +18,7 @@ urlpatterns = [
     path('create-supplier/', create_supplier, name='create-supplier'),
     path('create-product/', create_product, name='create-product'),
     path('create-order/', create_order, name='create-order'),
+    path('logs/', logs, name='logs'),
 
     path('supplier-list/', SupplierListView.as_view(), name='supplier-list'),
     path('product-list/', ProductListView.as_view(), name='product-list'),
@@ -25,5 +26,4 @@ urlpatterns = [
     path('generate-pdf/', generate_pdf, name='generate-pdf'),
     path('update_order/<str:pk>/', views.updateOrder, name="update_order"),
     path('delete_order/<str:pk>/', views.deleteOrder, name="delete_order"),
-
 ]

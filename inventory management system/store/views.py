@@ -1,3 +1,4 @@
+from django.contrib.admin.models import LogEntry
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views.generic import ListView
@@ -227,3 +228,9 @@ def deleteOrder(request, pk):
         return redirect('order-list')
 
     return render(request, 'store/delete.html', {'item': order})
+
+
+@login_required(login_url='/login')
+def logs(request):
+    my_logs = LogEntry.objects.all()
+    return render(request, 'store/logs.html', {'logs': my_logs})
