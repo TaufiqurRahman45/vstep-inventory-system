@@ -29,10 +29,9 @@
                         <thead>
                         <tr>
                             <th class="serial">#</th>
-                            <th>User</th>
-                            <th>Content Type</th>
-                            <th>Object</th>
-                            <th>Object Representation</th>
+                            <th>Username</th>
+                            <th>Role</th>
+                            <th>Time</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -40,10 +39,19 @@
                             {% for log in logs %}
                                 <tr>
                                     <td class="serial">{{ forloop.counter }}</td>
-                                    <td>{{ log.user }}</td>
-                                    <td>{{ log.content_type }}</td>
-                                    <td>{{ log }}</td>
-                                    <td>{{ log.object_repr }}</td>
+                                    <td>{{ log.user.username }}</td>
+                                    <td>
+                                        {% if log.user.is_operation %}
+                                            Operation
+                                        {% elif log.user.is_admin %}
+                                            Admin
+                                        {% elif log.user.is_ppc %}
+                                            PPC
+                                        {% else %}
+                                            Admin
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ log.action_time }}</td>
                                 </tr>
                             {% endfor %}
                         {% else %}
