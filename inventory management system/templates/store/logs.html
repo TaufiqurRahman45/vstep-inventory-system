@@ -31,6 +31,7 @@
                             <th class="serial">#</th>
                             <th>Username</th>
                             <th>Role</th>
+                            <th>Object</th>
                             <th>Time</th>
                         </tr>
                         </thead>
@@ -51,6 +52,7 @@
                                             Admin
                                         {% endif %}
                                     </td>
+                                    <td>{{ log }}</td>
                                     <td>{{ log.action_time }}</td>
                                 </tr>
                             {% endfor %}
