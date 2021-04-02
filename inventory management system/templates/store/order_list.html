@@ -18,10 +18,11 @@
                             <tr>
                                 <th class="serial">#</th>
                                 <th>Part No</th>
-                                <th>Description</th>
-                                <th>Style Packaging</th>
-                                <th>Standard</th>
+                                <th>Part Name</th>
+                                <!-- <th>Style Packaging</th> -->
+                                <th>Qty/Box</th>
                                 <th>Quantity PCS</th>
+                                <th>Product</th>
                                 <th>PIC</th>
                                 <th>Date</th>
                                 <th>Status</th>
@@ -35,9 +36,10 @@
                                 <td class="serial">{{ forloop.counter }}</td>
                                 <td>{{ order.partno }}</td>
                                 <td>{{ order.description }}</td>
-                                <td>{{ order.style }}</td>
+                                <!-- <td>{{ order.style }}</td> -->
                                 <td>{{ order.standard }}</td>
                                 <td>{{ order.quantity }}</td>
+                                <td>{{ order.product.name }}</td>
                                 <td>{{ order.is_ppc}}</td>
                                 <td>{{ order.created_date }}</td>
                                 <td> 
@@ -52,9 +54,10 @@
                                   {% endif %}
                                 </td>
                                 <td>
-                                    <a class="btn btn-sm btn-warning" href="{% url 'update_order' order.id %}" style="margin-right: 30px">Update</a>
-                                    <a class="btn btn-sm btn-danger" style="margin-left:-20px ;" href="{% url 'delete_order' order.id %}">Delete</a>
+                                    <a class="btn btn-sm btn-warning" href="{% url 'update_order' order.id %}" >Update</a>
+                                    <a class="btn btn-sm btn-danger" style="margin-top:15px ;" href="{% url 'delete_order' order.id %}">Delete</a>
                                 </td>
+                                
                             </tr>
                             {% endfor %}
                             {% else %}
