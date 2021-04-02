@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'widget_tweaks',
+    'djrill',
 
     # local
     'store.apps.StoreConfig',
@@ -127,3 +128,9 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 AUTH_USER_MODEL = 'users.User'
+
+EMAIL_SUBJECT_PREFIX = "[Platform]"
+
+# setup mandrill API https://stackoverflow.com/questions/65232548/why-got-error-invalid-key-from-the-metadata-api-of-mailchimp
+EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
+MANDRILL_API_KEY = "IO4lvMhGtFJZNWnT3LJYMg"

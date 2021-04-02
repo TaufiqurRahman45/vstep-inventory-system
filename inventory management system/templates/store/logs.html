@@ -1,0 +1,71 @@
+{% extends 'base/base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}User Log{% endblock title %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        <div class="breadcrumbs-inner">
+            <div class="row m-0">
+                <div class="col-sm-4">
+                    <div class="page-header float-left">
+                        <div class="page-title">
+                            <h1>Logs</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock breadcrumbs %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-body">
+                <div class="table-stats order-table ov-h">
+                    <table class="table ">
+                        <thead>
+                        <tr>
+                            <th class="serial">#</th>
+                            <th>Username</th>
+                            <th>Role</th>
+                            <th>Object</th>
+                            <th>Time</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if logs %}
+                            {% for log in logs %}
+                                <tr>
+                                    <td class="serial">{{ forloop.counter }}</td>
+                                    <td>{{ log.user.username }}</td>
+                                    <td>
+                                        {% if log.user.is_operation %}
+                                            Operation
+                                        {% elif log.user.is_admin %}
+                                            Admin
+                                        {% elif log.user.is_ppc %}
+                                            PPC
+                                        {% else %}
+                                            Admin
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ log }}</td>
+                                    <td>{{ log.action_time }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td>No Log Data</td>
+                            </tr>
+                        {% endif %}
+                        </tbody>
+                    </table>
+                </div> <!-- /.table-stats -->
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -2,3 +2,5 @@ asgiref==3.2.10
 Django==3.0.8
 pytz==2020.1
 sqlparse==0.3.1
+reportlab==3.5.66
+djrill==2.1.0

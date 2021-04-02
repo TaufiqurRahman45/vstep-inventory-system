@@ -87,12 +87,14 @@
                                         {{ form.limit }}
                                     </div>
                                 </div>
-                                <div class="col-4">
-                                    <div class="form-group">
-                                        <label for="new_stock" class="control-label mb-1">New Stock <i>(optional)</i></label>
-                                        {{ form.new_stock }}
+                                {% if form.new_stock not in form.hidden_fields %}
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            <label for="new_stock" class="control-label mb-1">New Stock <i>(optional)</i></label>
+                                            {{ form.new_stock }}
+                                        </div>
                                     </div>
-                                </div>
+                                {% endif %}
                             </div>
                             <div>
                                 <button id="payment-button" type="submit" class="btn btn-lg btn-success btn-block">
