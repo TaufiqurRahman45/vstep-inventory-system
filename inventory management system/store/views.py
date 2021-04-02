@@ -117,7 +117,12 @@ def create_supplier(request):
 class SupplierListView(ListView):
     model = Supplier
     template_name = 'store/supplier_list.html'
-    context_object_name = 'supplier'
+    # context_object_name = 'supplier'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['supplier'] = Supplier.objects.all().order_by('-id')
+        return context
 
 
 # Product views
@@ -139,7 +144,12 @@ def create_product(request):
 class ProductListView(ListView):
     model = Product
     template_name = 'store/product_list.html'
-    context_object_name = 'product'
+    # context_object_name = 'product'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['product'] = Product.objects.all().order_by('-id')
+        return context
 
 
 # Order views
