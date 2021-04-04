@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Product, Order
+from .models import Product, Order, Part
 
 
 class SupplierForm(forms.Form):
@@ -49,5 +49,22 @@ class OrderForm(forms.ModelForm):
             'limit' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'limit'}),
             'is_ppc' : forms.Select(attrs={'class': 'form-control', 'id': 'is_ppc'}),
             'new_stock' : forms. NumberInput(attrs={'class': 'form-control', 'id': 'new_stock'}),
+        }
+
+class PartForm(forms.ModelForm):
+    class Meta:
+        model = Part
+        fields = ['partno', 'partname', 'stylepack', 'standardpack', 'supplier', 'product', 'unit', 'price', 'tax']
+
+        widgets = {
+            'partno': forms.TextInput(attrs={'class': 'form-control', 'id': 'partno'}),
+            'partname': forms.TextInput(attrs={'class': 'form-control', 'id': 'partname'}),
+            'stylepack': forms.TextInput(attrs={'class': 'form-control', 'id': 'stylepack'}),
+            'standardpack': forms.NumberInput(attrs={'class': 'form-control', 'id': 'standardpack'}),
+            'supplier': forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),
+            'product': forms.Select(attrs={'class': 'form-control', 'id': 'product'}),
+            'unit': forms.NumberInput(attrs={'class': 'form-control', 'id': 'unit'}),
+            'price' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'price'}),
+            'tax' : forms. NumberInput(attrs={'class': 'form-control', 'id': 'tax'}),        
         }
 

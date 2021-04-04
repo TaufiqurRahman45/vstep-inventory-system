@@ -18,11 +18,13 @@ from .models import (
     Supplier,
     Product,
     Order,
+    Part,
 )
 from .forms import (
     SupplierForm,
     ProductForm,
     OrderForm,
+    PartForm,
 )
 
 
@@ -203,6 +205,51 @@ class OrderListView(ListView):
         context['order'] = Order.objects.all().order_by('-id')
         return context
 
+@login_required(login_url='login')
+def create_part(request):
+    from django import forms
+    form = PartForm()
+   
+    if request.method == 'POST':
+        forms = PartForm(request.POST)
+        if forms.is_valid():
+            supplier = forms.cleaned_data['supplier']
+            product = forms.cleaned_data['product']
+            partno = forms.cleaned_data['partno']
+            partname = forms.cleaned_data['partname']
+            stylepack = forms.cleaned_data['stylepack']
+            standardpack = forms.cleaned_data['standardpack']
+            unit = forms.cleaned_data['unit']
+            price = forms.cleaned_data['price']
+            tax = forms.cleaned_data['tax']
+
+            part = Part.objects.create(
+                supplier=supplier,
+                product=product,
+                partno=partno,
+                partname=partname,
+                stylepack=stylepack,
+                standardpack=standardpack,
+                unit=unit,
+                price=price,
+                tax=tax,
+            )
+            create_log(request, part)
+            return redirect('part-list')
+    context = {
+        'form': form
+    }
+    return render(request, 'store/addPart.html', context)
+
+
+class PartListView(ListView):
+    model = Part
+    template_name = 'store/part_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['part'] = Part.objects.all().order_by('-id')
+        return context
 
 @login_required(login_url='login')
 def update_Order(request):

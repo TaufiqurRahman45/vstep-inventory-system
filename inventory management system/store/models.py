@@ -36,3 +36,18 @@ class Order(models.Model):
 
     def __str__(self):
         return self.product.name
+
+class Part(models.Model):
+    partno = models.CharField(max_length=50)
+    partname = models.CharField(max_length=50)
+    stylepack = models.CharField(max_length=50, blank= True)
+    standardpack = models.PositiveIntegerField(default= 0)
+    unit = models.PositiveIntegerField(default= 0)
+    price = models.PositiveIntegerField(default= 0)
+    tax = models.PositiveIntegerField(default= 0)
+    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    created_date = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return self.product.name
