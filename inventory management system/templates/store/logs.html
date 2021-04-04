@@ -32,6 +32,7 @@
                             <th>Username</th>
                             <th>Role</th>
                             <th>Object</th>
+                            <!-- <th>Changed</th> -->
                             <th>Time</th>
                         </tr>
                         </thead>
@@ -53,6 +54,7 @@
                                         {% endif %}
                                     </td>
                                     <td>{{ log }}</td>
+                                    <!-- <td>{{ log.object_repr }}</td> -->
                                     <td>{{ log.action_time }}</td>
                                 </tr>
                             {% endfor %}

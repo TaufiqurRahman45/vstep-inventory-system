@@ -213,7 +213,7 @@ def update_Order(request):
 def updateOrder(request, pk):
     action = 'update'
     order = Order.objects.get(id=pk)
-    form = OrderForm(instance=order)
+    form = OrderForm(instance=order, initial={'new_stock': 0})
 
     if request.method == 'POST':
         form = OrderForm(request.POST, instance=order)
