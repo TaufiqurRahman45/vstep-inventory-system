@@ -4,6 +4,7 @@ from .models import (
     Supplier,
     Product,
     Order,
+    Part,
 )
 
 class SupplierAdmin(admin.ModelAdmin):
@@ -12,3 +13,4 @@ class SupplierAdmin(admin.ModelAdmin):
 admin.site.register(Supplier, SupplierAdmin)
 admin.site.register(Product)
 admin.site.register(Order)
+admin.site.register(Part)
