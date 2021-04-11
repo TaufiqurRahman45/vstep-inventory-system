@@ -19,12 +19,16 @@ from .models import (
     Product,
     Order,
     Part,
+    PurchaseOrder,
+    DeliveryOrder,
 )
 from .forms import (
     SupplierForm,
     ProductForm,
     OrderForm,
     PartForm,
+    PurchaseOrderForm,
+    DeliveryOrderForm,
 )
 
 
@@ -250,6 +254,78 @@ class PartListView(ListView):
         context = super().get_context_data(**kwargs)
         context['part'] = Part.objects.all().order_by('-id')
         return context
+
+@login_required(login_url='login')
+def create_purchaseorder(request):
+    from django import forms
+    form = PurchaseOrderForm()
+   
+    if request.method == 'POST':
+        forms = PurchaseOrderForm(request.POST)
+        if forms.is_valid():
+            supplier = forms.cleaned_data['supplier']
+            product = forms.cleaned_data['product']
+            part = forms.cleaned_data['part']
+            po_quantity = forms.cleaned_data['po_quantity']
+
+            purchaseorder = PurchaseOrder.objects.create(
+                supplier=supplier,
+                product=product,
+                part=part,
+                po_quantity=po_quantity,
+                terms = '30',
+                remarks = 'Follow DI',
+            )
+            create_log(request, purchaseorder)
+            return redirect('po-list')
+    context = {
+        'form': form
+    }
+    return render(request, 'store/addPo.html', context)
+
+
+class PurchaseOrderListView(ListView):
+    model = PurchaseOrder
+    template_name = 'store/po_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['purchaseorder'] = PurchaseOrder.objects.all().order_by('-id')
+        return context
+
+@login_required(login_url='login')
+def create_deliveryorder(request):
+    from django import forms
+    form = DeliveryOrderForm()
+   
+    if request.method == 'POST':
+        forms = DeliveryOrderForm(request.POST)
+        if forms.is_valid():
+            part = forms.cleaned_data['part']
+            do_quantity = forms.cleaned_data['do_quantity']
+
+            deliveryorder = DeliveryOrder.objects.create(
+                part=part,
+                do_quantity=do_quantity,
+              
+            )
+            create_log(request, deliveryorder)
+            return redirect('do-list')
+    context = {
+        'form': form
+    }
+    return render(request, 'store/addDo.html', context)
+
+
+class DeliveryOrderListView(ListView):
+    model = DeliveryOrder
+    template_name = 'store/do_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['deliveryorder'] = DeliveryOrder.objects.all().order_by('-id')
+        return context
+
 
 @login_required(login_url='login')
 def update_Order(request):
