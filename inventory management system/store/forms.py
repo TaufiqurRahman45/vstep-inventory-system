@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Product, Order, Part
+from .models import Product, Order, Part, PurchaseOrder, DeliveryOrder
 
 
 class SupplierForm(forms.Form):
@@ -68,3 +68,26 @@ class PartForm(forms.ModelForm):
             'tax' : forms. NumberInput(attrs={'class': 'form-control', 'id': 'tax'}),        
         }
 
+class PurchaseOrderForm(forms.ModelForm):
+    class Meta:
+        model = PurchaseOrder
+        fields = ['supplier', 'product','part', 'po_quantity', 'terms', 'remarks']
+
+        widgets = {
+            'supplier': forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),
+            'terms': forms.Select(attrs={'class': 'form-control', 'id': 'terms'}),
+            'remarks': forms.Select(attrs={'class': 'form-control', 'id': 'remarks'}),
+            'product': forms.Select(attrs={'class': 'form-control', 'id': 'product'}),
+            'part': forms.Select(attrs={'class': 'form-control', 'id': 'part'}),
+            'po_quantity': forms.NumberInput(attrs={'class': 'form-control', 'id': 'po_quantity'}),
+        }
+
+class DeliveryOrderForm(forms.ModelForm):
+    class Meta:
+        model = DeliveryOrder
+        fields = ['part', 'do_quantity']
+
+        widgets = {
+            'part': forms.Select(attrs={'class': 'form-control', 'id': 'part'}),
+            'do_quantity': forms.NumberInput(attrs={'class': 'form-control', 'id': 'do_quantity'}),
+        }

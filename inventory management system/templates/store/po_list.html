@@ -1,0 +1,60 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Part List{% endblock title %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="col-xl-3 box-title">Part List </h4> 
+                <a href="{% url 'create-purchaseorder' %}" class="col-xl-2 btn btn-primary" style="float: right;">Add New</a>
+                <a href="" class="col-xl-2 btn btn-success mx-2" style="float: right;">Export</a>
+            </div>
+            <div class="card-body--">
+                <div class="table-stats part-table ov-h">
+                    <table class="table ">
+                        <thead>
+                            <tr>
+                                <th class="serial">#</th>
+                                <th>Part No</th>
+                                <th>SP</th>
+                                <th>Amount</th>
+                                <th>Product</th>
+                                <th>Supplier</th>
+                                <th>Quantity</th>
+                                <th>Terms</th>
+                                <th>Remarks</th>
+                                <th>Date</th>
+                                <th>Action</th>                     
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if purchaseorder %}
+                            {% for purchaseorder in purchaseorder %}
+                            <tr>
+                                <td class="serial">{{ forloop.counter }}</td>
+                                <td>{{ purchaseorder.part }}</td>
+                                <td>{{ purchaseorder.part.standardpack }}</td>
+                                <td>{{ purchaseorder.amount}}</td>
+                                <td>{{ purchaseorder.product.name }}</td>
+                                <td>{{ purchaseorder.supplier.name }}</td>
+                                <td>{{ purchaseorder.po_quantity }}</td>
+                                <td>{{ purchaseorder.terms }}</td>
+                                <td>{{ purchaseorder.remarks }}</td>                              
+                                <td>{{ purchaseorder.created_date }}</td>        
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                                <tr><td>No Part Data</td></tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div> <!-- /.table-stats -->
+            </div>
+        </div> <!-- /.card -->
+    </div>  <!-- /.col-lg-8 -->
+
+    
+</div>
+{% endblock content %}
