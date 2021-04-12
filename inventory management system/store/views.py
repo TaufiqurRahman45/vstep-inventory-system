@@ -110,8 +110,12 @@ def create_supplier(request):
         if forms.is_valid():
             name = forms.cleaned_data['name']
             address = forms.cleaned_data['address']
+            address2 = forms.cleaned_data['address2']
+            address3 = forms.cleaned_data['address3']
+            postcode = forms.cleaned_data['postcode']
             email = forms.cleaned_data['email']
-            supplier = Supplier.objects.create(name=name, email=email, address=address)
+            phone = forms.cleaned_data['phone']
+            supplier = Supplier.objects.create(name=name, email=email, address=address,address2=address2,address3=address3,postcode=postcode, phone=phone)
             create_log(request, supplier)
         return redirect('supplier-list')
     context = {

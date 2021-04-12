@@ -39,13 +39,14 @@
             </div>
             <div class="card-body--">
                 <div class="table-stats order-table ov-h">
-                    <table class="table ">
+                    <table class="table table-striped ">
                         <thead>
                             <tr>
                                 <th class="serial">#</th>
                                 <th>Name</th>
                                 <th>Address</th>
                                 <th>Email</th>
+                                <th>Phone Number</th>
                                 <th>Date</th>
                                 <th>Action</th>
                             </tr>
@@ -56,8 +57,9 @@
                             <tr>
                                 <td class="serial">{{ forloop.counter }}</td>
                                 <td>{{ supplier.name }}</td>
-                                <td>{{ supplier.address }}</td>
+                                <td>{{ supplier.address }} {{ supplier.address2 }}<br/> {{ supplier.address3 }} {{ supplier.postcode }}</td>
                                 <td>{{ supplier.email }}</td>
+                                <td>{{ supplier.phone }}</td>
                                 <td>{{ supplier.created_date }}</td>
                                 <td><a class="btn btn-primary" href="{% url 'order-list' %}">View</a></td>
                             </tr>
