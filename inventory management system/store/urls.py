@@ -17,7 +17,8 @@ from .views import (
     PurchaseOrderListView,
     DeliveryOrderListView,
     logs,
-    generate_pdf
+    generate_pdf,
+    generate_pdf_part
 )
 
 urlpatterns = [
@@ -36,6 +37,9 @@ urlpatterns = [
     path('po-list/', PurchaseOrderListView.as_view(), name='po-list'),
     path('do-list/', DeliveryOrderListView.as_view(), name='do-list'),
     path('generate-pdf/', generate_pdf, name='generate-pdf'),
+    path('generate-pdf_part/', generate_pdf_part, name='generate-pdf_part'),
     path('update_order/<str:pk>/', views.updateOrder, name="update_order"),
     path('delete_order/<str:pk>/', views.deleteOrder, name="delete_order"),
+    path('update_part/<str:pk>/', views.updatePart, name="update_part"),
+    path('delete_part/<str:pk>/', views.deletePart, name="delete_part"),
 ]
