@@ -1,6 +1,7 @@
 {% extends 'base/base.html' %}
+{% load widget_tweaks %}
 
-{% block title %}Delete Part{% endblock title %}
+{% block title %}Update DO{% endblock title %}
 
 {% block breadcrumbs %}
 <div class="breadcrumbs">
@@ -19,19 +20,22 @@
 {% endblock breadcrumbs %}
 
 {% block content %}
-<br>
+
 <div class="row">
 	<div class="col-md-6">
 		<div class="card card-body">
-
-			<p>Are you sure you want to delete "{{item}}"?</p>
-			<form  action="" method="post">
-				{% csrf_token %}
-				<a class="btn btn-warning" href="{{request.META.HTTP_REFERER}}">Go back</a>
-
-			  	<input class="btn btn-danger" type="submit"/>
+			<form action="" method="POST">
+            	{% csrf_token %}
+				{% for field in form %}
+					{{field.label}}
+					{{field|add_class:'form-control'}}
+				
+				{% endfor %}
+				<hr>
+				<input type="submit" class="btn btn-info">
 			</form>
 		</div>
 	</div>
 </div>
-{% endblock content %}
+
+{% endblock %}

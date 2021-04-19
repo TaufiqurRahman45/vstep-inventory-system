@@ -229,6 +229,66 @@ def generate_pdf_po(request):
     return response
 
 
+@login_required(login_url='login')
+def generate_pdf_do(request):
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="DO List.pdf"'
+    pdf_buffer = BytesIO()
+    doc = SimpleDocTemplate(pdf_buffer, pagesize=A4,
+                            rightMargin=48, leftMargin=48,
+                            topMargin=100, bottomMargin=120)
+    doc.title = "DO List.pdf"
+    styles = getSampleStyleSheet()
+    styles.add(ParagraphStyle(name='small_text', alignment=TA_LEFT, fontName='Helvetica', borderPadding=6,
+                              leading=14, fontSize=10))
+    styles.add(ParagraphStyle(name='right_small_text', alignment=TA_RIGHT, fontName='Helvetica', borderPadding=6,
+                              leading=14, fontSize=10))
+    styles.add(ParagraphStyle(name='large_text', leading=14, fontSize=20))
+    styles.add(ParagraphStyle(name='center_text', alignment=TA_CENTER, leading=14, fontSize=20))
+    styles.add(ParagraphStyle(name='footer_text', leading=14, fontSize=6))
+
+    elements = []
+    paragraph_text = 'DO List'
+    elements.append(Paragraph(paragraph_text, styles["large_text"]))
+    elements.append(Spacer(1, 24))
+
+    columns = [
+        {'title': 'Date', 'field': 'created_date'},
+        {'title': 'Part', 'field': 'part'},
+        {'title': 'Part Name', 'field': 'partname'},
+        {'title': 'Quantity', 'field': 'do_quantity'},
+    ]
+
+    table_data = [[col['title'] for col in columns]]
+
+    deliveryorder = DeliveryOrder.objects.all()
+    for tr in deliveryorder:
+        table_row = [str(tr.created_date.strftime("%d-%m-%Y")), tr.part,tr.part.partname,
+                     tr.do_quantity]
+        table_data.append(table_row)
+
+    table = Table(table_data, repeatRows=1, colWidths=[doc.width / 7.0] * 7)
+    table.setStyle(TableStyle([
+        ('BOX', (0, 0), (-1, -1), 0.20, colors.dimgrey),
+        ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('INNERGRID', (0, 0), (-1, -1), 0.1, colors.black),
+        # ('SIZE', (0, 0), (-1, -1), 6.5),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        # ('SPAN', (0, 0), (3, 0))
+    ]))
+    elements.append(table)
+
+    elements.append(Spacer(1, 50))
+
+    doc.build(elements)
+
+    pdf = pdf_buffer.getvalue()
+    pdf_buffer.close()
+    response.write(pdf)
+
+    return response
+
 # Supplier views
 @login_required(login_url='login')
 def create_supplier(request):
@@ -506,6 +566,29 @@ class DeliveryOrderListView(ListView):
         context['deliveryorder'] = DeliveryOrder.objects.all().order_by('-id')
         return context
 
+@login_required(login_url="/login")
+def updateDO(request, pk):
+	action = 'update'
+	deliveryorder = DeliveryOrder.objects.get(id=pk)
+	form = DeliveryOrderForm(instance=deliveryorder)
+
+	if request.method == 'POST':
+		form = DeliveryOrderForm(request.POST, instance=deliveryorder)
+		if form.is_valid():
+			form.save()
+			return redirect('do-list')
+
+	context =  {'action':action, 'form':form}
+	return render(request, 'store/update_do.html', context)
+
+def deleteDO(request, pk):
+	deliveryorder = DeliveryOrder.objects.get(id=pk)
+	if request.method == 'POST':
+		deliveryorder_id = deliveryorder.part
+		deliveryorder.delete()
+		return redirect('do-list')
+		
+	return render(request, 'store/delete_do.html', {'item':deliveryorder})
 
 @login_required(login_url='login')
 def update_Order(request):

@@ -9,7 +9,7 @@
             <div class="card-body">
                 <h4 class="col-xl-3 box-title">Delivery Order List </h4> 
                 <a href="{% url 'create-deliveryorder' %}" class="col-xl-2 btn btn-primary" style="float: right;">Add New</a>
-                <a href="" class="col-xl-2 btn btn-success mx-2" style="float: right;">Export</a>
+                <a href="{% url 'generate-pdf_do' %}" class="col-xl-2 btn btn-success mx-2" style="float: right;">Export</a>
             </div>
             <div class="card-body--">
                 <div class="table-stats part-table ov-h">
@@ -33,6 +33,10 @@
                                 <td>{{ deliveryorder.part.partname }}</td>
                                 <td>{{ deliveryorder.do_quantity }}</td>
                                 <td>{{ deliveryorder.created_date }}</td>
+                                <td>
+                                    <a class="btn btn-sm btn-warning" href="{% url 'update_do' deliveryorder.id %}" >Update</a>
+                                    <a class="btn btn-sm btn-danger"  href="{% url 'delete_do' deliveryorder.id %}">Delete</a>
+                                </td>
         
                             </tr>
                             {% endfor %}
