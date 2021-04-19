@@ -165,6 +165,69 @@ def generate_pdf_part(request):
 
     return response
 
+@login_required(login_url='login')
+def generate_pdf_po(request):
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="PO List.pdf"'
+    pdf_buffer = BytesIO()
+    doc = SimpleDocTemplate(pdf_buffer, pagesize=A4,
+                            rightMargin=48, leftMargin=48,
+                            topMargin=100, bottomMargin=120)
+    doc.title = "PO List.pdf"
+    styles = getSampleStyleSheet()
+    styles.add(ParagraphStyle(name='small_text', alignment=TA_LEFT, fontName='Helvetica', borderPadding=6,
+                              leading=14, fontSize=10))
+    styles.add(ParagraphStyle(name='right_small_text', alignment=TA_RIGHT, fontName='Helvetica', borderPadding=6,
+                              leading=14, fontSize=10))
+    styles.add(ParagraphStyle(name='large_text', leading=14, fontSize=20))
+    styles.add(ParagraphStyle(name='center_text', alignment=TA_CENTER, leading=14, fontSize=20))
+    styles.add(ParagraphStyle(name='footer_text', leading=14, fontSize=6))
+
+    elements = []
+    paragraph_text = 'PO List'
+    elements.append(Paragraph(paragraph_text, styles["large_text"]))
+    elements.append(Spacer(1, 24))
+
+    columns = [
+        {'title': 'Date', 'field': 'created_date'},
+        {'title': 'Part', 'field': 'part'},
+        {'title': 'Terms', 'field': 'terms'},
+        {'title': 'Remarks', 'field': 'remarks'},
+        {'title': 'Quantity', 'field': 'po_quantity'},
+        {'title': 'Supplier', 'field': 'supplier'},
+        {'title': 'Product', 'field': 'product'},
+    ]
+
+    table_data = [[col['title'] for col in columns]]
+
+    purchaseorder = PurchaseOrder.objects.all()
+    for tr in purchaseorder:
+        table_row = [str(tr.created_date.strftime("%d-%m-%Y")), tr.part,
+                     tr.terms, tr.remarks, tr.po_quantity, tr.supplier, tr.product]
+        table_data.append(table_row)
+
+    table = Table(table_data, repeatRows=1, colWidths=[doc.width / 7.0] * 7)
+    table.setStyle(TableStyle([
+        ('BOX', (0, 0), (-1, -1), 0.20, colors.dimgrey),
+        ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('INNERGRID', (0, 0), (-1, -1), 0.1, colors.black),
+        # ('SIZE', (0, 0), (-1, -1), 6.5),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        # ('SPAN', (0, 0), (3, 0))
+    ]))
+    elements.append(table)
+
+    elements.append(Spacer(1, 50))
+
+    doc.build(elements)
+
+    pdf = pdf_buffer.getvalue()
+    pdf_buffer.close()
+    response.write(pdf)
+
+    return response
+
 
 # Supplier views
 @login_required(login_url='login')
@@ -385,6 +448,30 @@ class PurchaseOrderListView(ListView):
         context = super().get_context_data(**kwargs)
         context['purchaseorder'] = PurchaseOrder.objects.all().order_by('-id')
         return context
+
+@login_required(login_url="/login")
+def updatePO(request, pk):
+	action = 'update'
+	purchaseorder = PurchaseOrder.objects.get(id=pk)
+	form = PurchaseOrderForm(instance=purchaseorder)
+
+	if request.method == 'POST':
+		form = PurchaseOrderForm(request.POST, instance=purchaseorder)
+		if form.is_valid():
+			form.save()
+			return redirect('po-list')
+
+	context =  {'action':action, 'form':form}
+	return render(request, 'store/update_po.html', context)
+
+def deletePO(request, pk):
+	purchaseorder = PurchaseOrder.objects.get(id=pk)
+	if request.method == 'POST':
+		purchaseorder_id = purchaseorder.part
+		purchaseorder.delete()
+		return redirect('po-list')
+		
+	return render(request, 'store/delete_po.html', {'item':purchaseorder})
 
 @login_required(login_url='login')
 def create_deliveryorder(request):
