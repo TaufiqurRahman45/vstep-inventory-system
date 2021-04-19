@@ -1,15 +1,15 @@
 {% extends 'base/base.html' %}
 
-{% block title %}Part List{% endblock title %}
+{% block title %}PO List{% endblock title %}
 
 {% block content %}
 <div class="row">
     <div class="col-xl-12">
         <div class="card">
             <div class="card-body">
-                <h4 class="col-xl-3 box-title">Part List </h4> 
+                <h4 class="col-xl-3 box-title">PO List </h4> 
                 <a href="{% url 'create-purchaseorder' %}" class="col-xl-2 btn btn-primary" style="float: right;">Add New</a>
-                <a href="" class="col-xl-2 btn btn-success mx-2" style="float: right;">Export</a>
+                <a href="{% url 'generate-pdf_po' %}" class="col-xl-2 btn btn-success mx-2" style="float: right;">Export</a>
             </div>
             <div class="card-body--">
                 <div class="table-stats part-table ov-h">
@@ -42,7 +42,11 @@
                                 <td>{{ purchaseorder.po_quantity }}</td>
                                 <td>{{ purchaseorder.terms }}</td>
                                 <td>{{ purchaseorder.remarks }}</td>                              
-                                <td>{{ purchaseorder.created_date }}</td>        
+                                <td>{{ purchaseorder.created_date }}</td> 
+                                <td>
+                                    <a class="btn btn-sm btn-warning" href="{% url 'update_po' purchaseorder.id %}" >Update</a>
+                                    <a class="btn btn-sm btn-danger"  href="{% url 'delete_po' purchaseorder.id %}">Delete</a>
+                                </td>       
                             </tr>
                             {% endfor %}
                             {% else %}
