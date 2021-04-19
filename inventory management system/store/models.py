@@ -5,6 +5,10 @@ from users.models import User
 class Supplier(models.Model):
     name = models.CharField(max_length=120, unique=True)
     address = models.CharField(max_length=220)
+    address2 = models.CharField(max_length=220, default="No Address 2")
+    address3 = models.CharField(max_length=220, default="No Address 3")
+    postcode = models.CharField(max_length=10, default="No Postcode")
+    phone = models.CharField(max_length=20)
     email = models.CharField(max_length=220)
     created_date = models.DateField(auto_now_add=True)
 

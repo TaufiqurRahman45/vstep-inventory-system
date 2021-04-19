@@ -100,6 +100,71 @@ def generate_pdf(request):
 
     return response
 
+@login_required(login_url='login')
+def generate_pdf_part(request):
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="Part List.pdf"'
+    pdf_buffer = BytesIO()
+    doc = SimpleDocTemplate(pdf_buffer, pagesize=A4,
+                            rightMargin=48, leftMargin=48,
+                            topMargin=100, bottomMargin=120)
+    doc.title = "Part List.pdf"
+    styles = getSampleStyleSheet()
+    styles.add(ParagraphStyle(name='small_text', alignment=TA_LEFT, fontName='Helvetica', borderPadding=6,
+                              leading=14, fontSize=10))
+    styles.add(ParagraphStyle(name='right_small_text', alignment=TA_RIGHT, fontName='Helvetica', borderPadding=6,
+                              leading=14, fontSize=10))
+    styles.add(ParagraphStyle(name='large_text', leading=14, fontSize=20))
+    styles.add(ParagraphStyle(name='center_text', alignment=TA_CENTER, leading=14, fontSize=20))
+    styles.add(ParagraphStyle(name='footer_text', leading=14, fontSize=6))
+
+    elements = []
+    paragraph_text = 'Part List'
+    elements.append(Paragraph(paragraph_text, styles["large_text"]))
+    elements.append(Spacer(1, 24))
+
+    columns = [
+        {'title': 'Date', 'field': 'created_date'},
+        {'title': 'Part No', 'field': 'partno'},
+        {'title': 'Part Name', 'field': 'partname'},
+        {'title': 'Style Packeging', 'field': 'stylepack'},
+        {'title': 'Standart Packeging', 'field': 'standardpack'},
+        {'title': 'Unit', 'field': 'unit'},
+        {'title': 'Price', 'field': 'price'},
+        {'title': 'Supplier', 'field': 'supplier'},
+        {'title': 'Product', 'field': 'product'},
+    ]
+
+    table_data = [[col['title'] for col in columns]]
+
+    part = Part.objects.all()
+    for tr in part:
+        table_row = [str(tr.created_date.strftime("%d-%m-%Y")), tr.partno,
+                     tr.partname, tr.stylepack, tr.standardpack, tr.unit, tr.price, tr.supplier, tr.product]
+        table_data.append(table_row)
+
+    table = Table(table_data, repeatRows=1, colWidths=[doc.width / 7.0] * 7)
+    table.setStyle(TableStyle([
+        ('BOX', (0, 0), (-1, -1), 0.20, colors.dimgrey),
+        ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('INNERGRID', (0, 0), (-1, -1), 0.1, colors.black),
+        # ('SIZE', (0, 0), (-1, -1), 6.5),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        # ('SPAN', (0, 0), (3, 0))
+    ]))
+    elements.append(table)
+
+    elements.append(Spacer(1, 50))
+
+    doc.build(elements)
+
+    pdf = pdf_buffer.getvalue()
+    pdf_buffer.close()
+    response.write(pdf)
+
+    return response
+
 
 # Supplier views
 @login_required(login_url='login')
@@ -110,8 +175,12 @@ def create_supplier(request):
         if forms.is_valid():
             name = forms.cleaned_data['name']
             address = forms.cleaned_data['address']
+            address2 = forms.cleaned_data['address2']
+            address3 = forms.cleaned_data['address3']
+            postcode = forms.cleaned_data['postcode']
             email = forms.cleaned_data['email']
-            supplier = Supplier.objects.create(name=name, email=email, address=address)
+            phone = forms.cleaned_data['phone']
+            supplier = Supplier.objects.create(name=name, email=email, address=address,address2=address2,address3=address3,postcode=postcode, phone=phone)
             create_log(request, supplier)
         return redirect('supplier-list')
     context = {
@@ -254,6 +323,30 @@ class PartListView(ListView):
         context = super().get_context_data(**kwargs)
         context['part'] = Part.objects.all().order_by('-id')
         return context
+
+@login_required(login_url="/login")
+def updatePart(request, pk):
+	action = 'update'
+	part = Part.objects.get(id=pk)
+	form = PartForm(instance=part)
+
+	if request.method == 'POST':
+		form = PartForm(request.POST, instance=part)
+		if form.is_valid():
+			form.save()
+			return redirect('part-list')
+
+	context =  {'action':action, 'form':form}
+	return render(request, 'store/update_part.html', context)
+
+def deletePart(request, pk):
+	part = Part.objects.get(id=pk)
+	if request.method == 'POST':
+		part_id = part.partname
+		part.delete()
+		return redirect('part-list')
+		
+	return render(request, 'store/delete_part.html', {'item':part})
 
 @login_required(login_url='login')
 def create_purchaseorder(request):

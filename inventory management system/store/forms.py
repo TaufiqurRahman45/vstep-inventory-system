@@ -16,11 +16,35 @@ class SupplierForm(forms.Form):
         'data-val': 'true',
         'data-val-required': 'Please enter address',
     }))
+    address2 = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'id': 'address2',
+        'data-val': 'true',
+        'data-val-required': 'Please enter address',
+    }))
+    address3 = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'id': 'address3',
+        'data-val': 'true',
+        'data-val-required': 'Please enter address',
+    }))
+    postcode = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'id': 'postcode',
+        'data-val': 'true',
+        'data-val-required': 'Please enter address',
+    }))
     email = forms.CharField(widget=forms.EmailInput(attrs={
         'class': 'form-control',
         'id': 'email',
         'data-val': 'true',
         'data-val-required': 'Please enter email',
+    }))
+    phone = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'id': 'phone',
+        'data-val': 'true',
+        'data-val-required': 'Please enter phone number',
     }))
 
 class ProductForm(forms.ModelForm):

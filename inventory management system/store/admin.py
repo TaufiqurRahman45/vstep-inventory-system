@@ -9,7 +9,7 @@ from .models import (
 )
 
 class SupplierAdmin(admin.ModelAdmin):
-    list_display = [ 'name', 'address', 'email', 'created_date']
+    list_display = [ 'name', 'address' , 'address2' , 'address3', 'postcode', 'email','phone', 'created_date']
 
 admin.site.register(Supplier, SupplierAdmin)
 admin.site.register(Product)
