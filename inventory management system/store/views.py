@@ -184,10 +184,26 @@ def generate_pdf_po(request):
     styles.add(ParagraphStyle(name='footer_text', leading=14, fontSize=6))
 
     elements = []
-    paragraph_text = 'PO List'
-    elements.append(Paragraph(paragraph_text, styles["large_text"]))
-    elements.append(Spacer(1, 24))
+    paragraph_text = 'Victorious Step Sdn.Bhd. (667833-T)'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'No 5 Jalan Utarid U5/16,'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = '40150 Shah Alam'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(
+        Paragraph('Purchase Order', styles["right_small_text"]))
+    paragraph_text = 'Selangor Darul Ehsan'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'Tel: 03-7847 1979 / 03-7734 0205 '
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'Fax: 03-77346310'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'Email: victorious.step@yahoo.com'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'SST No.: B16-1808-21004655'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
 
+    paragraph_text = 'SST No.: B16-1808-21004655'
     columns = [
         {'title': 'Date', 'field': 'created_date'},
         {'title': 'Part', 'field': 'part'},
@@ -261,11 +277,16 @@ def generate_pdf_do(request):
 
     table_data = [[col['title'] for col in columns]]
 
+    do_quantity = 0
+
     deliveryorder = DeliveryOrder.objects.all()
     for tr in deliveryorder:
         table_row = [str(tr.created_date.strftime("%d-%m-%Y")), tr.part,tr.part.partname,
                      tr.do_quantity]
         table_data.append(table_row)
+        
+        do_quantity += tr.do_quantity
+    table_data.append(['','','SUBTOTAL (RM)', "{:.2f}".format(do_quantity)])
 
     table = Table(table_data, repeatRows=1, colWidths=[doc.width / 7.0] * 7)
     table.setStyle(TableStyle([
