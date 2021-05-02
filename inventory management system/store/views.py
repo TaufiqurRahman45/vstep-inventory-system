@@ -21,6 +21,7 @@ from .models import (
     Part,
     PurchaseOrder,
     DeliveryOrder,
+    DeliveryIns,
 )
 from .forms import (
     SupplierForm,
@@ -29,6 +30,7 @@ from .forms import (
     PartForm,
     PurchaseOrderForm,
     DeliveryOrderForm,
+    DeliveryInsForm,
 )
 
 
@@ -585,6 +587,48 @@ class DeliveryOrderListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['deliveryorder'] = DeliveryOrder.objects.all().order_by('-id')
+        return context
+
+@login_required(login_url='login')
+def create_deliveryins(request):
+    from django import forms
+    form = DeliveryInsForm()
+   
+    if request.method == 'POST':
+        forms = DeliveryInsForm(request.POST)
+        if forms.is_valid():
+            variant = forms.cleaned_data['variant']
+            usage = forms.cleaned_data['usage']
+            part = forms.cleaned_data['part']
+            supplier = forms.cleaned_data['supplier']
+            dimension = forms.cleaned_data['dimension']
+            box = forms.cleaned_data['box']
+            remarks = forms.cleaned_data['remarks']
+
+            deliveryins = DeliveryIns.objects.create(
+                variant= variant,
+                usage= usage,
+                part=part,
+                supplier= supplier,
+                dimension= dimension,
+                box= box,
+                remarks= remarks,                  
+            )
+            create_log(request, deliveryins)
+            return redirect('dins-list')
+    context = {
+        'form': form
+    }
+    return render(request, 'store/addDins.html', context)
+
+
+class DeliveryInsListView(ListView):
+    model = DeliveryIns
+    template_name = 'store/dins-list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['deliveryins'] = DeliveryIns.objects.all().order_by('-id')
         return context
 
 @login_required(login_url="/login")

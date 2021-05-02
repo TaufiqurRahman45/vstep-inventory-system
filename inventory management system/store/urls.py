@@ -9,6 +9,7 @@ from .views import (
     create_part,
     create_purchaseorder,
     create_deliveryorder,
+    create_deliveryins,
 
     SupplierListView,
     ProductListView,
@@ -21,6 +22,7 @@ from .views import (
     generate_pdf_part,
     generate_pdf_po,
     generate_pdf_do,
+    DeliveryInsListView,
 )
 
 urlpatterns = [
@@ -36,6 +38,8 @@ urlpatterns = [
 
     path('create-deliveryorder/', create_deliveryorder, name='create-deliveryorder'),
 
+    path('create-deliveryins/', create_deliveryins, name='create-deliveryins'),
+
     path('logs/', logs, name='logs'),
 
 
@@ -50,6 +54,8 @@ urlpatterns = [
     path('po-list/', PurchaseOrderListView.as_view(), name='po-list'),
 
     path('do-list/', DeliveryOrderListView.as_view(), name='do-list'),
+
+    path('dins-list/', DeliveryInsListView.as_view(), name='dins-list'),
 
     path('generate-pdf/', generate_pdf, name='generate-pdf'),
 

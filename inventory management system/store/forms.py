@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Product, Order, Part, PurchaseOrder, DeliveryOrder
+from .models import Product, Order, Part, PurchaseOrder, DeliveryOrder,DeliveryIns
 
 
 class SupplierForm(forms.Form):
@@ -114,4 +114,19 @@ class DeliveryOrderForm(forms.ModelForm):
         widgets = {
             'part': forms.Select(attrs={'class': 'form-control', 'id': 'part'}),
             'do_quantity': forms.NumberInput(attrs={'class': 'form-control', 'id': 'do_quantity'}),
+        }
+
+class DeliveryInsForm(forms.ModelForm):
+    class Meta:
+        model = DeliveryIns
+        fields = ['variant','usage', 'part', 'supplier', 'dimension', 'box', 'remarks']
+
+        widgets = {
+            'variant': forms.Select(attrs={'class': 'form-control', 'id': 'variant'}),
+            'usage' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'usage'}),
+            'part': forms.Select(attrs={'class': 'form-control', 'id': 'part'}),
+            'supplier': forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),
+            'dimension': forms.TextInput(attrs={'class': 'form-control', 'id': 'dimension'}),
+            'box': forms.NumberInput(attrs={'class': 'form-control', 'id': 'box'}),
+            'remarks': forms.TextInput(attrs={'class': 'form-control', 'id': 'remarks'}),
         }

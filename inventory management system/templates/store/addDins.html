@@ -1,0 +1,95 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Add Delievery Instructions{% endblock title %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <div class="breadcrumbs-inner">
+        <div class="row m-0">
+            <div class="col-sm-4">
+                <div class="page-header float-left">
+                    <div class="page-title">
+                        <h1>Dashboard</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8">
+                <div class="page-header float-right">
+                    <div class="page-title">
+                        <ol class="breadcrumb text-right">
+                            <li><a href="#">Dashboard</a></li>
+                            <li><a href="#">Delivery Instructions</a></li>
+                            <li class="active">Add</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock breadcrumbs %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <strong class="card-title">Add Delivery Instructions</strong>
+            </div>
+            <div class="card-body">
+                <!-- Credit Card -->
+                <div id="pay-invoice">
+                    <div class="card-body">
+                        <form action="#" method="post" novalidate="novalidate">
+                            {% csrf_token %}
+                            
+                            <div class="form-group">
+                                <label for="variant" class="control-label mb-1">Variant</label>
+                                {{ form.variant }}
+                            </div>
+
+                            <div class="form-group">
+                                <label for="usage" class="control-label mb-1">Usage</label>
+                                {{ form.usage }}
+                            </div>
+
+                            <div class="form-group">
+                                <label for="part" class="control-label mb-1">Part</label>
+                                {{ form.part }}
+                            </div>
+
+                            <div class="form-group">
+                                <label for="supplier" class="control-label mb-1">Supplier</label>
+                                {{ form.supplier }}
+                            </div>
+
+                            <div class="form-group">
+                                <label for="dimersion" class="control-label mb-1">DIMENSION PACKAGING L x W x H (cm)</label>
+                                {{ form.dimension }}
+                            </div>
+
+                            <div class="form-group">
+                                <label for="box" class="control-label mb-1">QTY/BOX</label>
+                                {{ form.box }}
+                            </div>
+
+                            <div class="form-group">
+                                <label for="remarks" class="control-label mb-1">Remarks</label>
+                                {{ form.remarks }}
+                            </div>
+                           
+                            <div>
+                                <button id="payment-button" type="submit" class="btn btn-lg btn-success btn-block">
+                                    <span id="payment-button-amount">Save</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div> <!-- .card -->
+
+    </div><!--/.col-->
+</div>
+{% endblock content %}
