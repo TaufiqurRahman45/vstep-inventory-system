@@ -1,0 +1,65 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Delivery Instruction List {% endblock title %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="col-xl-3 box-title">Delivery Instruction List </h4> 
+                <a href="{% url 'create-deliveryins' %}" class="col-xl-2 btn btn-primary" style="float: right;">Add New</a>
+                <a href="" class="col-xl-2 btn btn-success mx-2" style="float: right;">Export</a>
+            </div>
+            <div class="card-body--">
+                <div class="table-stats part-table ov-h">
+                    <table class="table table-striped ">
+                        <thead>
+                            <tr>
+                                <th class="serial">#</th>
+                                <th>Variant</th>
+                                <th>Usage</th>
+                                <th>Part No</th>
+                                <th>Part Name</th>                            
+                                <th>Supplier</th>
+                                <th>Dimension</th> 
+                                <th>QTY/Box</th>   
+                                <th>Remarks</th>           
+                                <th>Date</th>
+                                <th>Action</th>                     
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if deliveryins %}
+                            {% for deliveryins in deliveryins %}
+                            <tr>
+                                <td class="serial">{{ forloop.counter }}</td>
+                                <td>{{ deliveryins.variant }}</td>
+                                <td>{{ deliveryins.usage }}</td>
+                                <td>{{ deliveryins.part.partno }}</td>
+                                <td>{{ deliveryins.part.partname }}</td>
+                                <td>{{ deliveryins.supplier }}</td>
+                                <td>{{ deliveryins.dimension }}</td>
+                                <td>{{ deliveryins.box }}</td>
+                                <td>{{ deliveryins.remarks }}</td>
+                                <td>{{ deliveryins.created_date }}</td>
+                                <td>
+                                    <a class="btn btn-sm btn-warning" href="" >Update</a>
+                                    <a class="btn btn-sm btn-danger"  href="">Delete</a>
+                                </td>
+        
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                                <tr><td>No DI Data</td></tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div> <!-- /.table-stats -->
+            </div>
+        </div> <!-- /.card -->
+    </div>  <!-- /.col-lg-8 -->
+
+    
+</div>
+{% endblock content %}

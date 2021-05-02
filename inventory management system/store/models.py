@@ -84,6 +84,27 @@ class DeliveryOrder(models.Model):
     do_quantity = models.PositiveIntegerField(default= 0)    
     created_date = models.DateField(auto_now_add=True)
 
+class DeliveryIns(models.Model):
+    variant = (
+        ('STD', 'STD'),
+        ('EXEC', 'EXEC'),
+        ('PREM', 'PREM'),
+        ('SE', 'SE'),
+        ('ALL', 'ALL'),
+        ('PREM/FLAG', 'PREM/FLAG'),
+        ('FLAG', 'FLAG'),
+        ('STD/EXEC', 'STD/EXEC'),
+        ('EXEC/PREM', 'EXEC/PREM'),
+    )
+    part = models.ForeignKey(Part, on_delete=models.CASCADE)  
+    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
+    dimension =  models.CharField(max_length=30)
+    box = models.PositiveIntegerField(default= 0)  
+    variant = models.CharField(max_length=20, choices=variant)
+    usage = models.PositiveIntegerField(default= 0) 
+    remarks = models.CharField(max_length=500, blank= True)
+    created_date = models.DateField(auto_now_add=True)
+
 
     
 
