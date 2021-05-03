@@ -109,22 +109,23 @@ class PurchaseOrderForm(forms.ModelForm):
 class DeliveryOrderForm(forms.ModelForm):
     class Meta:
         model = DeliveryOrder
-        fields = ['part', 'do_quantity']
+        fields = ['do_quantity', 'purchaseorder']
 
         widgets = {
-            'part': forms.Select(attrs={'class': 'form-control', 'id': 'part'}),
             'do_quantity': forms.NumberInput(attrs={'class': 'form-control', 'id': 'do_quantity'}),
+            'purchaseorder': forms.Select(attrs={'class': 'form-control', 'id': 'purchaseorder'})
         }
+
 
 class DeliveryInsForm(forms.ModelForm):
     class Meta:
         model = DeliveryIns
-        fields = ['variant','usage', 'part', 'supplier', 'dimension', 'box', 'remarks']
+        fields = ['variant','usage', 'purchaseorder', 'supplier', 'dimension', 'box', 'remarks']
 
         widgets = {
+            'purchaseorder': forms.Select(attrs={'class': 'form-control', 'id': 'purchaseorder'}),
             'variant': forms.Select(attrs={'class': 'form-control', 'id': 'variant'}),
             'usage' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'usage'}),
-            'part': forms.Select(attrs={'class': 'form-control', 'id': 'part'}),
             'supplier': forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),
             'dimension': forms.TextInput(attrs={'class': 'form-control', 'id': 'dimension'}),
             'box': forms.NumberInput(attrs={'class': 'form-control', 'id': 'box'}),

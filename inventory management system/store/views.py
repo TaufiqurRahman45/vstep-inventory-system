@@ -21,7 +21,7 @@ from .models import (
     Part,
     PurchaseOrder,
     DeliveryOrder,
-    DeliveryIns,
+    DeliveryIns
 )
 from .forms import (
     SupplierForm,
@@ -30,7 +30,7 @@ from .forms import (
     PartForm,
     PurchaseOrderForm,
     DeliveryOrderForm,
-    DeliveryInsForm,
+    DeliveryInsForm
 )
 
 
@@ -564,13 +564,12 @@ def create_deliveryorder(request):
     if request.method == 'POST':
         forms = DeliveryOrderForm(request.POST)
         if forms.is_valid():
-            part = forms.cleaned_data['part']
             do_quantity = forms.cleaned_data['do_quantity']
+            purchaseorder = forms.cleaned_data['purchaseorder']
 
             deliveryorder = DeliveryOrder.objects.create(
-                part=part,
                 do_quantity=do_quantity,
-              
+                purchaseorder=purchaseorder,
             )
             create_log(request, deliveryorder)
             return redirect('do-list')
@@ -599,7 +598,7 @@ def create_deliveryins(request):
         if forms.is_valid():
             variant = forms.cleaned_data['variant']
             usage = forms.cleaned_data['usage']
-            part = forms.cleaned_data['part']
+            purchaseorder = forms.cleaned_data['purchaseorder']
             supplier = forms.cleaned_data['supplier']
             dimension = forms.cleaned_data['dimension']
             box = forms.cleaned_data['box']
@@ -608,7 +607,7 @@ def create_deliveryins(request):
             deliveryins = DeliveryIns.objects.create(
                 variant= variant,
                 usage= usage,
-                part=part,
+                purchaseorder=purchaseorder,
                 supplier= supplier,
                 dimension= dimension,
                 box= box,

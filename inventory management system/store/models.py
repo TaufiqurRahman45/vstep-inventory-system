@@ -54,7 +54,7 @@ class Part(models.Model):
     created_date = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return self.partno
+        return self.partname
 
 class PurchaseOrder(models.Model):
     terms = (
@@ -79,9 +79,12 @@ class PurchaseOrder(models.Model):
     def amount(self):
         return self.part.price * self.po_quantity
 
+    def __str__(self):
+        return self.part.partname
+
 class DeliveryOrder(models.Model):
-    part = models.ForeignKey(Part, on_delete=models.CASCADE)  
-    do_quantity = models.PositiveIntegerField(default= 0)    
+    purchaseorder = models.ForeignKey(PurchaseOrder, on_delete=models.CASCADE)
+    do_quantity = models.PositiveIntegerField(default= 0)
     created_date = models.DateField(auto_now_add=True)
 
 class DeliveryIns(models.Model):
@@ -96,7 +99,7 @@ class DeliveryIns(models.Model):
         ('STD/EXEC', 'STD/EXEC'),
         ('EXEC/PREM', 'EXEC/PREM'),
     )
-    part = models.ForeignKey(Part, on_delete=models.CASCADE)  
+    purchaseorder = models.ForeignKey(PurchaseOrder, on_delete=models.CASCADE)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     dimension =  models.CharField(max_length=30)
     box = models.PositiveIntegerField(default= 0)  
