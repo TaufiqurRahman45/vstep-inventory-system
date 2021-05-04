@@ -107,7 +107,3 @@ class DeliveryIns(models.Model):
     usage = models.PositiveIntegerField(default= 0) 
     remarks = models.CharField(max_length=500, blank= True)
     created_date = models.DateField(auto_now_add=True)
-
-
-    
-
