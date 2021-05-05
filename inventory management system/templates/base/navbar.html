@@ -1,29 +1,28 @@
 {% load static %}
 
-<header id="header" class="header" style="background:#7877B0">
-    <div class="top-left">
-        <div class="navbar-header" style="background: #7877B0">
-            <a class="navbar-brand" style="color: white">Inventory Management System</a>
+<link href="{% static 'assets/css/nav.css' %}" rel="stylesheet">
 
-            <a id="menuToggle" class="menutoggle"><i class="fa fa-bars"></i></a>
+<header class="header">
+    <h1 class="logo"><a href="/">Victorious Step</a></h1>
+  <ul class="main-nav">
+      <li><a href="{% url 'product-list' %}">Product</a></li>
+      <li><a href="{% url 'supplier-list' %}">Supplier</a></li>
+      <li><a href="{% url 'order-list' %}">PO List</a></li>
+      <li><a href="{% url 'part-list' %}">Part List</a></li>
+      <li><a href="{% url 'po-list' %}">Purchase Order</a></li>
+      <li><a href="{% url 'do-list' %}">Delivery Instruction</a></li>
+      <li><a href="{% url 'dins-list' %}">Delivery Order</a></li>
+      <div class="user-area dropdown float-right">
+        <a href="#" class="dropdown-toggle active" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <img class="user-avatar rounded-circle" src="{% static 'images/icons/user.png' %}" alt="User Avatar">
+        </a>
+
+        <div class="user-menu dropdown-menu" >
+
+            <a class="nav-link" href="{% url 'logs' %}"><i class="fa fa-power -off"></i>User Log</a>
+            <a class="nav-link" href="{% url 'logout' %}"><i class="fa fa-power -off"></i>Logout</a>
         </div>
     </div>
-    <div class="top-right" >
-        <div class="header-menu" >
-            
+  </ul>
+</header> 
 
-            <div class="user-area dropdown float-right">
-                <a href="#" class="dropdown-toggle active" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <img class="user-avatar rounded-circle" src="{% static 'images/icons/user.png' %}" alt="User Avatar">
-                </a>
-
-                <div class="user-menu dropdown-menu" style="background: skyblue">
-
-
-                    <a class="nav-link" href="{% url 'logout' %}"><i class="fa fa-power -off"></i>Logout</a>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</header>
