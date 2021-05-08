@@ -84,6 +84,7 @@ class PurchaseOrder(models.Model):
 
 class DeliveryOrder(models.Model):
     purchaseorder = models.ForeignKey(PurchaseOrder, on_delete=models.CASCADE)
+    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     do_quantity = models.PositiveIntegerField(default= 0)
     created_date = models.DateField(auto_now_add=True)
 

@@ -15,6 +15,7 @@ from utils.user_log import create_log
 from .filters import PartFilter
 from .filters import POFilter
 from .filters import DIFilter
+from .filters import DOFilter
 
 from users.models import User
 from .models import (
@@ -568,10 +569,12 @@ def create_deliveryorder(request):
     if request.method == 'POST':
         forms = DeliveryOrderForm(request.POST)
         if forms.is_valid():
+            supplier = forms.cleaned_data['supplier']
             do_quantity = forms.cleaned_data['do_quantity']
             purchaseorder = forms.cleaned_data['purchaseorder']
 
             deliveryorder = DeliveryOrder.objects.create(
+                supplier=supplier,
                 do_quantity=do_quantity,
                 purchaseorder=purchaseorder,
             )
@@ -590,6 +593,7 @@ class DeliveryOrderListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['deliveryorder'] = DeliveryOrder.objects.all().order_by('-id')
+        context['filter'] = DOFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
 @login_required(login_url='login')
