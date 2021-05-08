@@ -20,3 +20,9 @@ class DIFilter(django_filters.FilterSet):
     class Meta:
         model = DeliveryIns
         fields = ['supplier']
+
+class DOFilter(django_filters.FilterSet):
+
+    class Meta:
+        model = DeliveryIns
+        fields = ['supplier']

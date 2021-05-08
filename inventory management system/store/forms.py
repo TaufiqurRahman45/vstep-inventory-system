@@ -109,9 +109,10 @@ class PurchaseOrderForm(forms.ModelForm):
 class DeliveryOrderForm(forms.ModelForm):
     class Meta:
         model = DeliveryOrder
-        fields = ['do_quantity', 'purchaseorder']
+        fields = ['supplier','do_quantity', 'purchaseorder']
 
         widgets = {
+            'supplier' : forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),
             'do_quantity': forms.NumberInput(attrs={'class': 'form-control', 'id': 'do_quantity'}),
             'purchaseorder': forms.Select(attrs={'class': 'form-control', 'id': 'purchaseorder'})
         }
