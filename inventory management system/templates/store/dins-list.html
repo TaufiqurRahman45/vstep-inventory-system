@@ -11,6 +11,16 @@
                 <a href="{% url 'create-deliveryins' %}" class="col-xl-2 btn btn-primary" style="float: right;">Add New</a>
                 <a href="" class="col-xl-2 btn btn-success mx-2" style="float: right;">Export</a>
             </div>
+            <div class="row">
+                <div class="col">
+                <div class="card card-body">
+                <form method="GET">
+                       {{filter.form}}
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </form>
+                </div>
+                </div>
+            </div>
             <div class="card-body--">
                 <div class="table-stats part-table ov-h">
                     <table class="table table-striped ">

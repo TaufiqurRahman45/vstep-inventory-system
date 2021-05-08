@@ -12,6 +12,9 @@ from reportlab.platypus import SimpleDocTemplate, Spacer, Table, TableStyle
 from reportlab.platypus.para import Paragraph
 from six import BytesIO
 from utils.user_log import create_log
+from .filters import PartFilter
+from .filters import POFilter
+from .filters import DIFilter
 
 from users.models import User
 from .models import (
@@ -460,7 +463,6 @@ def create_part(request):
     }
     return render(request, 'store/addPart.html', context)
 
-
 class PartListView(ListView):
     model = Part
     template_name = 'store/part_list.html'
@@ -468,6 +470,7 @@ class PartListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['part'] = Part.objects.all().order_by('-id')
+        context['filter'] = PartFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
 @login_required(login_url="/login")
@@ -530,6 +533,7 @@ class PurchaseOrderListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['purchaseorder'] = PurchaseOrder.objects.all().order_by('-id')
+        context['filter'] = POFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
 @login_required(login_url="/login")
@@ -628,6 +632,7 @@ class DeliveryInsListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['deliveryins'] = DeliveryIns.objects.all().order_by('-id')
+        context['filter'] = DIFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
 @login_required(login_url="/login")
