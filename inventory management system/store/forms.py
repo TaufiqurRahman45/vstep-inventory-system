@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Product, Order, Part, PurchaseOrder, DeliveryOrder,DeliveryIns
+from .models import Product, Order, Part, DeliveryOrder,DeliveryIns
 
 
 class SupplierForm(forms.Form):
@@ -60,25 +60,28 @@ class ProductForm(forms.ModelForm):
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['supplier', 'product', 'partno', 'description', 'style', 'standard', 'quantity', 'limit', 'is_ppc', 'new_stock']
+        fields = ['supplier', 'product', 'part', 'style', 'standard', 'quantity', 'limit', 'is_ppc', 'tax', 'price', 'unit', 'terms', 'remarks']
 
         widgets = {
             'supplier': forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),
             'product': forms.Select(attrs={'class': 'form-control', 'id': 'product'}),
-            'partno': forms.TextInput(attrs={'class': 'form-control', 'id': 'partno'}),
-            'description': forms.TextInput(attrs={'class': 'form-control', 'id': 'description'}),
+            'part': forms.Select(attrs={'class': 'form-control', 'id': 'part'}),
             'style': forms.TextInput(attrs={'class': 'form-control', 'id': 'description'}),
             'standard': forms.NumberInput(attrs={'class': 'form-control', 'id': 'standard'}),
             'quantity': forms.NumberInput(attrs={'class': 'form-control', 'id': 'quantity'}),
             'limit' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'limit'}),
             'is_ppc' : forms.Select(attrs={'class': 'form-control', 'id': 'is_ppc'}),
-            'new_stock' : forms. NumberInput(attrs={'class': 'form-control', 'id': 'new_stock'}),
+            'tax' : forms. NumberInput(attrs={'class': 'form-control', 'id': 'tax'}),
+            'price' : forms. NumberInput(attrs={'class': 'form-control', 'id': 'price'}),
+            'unit' : forms. NumberInput(attrs={'class': 'form-control', 'id': 'unit'}),
+            'terms': forms.Select(attrs={'class': 'form-control', 'id': 'terms'}),
+            'remarks': forms.Select(attrs={'class': 'form-control', 'id': 'remarks'}),
         }
 
 class PartForm(forms.ModelForm):
     class Meta:
         model = Part
-        fields = ['partno', 'partname', 'stylepack', 'standardpack', 'supplier', 'product', 'unit', 'price', 'tax']
+        fields = ['partno', 'partname', 'stylepack', 'standardpack', 'supplier', 'product', 'unit', 'price', 'tax', ]
 
         widgets = {
             'partno': forms.TextInput(attrs={'class': 'form-control', 'id': 'partno'}),
@@ -89,42 +92,27 @@ class PartForm(forms.ModelForm):
             'product': forms.Select(attrs={'class': 'form-control', 'id': 'product'}),
             'unit': forms.NumberInput(attrs={'class': 'form-control', 'id': 'unit'}),
             'price' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'price'}),
-            'tax' : forms. NumberInput(attrs={'class': 'form-control', 'id': 'tax'}),        
-        }
-
-class PurchaseOrderForm(forms.ModelForm):
-    class Meta:
-        model = PurchaseOrder
-        fields = ['supplier', 'product','part', 'po_quantity', 'terms', 'remarks']
-
-        widgets = {
-            'supplier': forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),
-            'terms': forms.Select(attrs={'class': 'form-control', 'id': 'terms'}),
-            'remarks': forms.Select(attrs={'class': 'form-control', 'id': 'remarks'}),
-            'product': forms.Select(attrs={'class': 'form-control', 'id': 'product'}),
-            'part': forms.Select(attrs={'class': 'form-control', 'id': 'part'}),
-            'po_quantity': forms.NumberInput(attrs={'class': 'form-control', 'id': 'po_quantity'}),
         }
 
 class DeliveryOrderForm(forms.ModelForm):
     class Meta:
         model = DeliveryOrder
-        fields = ['supplier','do_quantity', 'purchaseorder']
+        fields = ['supplier','do_quantity', 'order']
 
         widgets = {
             'supplier' : forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),
             'do_quantity': forms.NumberInput(attrs={'class': 'form-control', 'id': 'do_quantity'}),
-            'purchaseorder': forms.Select(attrs={'class': 'form-control', 'id': 'purchaseorder'})
+            'order': forms.Select(attrs={'class': 'form-control', 'id': 'order'})
         }
 
 
 class DeliveryInsForm(forms.ModelForm):
     class Meta:
         model = DeliveryIns
-        fields = ['variant','usage', 'purchaseorder', 'supplier', 'dimension', 'box', 'remarks']
+        fields = ['variant','usage',  'supplier', 'dimension', 'box', 'remarks','order']
 
         widgets = {
-            'purchaseorder': forms.Select(attrs={'class': 'form-control', 'id': 'purchaseorder'}),
+            'order': forms.Select(attrs={'class': 'form-control', 'id': 'order'}),
             'variant': forms.Select(attrs={'class': 'form-control', 'id': 'variant'}),
             'usage' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'usage'}),
             'supplier': forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),

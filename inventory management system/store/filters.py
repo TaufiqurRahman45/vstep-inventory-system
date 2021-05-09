@@ -9,11 +9,6 @@ class PartFilter(django_filters.FilterSet):
         model = Part
         fields = ['partno', 'product', 'supplier']
         
-class POFilter(django_filters.FilterSet):
-
-    class Meta:
-        model = PurchaseOrder
-        fields = ['product', 'supplier']
 
 class DIFilter(django_filters.FilterSet):
 
@@ -24,5 +19,11 @@ class DIFilter(django_filters.FilterSet):
 class DOFilter(django_filters.FilterSet):
 
     class Meta:
-        model = DeliveryIns
+        model = DeliveryOrder
         fields = ['supplier']
+
+class POFilter(django_filters.FilterSet):
+
+    class Meta:
+        model = Order
+        fields = ['product','supplier']

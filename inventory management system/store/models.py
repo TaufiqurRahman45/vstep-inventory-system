@@ -24,23 +24,6 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
-
-class Order(models.Model):
-    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    partno = models.CharField(max_length=50)
-    description = models.CharField(max_length=50)
-    style = models.CharField(max_length=50, blank= True)
-    standard = models.PositiveIntegerField(default= 0)
-    quantity = models.PositiveIntegerField(default= 0)
-    limit = models.PositiveIntegerField(default= 0)
-    created_date = models.DateField(auto_now_add=True)
-    is_ppc = models.ForeignKey(User, on_delete=models.CASCADE, null=True,)
-    new_stock = models.PositiveIntegerField(default=0, blank=True, null=True)
-
-    def __str__(self):
-        return self.product.name
-
 class Part(models.Model):
     partno = models.CharField(max_length=50)
     partname = models.CharField(max_length=50)
@@ -56,7 +39,7 @@ class Part(models.Model):
     def __str__(self):
         return self.partname
 
-class PurchaseOrder(models.Model):
+class Order(models.Model):
     terms = (
         ('30', '30'),
         ('60', '60'),
@@ -67,23 +50,31 @@ class PurchaseOrder(models.Model):
         ('follow di', 'Follow DI'),
         ('follow agent', 'Follow Agent'),
     )
+    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     part = models.ForeignKey(Part, on_delete=models.CASCADE)
     terms = models.CharField(max_length=10, choices=terms)
     remarks = models.CharField(max_length=20, choices=remarks)
-    po_quantity = models.PositiveIntegerField(default= 0)
-    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    style = models.CharField(max_length=50, blank= True)
+    standard = models.PositiveIntegerField(default= 0)
+    quantity = models.PositiveIntegerField(default= 0)
+    limit = models.PositiveIntegerField(default= 0)
+    tax = models.PositiveIntegerField(default= 0)
+    price = models.PositiveIntegerField(default= 0)
     created_date = models.DateField(auto_now_add=True)
+    is_ppc = models.ForeignKey(User, on_delete=models.CASCADE, null=True,)
+    unit = models.PositiveIntegerField(default=0, blank=True, null=True)
 
     @property
     def amount(self):
-        return self.part.price * self.po_quantity
+        return self.part.price * self.quantity
 
     def __str__(self):
         return self.part.partname
 
+
 class DeliveryOrder(models.Model):
-    purchaseorder = models.ForeignKey(PurchaseOrder, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     do_quantity = models.PositiveIntegerField(default= 0)
     created_date = models.DateField(auto_now_add=True)
@@ -100,7 +91,7 @@ class DeliveryIns(models.Model):
         ('STD/EXEC', 'STD/EXEC'),
         ('EXEC/PREM', 'EXEC/PREM'),
     )
-    purchaseorder = models.ForeignKey(PurchaseOrder, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     dimension =  models.CharField(max_length=30)
     box = models.PositiveIntegerField(default= 0)  
