@@ -13,9 +13,9 @@ from reportlab.platypus.para import Paragraph
 from six import BytesIO
 from utils.user_log import create_log
 from .filters import PartFilter
-from .filters import POFilter
 from .filters import DIFilter
 from .filters import DOFilter
+from .filters import POFilter
 
 from users.models import User
 from .models import (
@@ -23,7 +23,6 @@ from .models import (
     Product,
     Order,
     Part,
-    PurchaseOrder,
     DeliveryOrder,
     DeliveryIns
 )
@@ -32,7 +31,6 @@ from .forms import (
     ProductForm,
     OrderForm,
     PartForm,
-    PurchaseOrderForm,
     DeliveryOrderForm,
     DeliveryInsForm
 )
@@ -383,33 +381,38 @@ def create_order(request):
     from django import forms
     form = OrderForm()
     form.fields['is_ppc'].queryset = User.objects.filter(is_ppc=True)
-    form.fields['new_stock'].widget = forms.HiddenInput()
+    # form.fields['new_stock'].widget = forms.HiddenInput()
 
     if request.method == 'POST':
         forms = OrderForm(request.POST)
         if forms.is_valid():
             supplier = forms.cleaned_data['supplier']
             product = forms.cleaned_data['product']
-            partno = forms.cleaned_data['partno']
-            description = forms.cleaned_data['description']
+            part = forms.cleaned_data['part']
             style = forms.cleaned_data['style']
             quantity = forms.cleaned_data['quantity']
             standard = forms.cleaned_data['standard']
             limit = forms.cleaned_data['limit']
             is_ppc = forms.cleaned_data['is_ppc']
-            new_stock = forms.cleaned_data['new_stock']
+            tax = forms.cleaned_data['tax']
+            price = forms.cleaned_data['price']
+            unit = forms.cleaned_data['unit']
 
             order = Order.objects.create(
                 supplier=supplier,
                 product=product,
-                partno=partno,
-                description=description,
+                part=part,
                 style=style,
                 standard=standard,
                 quantity=quantity,
                 limit=limit,
                 is_ppc=is_ppc,
-                new_stock=new_stock,
+                tax=tax,
+                price=price,
+                unit=unit,
+                terms=30,
+                remarks='Follow DI',
+
             )
             create_log(request, order)
             return redirect('order-list')
@@ -426,6 +429,7 @@ class OrderListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['order'] = Order.objects.all().order_by('-id')
+        context['filter'] = POFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
 @login_required(login_url='login')
@@ -498,68 +502,7 @@ def deletePart(request, pk):
 		
 	return render(request, 'store/delete_part.html', {'item':part})
 
-@login_required(login_url='login')
-def create_purchaseorder(request):
-    from django import forms
-    form = PurchaseOrderForm()
-   
-    if request.method == 'POST':
-        forms = PurchaseOrderForm(request.POST)
-        if forms.is_valid():
-            supplier = forms.cleaned_data['supplier']
-            product = forms.cleaned_data['product']
-            part = forms.cleaned_data['part']
-            po_quantity = forms.cleaned_data['po_quantity']
 
-            purchaseorder = PurchaseOrder.objects.create(
-                supplier=supplier,
-                product=product,
-                part=part,
-                po_quantity=po_quantity,
-                terms = '30',
-                remarks = 'Follow DI',
-            )
-            create_log(request, purchaseorder)
-            return redirect('po-list')
-    context = {
-        'form': form
-    }
-    return render(request, 'store/addPo.html', context)
-
-
-class PurchaseOrderListView(ListView):
-    model = PurchaseOrder
-    template_name = 'store/po_list.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['purchaseorder'] = PurchaseOrder.objects.all().order_by('-id')
-        context['filter'] = POFilter(self.request.GET, queryset=self.get_queryset())
-        return context
-
-@login_required(login_url="/login")
-def updatePO(request, pk):
-	action = 'update'
-	purchaseorder = PurchaseOrder.objects.get(id=pk)
-	form = PurchaseOrderForm(instance=purchaseorder)
-
-	if request.method == 'POST':
-		form = PurchaseOrderForm(request.POST, instance=purchaseorder)
-		if form.is_valid():
-			form.save()
-			return redirect('po-list')
-
-	context =  {'action':action, 'form':form}
-	return render(request, 'store/update_po.html', context)
-
-def deletePO(request, pk):
-	purchaseorder = PurchaseOrder.objects.get(id=pk)
-	if request.method == 'POST':
-		purchaseorder_id = purchaseorder.part
-		purchaseorder.delete()
-		return redirect('po-list')
-		
-	return render(request, 'store/delete_po.html', {'item':purchaseorder})
 
 @login_required(login_url='login')
 def create_deliveryorder(request):
@@ -571,12 +514,12 @@ def create_deliveryorder(request):
         if forms.is_valid():
             supplier = forms.cleaned_data['supplier']
             do_quantity = forms.cleaned_data['do_quantity']
-            purchaseorder = forms.cleaned_data['purchaseorder']
+            order = forms.cleaned_data['order']
 
             deliveryorder = DeliveryOrder.objects.create(
                 supplier=supplier,
                 do_quantity=do_quantity,
-                purchaseorder=purchaseorder,
+                order=order,
             )
             create_log(request, deliveryorder)
             return redirect('do-list')
@@ -606,7 +549,7 @@ def create_deliveryins(request):
         if forms.is_valid():
             variant = forms.cleaned_data['variant']
             usage = forms.cleaned_data['usage']
-            purchaseorder = forms.cleaned_data['purchaseorder']
+            order = forms.cleaned_data['order']
             supplier = forms.cleaned_data['supplier']
             dimension = forms.cleaned_data['dimension']
             box = forms.cleaned_data['box']
@@ -615,7 +558,7 @@ def create_deliveryins(request):
             deliveryins = DeliveryIns.objects.create(
                 variant= variant,
                 usage= usage,
-                purchaseorder=purchaseorder,
+                order=order,
                 supplier= supplier,
                 dimension= dimension,
                 box= box,

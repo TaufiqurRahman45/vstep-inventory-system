@@ -41,11 +41,11 @@
                             {% for deliveryorder in deliveryorder %}
                             <tr>
                                 <td class="serial">{{ forloop.counter }}</td>
-                                <td>{{ deliveryorder.purchaseorder }}</td>
-                                <td>{{ deliveryorder.purchaseorder.part.partno }}</td>
+                                <td>{{ deliveryorder.order }}</td>
+                                <td>{{ deliveryorder.order.part.partno }}</td>
                                 <td>{{ deliveryorder.supplier }}</td>
                                 <td>{{ deliveryorder.do_quantity }}</td>                 
-                                <td>{{ deliveryorder.purchaseorder.po_quantity }}</td>
+                                <td>{{ deliveryorder.order.quantity }}</td>
                                 <td>{{ deliveryorder.created_date }}</td>
                                 <td>
                                     <a class="btn btn-sm btn-warning" href="{% url 'update_do' deliveryorder.id %}" >Update</a>

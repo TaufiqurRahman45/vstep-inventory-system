@@ -11,6 +11,16 @@
                 <a href="{% url 'create-order' %}" class="col-xl-2 btn btn-primary" style="float: right;">Add New</a>
                 <a href="{% url 'generate-pdf' %}" class="col-xl-2 btn btn-success mx-2" style="float: right;">Export</a>
             </div>
+            <div class="row">
+                <div class="col">
+                <div class="card card-body">
+                <form method="GET">
+                       {{filter.form}}
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </form>
+                </div>
+                </div>
+            </div>
             <div class="card-body--">
                 <div class="table-stats order-table ov-h">
                     <table class="table table-striped ">
@@ -19,11 +29,13 @@
                                 <th class="serial">#</th>
                                 <th>Part No</th>
                                 <th>Part Name</th>
-                                <!-- <th>Style Packaging</th> -->
-                                <th>Qty/Box</th>
-                                <th>Total PCS</th>
-                                <th>Product</th>
-                                <th>Supplier</th>
+                                <th>Style</th>
+                                <th>S.Package</th>
+                                <th>Unit</th>
+                                <th>Quantity</th>
+                                <th>Tax</th>
+                                <th>Unit Price</th>
+                                <th>Amount</th>
                                 <th>PIC</th>
                                 <th>Date</th>
                                 <th>Status</th>
@@ -35,13 +47,15 @@
                             {% for order in order %}
                             <tr>
                                 <td class="serial">{{ forloop.counter }}</td>
-                                <td>{{ order.partno }}</td>
-                                <td>{{ order.description }}</td>
-                                <!-- <td>{{ order.style }}</td> -->
+                                <td>{{ order.part.partno}}</td>
+                                <td>{{ order.part.partname }}</td>
+                                <td>{{ order.style }}</td>
                                 <td>{{ order.standard }}</td>
+                                <td>{{ order.unit }}</td>
                                 <td>{{ order.quantity }}</td>
-                                <td>{{ order.product.name }}</td>
-                                <td>{{ order.supplier.name }}</td>
+                                <td>{{ order.tax }}%</td>
+                                <td>{{ order.price }}</td>
+                                <td>{{ order.amount }}</td>
                                 <td>{{ order.is_ppc}}</td>
                                 <td>{{ order.created_date }}</td>
                                 <td> 
