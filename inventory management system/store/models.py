@@ -1,6 +1,10 @@
 from django.db import models
 
+from django.utils import timezone
+
 from users.models import User
+
+import datetime
 
 class Supplier(models.Model):
     name = models.CharField(max_length=120, unique=True)
@@ -79,6 +83,13 @@ class DeliveryOrder(models.Model):
     do_quantity = models.PositiveIntegerField(default= 0)
     created_date = models.DateField(auto_now_add=True)
 
+class EventManager(models.Manager):
+
+    def get_queryset(self):
+        return super().get_queryset().filter(
+            created_date__gte=timezone.now()-timezone.timedelta(days=1)
+        )
+
 class DeliveryIns(models.Model):
     variant = (
         ('STD', 'STD'),
@@ -98,4 +109,7 @@ class DeliveryIns(models.Model):
     variant = models.CharField(max_length=20, choices=variant)
     usage = models.PositiveIntegerField(default= 0) 
     remarks = models.CharField(max_length=500, blank= True)
-    created_date = models.DateField(auto_now_add=True)
+    created_date = models.DateTimeField(default=timezone.now)
+    objects = EventManager()
+
+   

@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views.generic import ListView
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_LEFT, TA_RIGHT, TA_CENTER
@@ -24,7 +25,8 @@ from .models import (
     Order,
     Part,
     DeliveryOrder,
-    DeliveryIns
+    DeliveryIns,
+    EventManager
 )
 from .forms import (
     SupplierForm,
@@ -580,6 +582,7 @@ class DeliveryInsListView(ListView):
         context = super().get_context_data(**kwargs)
         context['deliveryins'] = DeliveryIns.objects.all().order_by('-id')
         context['filter'] = DIFilter(self.request.GET, queryset=self.get_queryset())
+        DeliveryIns._base_manager.filter(created_date__lt=timezone.now()-timezone.timedelta(days=1)).delete()
         return context
 
 @login_required(login_url="/login")
