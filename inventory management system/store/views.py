@@ -629,7 +629,8 @@ def updateOrder(request, pk):
             if order.quantity <= order.limit:
                 from django.core.mail import EmailMessage
 
-                to = order.is_ppc.email
+                # to = order.is_ppc.email
+                to = "toufiqurrahman45@gmail.com"
 
                 msg = EmailMessage(subject="Status: Reorder", from_email="Webmaster@victoriousstep.com",
                                    to=[to])
