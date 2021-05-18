@@ -143,11 +143,16 @@ def generate_pdf_part(request):
 
     table_data = [[col['title'] for col in columns]]
 
+    price = 0
+
     part = Part.objects.all()
+
     for tr in part:
         table_row = [str(tr.created_date.strftime("%d-%m-%Y")), tr.partno,
                      tr.partname, tr.stylepack, tr.standardpack, tr.unit, tr.price, tr.supplier, tr.product]
         table_data.append(table_row)
+        price += tr.price
+    table_data.append(['','','SUBTOTAL (RM)', price])
 
     table = Table(table_data, repeatRows=1, colWidths=[doc.width / 7.0] * 7)
     table.setStyle(TableStyle([
@@ -276,8 +281,6 @@ def generate_pdf_do(request):
 
     columns = [
         {'title': 'Date', 'field': 'created_date'},
-        {'title': 'Part', 'field': 'part'},
-        {'title': 'Part Name', 'field': 'partname'},
         {'title': 'Quantity', 'field': 'do_quantity'},
     ]
 
@@ -287,7 +290,7 @@ def generate_pdf_do(request):
 
     deliveryorder = DeliveryOrder.objects.all()
     for tr in deliveryorder:
-        table_row = [str(tr.created_date.strftime("%d-%m-%Y")), tr.part,tr.part.partname,
+        table_row = [str(tr.created_date.strftime("%d-%m-%Y")),
                      tr.do_quantity]
         table_data.append(table_row)
         
