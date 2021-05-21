@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.admin.models import LogEntry
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -520,7 +521,6 @@ def deletePart(request, pk):
 
 @login_required(login_url='login')
 def create_deliveryorder(request):
-    from django import forms
     form = DeliveryOrderForm()
 
     if request.method == 'POST':
@@ -530,11 +530,19 @@ def create_deliveryorder(request):
             do_quantity = forms.cleaned_data['do_quantity']
             order = forms.cleaned_data['order']
 
+            o = Order.objects.get(id=order.id)
+            if do_quantity > o.quantity:
+                messages.warning(request, "Quantity can't be greater than order quantity")
+                return redirect('do-list')
+
             deliveryorder = DeliveryOrder.objects.create(
                 supplier=supplier,
                 do_quantity=do_quantity,
                 order=order,
             )
+            o.quantity -= do_quantity  # deduct quantity
+            o.save()
+            messages.success(request, "Delivery order created successfully")
             create_log(request, deliveryorder)
             return redirect('do-list')
     context = {
