@@ -106,6 +106,7 @@ def generate_pdf(request):
 
     return response
 
+
 @login_required(login_url='login')
 def generate_pdf_part(request):
     response = HttpResponse(content_type='application/pdf')
@@ -152,7 +153,7 @@ def generate_pdf_part(request):
                      tr.partname, tr.stylepack, tr.standardpack, tr.unit, tr.price, tr.supplier, tr.product]
         table_data.append(table_row)
         price += tr.price
-    table_data.append(['','','SUBTOTAL (RM)', price])
+    table_data.append(['', '', 'SUBTOTAL (RM)', price])
 
     table = Table(table_data, repeatRows=1, colWidths=[doc.width / 7.0] * 7)
     table.setStyle(TableStyle([
@@ -175,6 +176,7 @@ def generate_pdf_part(request):
     response.write(pdf)
 
     return response
+
 
 @login_required(login_url='login')
 def generate_pdf_po(request):
@@ -293,9 +295,9 @@ def generate_pdf_do(request):
         table_row = [str(tr.created_date.strftime("%d-%m-%Y")),
                      tr.do_quantity]
         table_data.append(table_row)
-        
+
         do_quantity += tr.do_quantity
-    table_data.append(['','','SUBTOTAL (RM)', "{:.2f}".format(do_quantity)])
+    table_data.append(['', '', 'SUBTOTAL (RM)', "{:.2f}".format(do_quantity)])
 
     table = Table(table_data, repeatRows=1, colWidths=[doc.width / 7.0] * 7)
     table.setStyle(TableStyle([
@@ -319,6 +321,7 @@ def generate_pdf_do(request):
 
     return response
 
+
 # Supplier views
 @login_required(login_url='login')
 def create_supplier(request):
@@ -333,7 +336,8 @@ def create_supplier(request):
             postcode = forms.cleaned_data['postcode']
             email = forms.cleaned_data['email']
             phone = forms.cleaned_data['phone']
-            supplier = Supplier.objects.create(name=name, email=email, address=address,address2=address2,address3=address3,postcode=postcode, phone=phone)
+            supplier = Supplier.objects.create(name=name, email=email, address=address, address2=address2, address3=address3,
+                                               postcode=postcode, phone=phone)
             create_log(request, supplier)
         return redirect('supplier-list')
     context = {
@@ -345,6 +349,7 @@ def create_supplier(request):
 class SupplierListView(ListView):
     model = Supplier
     template_name = 'store/supplier_list.html'
+
     # context_object_name = 'supplier'
 
     def get_context_data(self, **kwargs):
@@ -372,6 +377,7 @@ def create_product(request):
 class ProductListView(ListView):
     model = Product
     template_name = 'store/product_list.html'
+
     # context_object_name = 'product'
 
     def get_context_data(self, **kwargs):
@@ -437,11 +443,12 @@ class OrderListView(ListView):
         context['filter'] = POFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
+
 @login_required(login_url='login')
 def create_part(request):
     from django import forms
     form = PartForm()
-   
+
     if request.method == 'POST':
         forms = PartForm(request.POST)
         if forms.is_valid():
@@ -473,6 +480,7 @@ def create_part(request):
     }
     return render(request, 'store/addPart.html', context)
 
+
 class PartListView(ListView):
     model = Part
     template_name = 'store/part_list.html'
@@ -483,37 +491,38 @@ class PartListView(ListView):
         context['filter'] = PartFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
+
 @login_required(login_url="/login")
 def updatePart(request, pk):
-	action = 'update'
-	part = Part.objects.get(id=pk)
-	form = PartForm(instance=part)
+    action = 'update'
+    part = Part.objects.get(id=pk)
+    form = PartForm(instance=part)
 
-	if request.method == 'POST':
-		form = PartForm(request.POST, instance=part)
-		if form.is_valid():
-			form.save()
-			return redirect('part-list')
+    if request.method == 'POST':
+        form = PartForm(request.POST, instance=part)
+        if form.is_valid():
+            form.save()
+            return redirect('part-list')
 
-	context =  {'action':action, 'form':form}
-	return render(request, 'store/update_part.html', context)
+    context = {'action': action, 'form': form}
+    return render(request, 'store/update_part.html', context)
+
 
 def deletePart(request, pk):
-	part = Part.objects.get(id=pk)
-	if request.method == 'POST':
-		part_id = part.partname
-		part.delete()
-		return redirect('part-list')
-		
-	return render(request, 'store/delete_part.html', {'item':part})
+    part = Part.objects.get(id=pk)
+    if request.method == 'POST':
+        part_id = part.partname
+        part.delete()
+        return redirect('part-list')
 
+    return render(request, 'store/delete_part.html', {'item': part})
 
 
 @login_required(login_url='login')
 def create_deliveryorder(request):
     from django import forms
     form = DeliveryOrderForm()
-   
+
     if request.method == 'POST':
         forms = DeliveryOrderForm(request.POST)
         if forms.is_valid():
@@ -544,11 +553,12 @@ class DeliveryOrderListView(ListView):
         context['filter'] = DOFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
+
 @login_required(login_url='login')
 def create_deliveryins(request):
     from django import forms
     form = DeliveryInsForm()
-   
+
     if request.method == 'POST':
         forms = DeliveryInsForm(request.POST)
         if forms.is_valid():
@@ -561,13 +571,13 @@ def create_deliveryins(request):
             remarks = forms.cleaned_data['remarks']
 
             deliveryins = DeliveryIns.objects.create(
-                variant= variant,
-                usage= usage,
+                variant=variant,
+                usage=usage,
                 order=order,
-                supplier= supplier,
-                dimension= dimension,
-                box= box,
-                remarks= remarks,                  
+                supplier=supplier,
+                dimension=dimension,
+                box=box,
+                remarks=remarks,
             )
             create_log(request, deliveryins)
             return redirect('dins-list')
@@ -585,32 +595,35 @@ class DeliveryInsListView(ListView):
         context = super().get_context_data(**kwargs)
         context['deliveryins'] = DeliveryIns.objects.all().order_by('-id')
         context['filter'] = DIFilter(self.request.GET, queryset=self.get_queryset())
-        DeliveryIns._base_manager.filter(created_date__lt=timezone.now()-timezone.timedelta(days=1)).delete()
+        DeliveryIns._base_manager.filter(created_date__lt=timezone.now() - timezone.timedelta(days=1)).delete()
         return context
+
 
 @login_required(login_url="/login")
 def updateDO(request, pk):
-	action = 'update'
-	deliveryorder = DeliveryOrder.objects.get(id=pk)
-	form = DeliveryOrderForm(instance=deliveryorder)
+    action = 'update'
+    deliveryorder = DeliveryOrder.objects.get(id=pk)
+    form = DeliveryOrderForm(instance=deliveryorder)
 
-	if request.method == 'POST':
-		form = DeliveryOrderForm(request.POST, instance=deliveryorder)
-		if form.is_valid():
-			form.save()
-			return redirect('do-list')
+    if request.method == 'POST':
+        form = DeliveryOrderForm(request.POST, instance=deliveryorder)
+        if form.is_valid():
+            form.save()
+            return redirect('do-list')
 
-	context =  {'action':action, 'form':form}
-	return render(request, 'store/update_do.html', context)
+    context = {'action': action, 'form': form}
+    return render(request, 'store/update_do.html', context)
+
 
 def deleteDO(request, pk):
-	deliveryorder = DeliveryOrder.objects.get(id=pk)
-	if request.method == 'POST':
-		deliveryorder_id = deliveryorder.part
-		deliveryorder.delete()
-		return redirect('do-list')
-		
-	return render(request, 'store/delete_do.html', {'item':deliveryorder})
+    deliveryorder = DeliveryOrder.objects.get(id=pk)
+    if request.method == 'POST':
+        deliveryorder_id = deliveryorder.part
+        deliveryorder.delete()
+        return redirect('do-list')
+
+    return render(request, 'store/delete_do.html', {'item': deliveryorder})
+
 
 @login_required(login_url='login')
 def update_Order(request):
