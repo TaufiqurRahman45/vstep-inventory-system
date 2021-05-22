@@ -9,7 +9,7 @@
             <div class="card-body">
                 <h4 class="col-xl-3 box-title">Delivery Instruction List </h4> 
                 <a href="{% url 'create-deliveryins' %}" class="col-xl-2 btn btn-primary" style="float: right;">Add New</a>
-                <a href="" class="col-xl-2 btn btn-success mx-2" style="float: right;">Export</a>
+                <a href="?{{ request.GET.urlencode }}" class="col-xl-2 btn btn-success mx-2" style="float: right;">Export</a>
             </div>
             <div class="row">
                 <div class="col">

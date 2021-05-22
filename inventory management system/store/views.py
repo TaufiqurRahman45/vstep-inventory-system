@@ -298,6 +298,10 @@ def generate_pdf_do(request):
     do_quantity = 0
 
     deliveryorder = DeliveryOrder.objects.all()
+    supplier = request.GET.get('supplier')
+    if supplier:
+        deliveryorder = deliveryorder.filter(supplier_id=supplier)
+
     for tr in deliveryorder:
         table_row = [str(tr.created_date.strftime("%d-%m-%Y")),
                      tr.do_quantity]
@@ -446,7 +450,7 @@ class OrderListView(ListView):
     context_object_name = 'order'
 
     def get_queryset(self):
-        queryset = self.model.objects.all()
+        queryset = self.model.objects.all().order_by('-id')
         if self.request.GET.get('supplier'):
             queryset = queryset.filter(supplier_id=self.request.GET.get('supplier'))
         elif self.request.GET.get('product'):
@@ -568,10 +572,16 @@ def create_deliveryorder(request):
 class DeliveryOrderListView(ListView):
     model = DeliveryOrder
     template_name = 'store/do_list.html'
+    context_object_name = 'deliveryorder'
+
+    def get_queryset(self):
+        queryset = self.model.objects.all().order_by('-id')
+        if self.request.GET.get('supplier'):
+            queryset = queryset.filter(supplier_id=self.request.GET.get('supplier'))
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['deliveryorder'] = DeliveryOrder.objects.all().order_by('-id')
         context['filter'] = DOFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
@@ -612,10 +622,16 @@ def create_deliveryins(request):
 class DeliveryInsListView(ListView):
     model = DeliveryIns
     template_name = 'store/dins-list.html'
+    context_object_name = 'deliveryins'
+
+    def get_queryset(self):
+        queryset = self.model.objects.all().order_by('-id')
+        if self.request.GET.get('supplier'):
+            queryset = queryset.filter(supplier_id=self.request.GET.get('supplier'))
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['deliveryins'] = DeliveryIns.objects.all().order_by('-id')
         context['filter'] = DIFilter(self.request.GET, queryset=self.get_queryset())
         DeliveryIns._base_manager.filter(created_date__lt=timezone.now() - timezone.timedelta(days=1)).delete()
         return context
