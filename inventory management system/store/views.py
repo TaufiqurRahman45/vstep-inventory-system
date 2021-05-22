@@ -75,13 +75,19 @@ def generate_pdf(request):
     table_data = [[col['title'] for col in columns]]
 
     orders = Order.objects.all()
+    supplier = request.GET.get('supplier')
+    product = request.GET.get('product')
+    if supplier:
+        orders = orders.filter(supplier_id=supplier)
+    if product:
+        orders = orders.filter(product_id=product)
     for tr in orders:
         status = ''
         if tr.quantity <= tr.limit:
             status = 'Reorder'
         elif tr.quantity > tr.limit:
             status = 'Available'
-        table_row = [str(tr.created_date.strftime("%d-%m-%Y")), tr.partno,
+        table_row = [str(tr.created_date.strftime("%d-%m-%Y")), tr.part.partno,
                      tr.style, tr.standard, tr.quantity, tr.is_ppc, status]
         table_data.append(table_row)
 
@@ -437,10 +443,18 @@ def create_order(request):
 class OrderListView(ListView):
     model = Order
     template_name = 'store/order_list.html'
+    context_object_name = 'order'
+
+    def get_queryset(self):
+        queryset = self.model.objects.all()
+        if self.request.GET.get('supplier'):
+            queryset = queryset.filter(supplier_id=self.request.GET.get('supplier'))
+        elif self.request.GET.get('product'):
+            queryset = queryset.filter(product_id=self.request.GET.get('product'))
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['order'] = Order.objects.all().order_by('-id')
         context['filter'] = POFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
