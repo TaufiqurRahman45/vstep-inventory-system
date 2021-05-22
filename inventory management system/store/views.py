@@ -625,12 +625,15 @@ class DeliveryInsListView(ListView):
 def updateDO(request, pk):
     action = 'update'
     deliveryorder = DeliveryOrder.objects.get(id=pk)
+    previous_do = deliveryorder.do_quantity
     form = DeliveryOrderForm(instance=deliveryorder)
 
     if request.method == 'POST':
         form = DeliveryOrderForm(request.POST, instance=deliveryorder)
         if form.is_valid():
-            form.save()
+            do = form.save()
+            create_log(request, do, object_repr=do.order.part.partname,
+                       change_message=f"do_quantity {previous_do} to {do.do_quantity}")
             return redirect('do-list')
 
     context = {'action': action, 'form': form}
