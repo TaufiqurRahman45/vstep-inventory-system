@@ -9,7 +9,7 @@
             <div class="card-body">
                 <h4 class="col-xl-3 box-title">Delivery Instruction List </h4> 
                 <a href="{% url 'create-deliveryins' %}" class="col-xl-2 btn btn-primary" style="float: right;">Add New</a>
-                <a href="?{{ request.GET.urlencode }}" class="col-xl-2 btn btn-success mx-2" style="float: right;">Export</a>
+                <a href="{% url 'generate-pdf_di' %}?{{ request.GET.urlencode }}" class="col-xl-2 btn btn-success mx-2" style="float: right;">Export</a>
             </div>
             <div class="row">
                 <div class="col">
@@ -54,8 +54,8 @@
                                 <td>{{ deliveryins.remarks }}</td>
                                 <td>{{ deliveryins.created_date }}</td>
                                 <td>
-                                    <a class="btn btn-sm btn-warning" href="" >Update</a>
-                                    <a class="btn btn-sm btn-danger"  href="">Delete</a>
+                                    <a class="btn btn-sm btn-warning" href="{% url 'update_di' deliveryins.id %}" >Update</a>
+                                    <a class="btn btn-sm btn-danger"  href="{% url 'delete_di' deliveryins.id %}">Delete</a>
                                 </td>
         
                             </tr>
