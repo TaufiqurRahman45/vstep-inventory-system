@@ -88,10 +88,12 @@ def generate_pdf(request):
         orders = orders.filter(supplier_id=supplier)
     if product:
         orders = orders.filter(product_id=product)
+
+    table_row = set()
     for tr in orders:
 
-        table_row = [str(tr.supplier)]
-        table_data.append(table_row)
+        table_row.add(str(tr.supplier))
+    table_data.append(table_row)
 
     table = Table(table_data, repeatRows=1, colWidths=[doc.width / 2.0] * 9)
     table.setStyle(TableStyle([
