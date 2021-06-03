@@ -515,7 +515,7 @@ def create_order(request):
     from django import forms
     form = OrderForm()
     form.fields['is_ppc'].queryset = User.objects.filter(is_ppc=True)
-    # form.fields['new_stock'].widget = forms.HiddenInput()
+    form.fields['new_stock'].widget = forms.HiddenInput()
 
     if request.method == 'POST':
         forms = OrderForm(request.POST)
@@ -531,6 +531,8 @@ def create_order(request):
             tax = forms.cleaned_data['tax']
             price = forms.cleaned_data['price']
             unit = forms.cleaned_data['unit']
+            new_stock = forms.cleaned_data['new_stock']
+
 
             order = Order.objects.create(
                 supplier=supplier,
@@ -546,6 +548,7 @@ def create_order(request):
                 unit=unit,
                 terms=30,
                 remarks='Follow DI',
+                new_stock=new_stock,
 
             )
             create_log(request, order)
@@ -778,15 +781,18 @@ def deleteDI(request, pk):
 def updateDO(request, pk):
     action = 'update'
     deliveryorder = DeliveryOrder.objects.get(id=pk)
-    previous_do = deliveryorder.do_quantity
     form = DeliveryOrderForm(instance=deliveryorder)
 
     if request.method == 'POST':
         form = DeliveryOrderForm(request.POST, instance=deliveryorder)
         if form.is_valid():
-            do = form.save()
-            create_log(request, do, object_repr=do.order.part.partname,
-                       change_message=f"do_quantity {previous_do} to {do.do_quantity}")
+            order = form.cleaned_data['order']
+            do_quantity = form.cleaned_data['do_quantity']
+
+            o = Order.objects.get(id=order.id)
+            o.quantity -= do_quantity  # deduct quantity
+            o.save()
+            form.save()
             return redirect('do-list')
 
     context = {'action': action, 'form': form}
@@ -796,7 +802,7 @@ def updateDO(request, pk):
 def deleteDO(request, pk):
     deliveryorder = DeliveryOrder.objects.get(id=pk)
     if request.method == 'POST':
-        deliveryorder_id = deliveryorder.part
+        deliveryorder_id = deliveryorder.order
         deliveryorder.delete()
         return redirect('do-list')
 
@@ -848,7 +854,7 @@ def updateOrder(request, pk):
 def deleteOrder(request, pk):
     order = Order.objects.get(id=pk)
     if request.method == 'POST':
-        order_id = order.partno
+        order_id = order.part.partno
         order.delete()
         create_log(request, order, 3)
         return redirect('order-list')

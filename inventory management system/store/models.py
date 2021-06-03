@@ -68,6 +68,7 @@ class Order(models.Model):
     created_date = models.DateField(auto_now_add=True)
     is_ppc = models.ForeignKey(User, on_delete=models.CASCADE, null=True,)
     unit = models.PositiveIntegerField(default=0, blank=True, null=True)
+    new_stock = models.PositiveIntegerField(default= 0, blank=True)
 
     @property
     def amount(self):
