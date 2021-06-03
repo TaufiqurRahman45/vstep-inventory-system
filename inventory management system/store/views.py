@@ -1,3 +1,5 @@
+import random
+import string
 from django.contrib import messages
 from django.contrib.admin.models import LogEntry
 from django.http import HttpResponse
@@ -54,17 +56,21 @@ def generate_pdf(request):
                               leading=14, fontSize=10))
     styles.add(ParagraphStyle(name='right_small_text', alignment=TA_RIGHT, fontName='Helvetica', borderPadding=6,
                               leading=14, fontSize=10))
-    styles.add(ParagraphStyle(name='large_text', leading=14, fontSize=20))
+    styles.add(ParagraphStyle(name='large_text', leading=14, fontSize=15, spaceAfter = 12, spaceBefore = 10))
     styles.add(ParagraphStyle(name='center_text', alignment=TA_CENTER, leading=14, fontSize=20))
     styles.add(ParagraphStyle(name='footer_text', leading=14, fontSize=6))
     elements = []
+
+    elements.append(Paragraph('Inovice Number: PO {}'.format("A"+ str(random.randint(1000, 2000))), styles["right_small_text"]))
+
+    elements.append(Paragraph('Purchase Order', styles["right_small_text"]))
+    elements.append(Paragraph('Date: {}'.format(str(datetime.now().date().strftime("%d-%m-%Y"))), styles["right_small_text"]))
     paragraph_text = 'Victorious Step Sdn.Bhd. (667833-T)'
     elements.append(Paragraph(paragraph_text, styles["small_text"]))
     paragraph_text = 'No 5 Jalan Utarid U5/16,'
     elements.append(Paragraph(paragraph_text, styles["small_text"]))
     paragraph_text = '40150 Shah Alam'
     elements.append(Paragraph(paragraph_text, styles["small_text"]))
-    elements.append(Paragraph('Purchase Order', styles["right_small_text"]))
     paragraph_text = 'Selangor Darul Ehsan'
     elements.append(Paragraph(paragraph_text, styles["small_text"]))
     paragraph_text = 'Tel: 03-7847 1979 / 03-7734 0205 '
@@ -75,11 +81,11 @@ def generate_pdf(request):
     elements.append(Paragraph(paragraph_text, styles["small_text"]))
     paragraph_text = 'SST No.: B16-1808-21004655'
 
-    columns = [
-        {'title': 'Supplier', 'field': 'supplier'},
-    ]
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'Supplier'
+    elements.append(Paragraph(paragraph_text, styles["large_text"]))
 
-    table_data = [[col['title'] for col in columns]]
+    table_data = []
 
     orders = Order.objects.all()
     supplier = request.GET.get('supplier')
@@ -93,11 +99,73 @@ def generate_pdf(request):
     for tr in orders:
 
         table_row.add(str(tr.supplier))
+        
     table_data.append(table_row)
 
-    table = Table(table_data, repeatRows=1, colWidths=[doc.width / 2.0] * 9)
+# address 1
+    table_add = set()
+    for tr in orders:
+
+        table_add.add(str(tr.supplier.address))
+        
+    table_data.append(table_add)
+
+# address 2
+    table_add2 = set()
+    for tr in orders:
+
+        table_add2.add(str(tr.supplier.address2))
+        
+    table_data.append(table_add2)
+
+# address 3
+    table_add3 = set()
+    for tr in orders:
+
+        table_add3.add(str(tr.supplier.address3))
+    
+    table_data.append(table_add3)
+
+# phone
+    table_phn = set()
+    for tr in orders:
+
+        table_phn.add(str(tr.supplier.phone))
+        
+    table_data.append(table_phn)
+
+    table = Table(table_data, repeatRows=0,  colWidths=None)
+    table.hAlign = "LEFT"
+    
+    elements.append(table)
+
+    elements.append(Spacer(5, 5))
+
+
+# Prod
+    columns = [
+            {'title': 'Payment Terms', 'field': 'terms'},
+            {'title': 'Model', 'field': 'product'},
+            {'title': 'Remarks', 'field': 'remarks'},
+        ]
+
+    table_data = [[col['title'] for col in columns]]
+
+    orders = Order.objects.all()
+    supplier = request.GET.get('supplier')
+    product = request.GET.get('product')
+    if supplier:
+        orders = orders.filter(supplier_id=supplier)
+    if product:
+        orders = orders.filter(product_id=product)
+
+    table_sec = set()
+    for tr in orders:
+        table_sec=[str(tr.product), tr.terms, tr.remarks]
+    table_data.append(table_sec)
+    table = Table(table_data, repeatRows=1, colWidths=[doc.width / 7.0] * 7)
     table.setStyle(TableStyle([
-        ('BOX', (1, 1), (-2, -2), 0.70, colors.dimgrey),
+        ('BOX', (0, 0), (-1, -1), 0.20, colors.dimgrey),
         ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('INNERGRID', (0, 0), (-1, -1), 0.1, colors.black),
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
@@ -107,6 +175,7 @@ def generate_pdf(request):
 
     elements.append(Spacer(1, 50))
 
+#end prod
 
     columns = [
         {'title': 'Date', 'field': 'created_date'},
@@ -134,7 +203,7 @@ def generate_pdf(request):
         elif tr.quantity > tr.limit:
             status = 'Available'
         table_row = [str(tr.created_date.strftime("%d-%m-%Y")), tr.part.partno,
-                     tr.style,tr.supplier, tr.standard, tr.quantity, tr.is_ppc, status]
+                     tr.style, tr.standard, tr.quantity, tr.is_ppc, status]
         table_data.append(table_row)
 
     table = Table(table_data, repeatRows=1, colWidths=[doc.width / 7.0] * 7)
