@@ -65,7 +65,9 @@
                                 <thead>
                                     <tr>
                                         <th class="serial">#</th>
-                                        <th>Product</th>
+                                        <th>Part No</th>
+                                        <th>Part Name</th>
+                                        <th>Status</th>
                                         <th>Date</th>
                                         <th>Action</th>
                                         
@@ -75,11 +77,26 @@
                                     {% if orders %}
                                     {% for order in orders %}
                                     <tr>
-                                        <td class="serial">{{ forloop.counter }}</td>                                      
-                                        <td>{{ order.product }}</td>                                     
-                                        <td>{{ order.created_date }}</td>
+                                        <td class="serial">{{ forloop.counter }}</td> 
+                                        <td>{{ order.part.partno }}</td>                                      
+                                        <td>{{ order.part.partname }}</td>
+                                                                             
+                                        
                                         <td>
-                                        <a class="btn btn-info" href="{% url 'product-list'%}">More Details</a>                                   
+                                            {% if order.quantity <= order.limit   %}
+                                                <p style="color: #FF0000">
+                                                      Reorder
+                                                </p>
+                                             {% elif order.quantity  > order.limit  %}
+                                                 <p style="color:#008000">
+                                                     Available
+                                                 </p>
+                                              {% endif %}
+                                        </td>
+                                        <td>{{ order.created_date }}</td>
+                                        
+                                        <td>
+                                        <a class="btn btn-info" href="{% url 'order-list'%}">More Details</a>                                   
                                         </td>
                                     </tr>
                                     {% endfor %}
