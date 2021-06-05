@@ -60,20 +60,15 @@ class ProductForm(forms.ModelForm):
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['supplier', 'product', 'part', 'style', 'standard', 'quantity', 'limit', 'is_ppc', 'tax', 'price', 'unit', 'terms', 'remarks', 'new_stock']
+        fields = ['supplier', 'product', 'part', 'quantity', 'limit', 'is_ppc', 'terms', 'remarks', 'new_stock']
 
         widgets = {
             'supplier': forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),
             'product': forms.Select(attrs={'class': 'form-control', 'id': 'product'}),
-            'part': forms.Select(attrs={'class': 'form-control', 'id': 'part'}),
-            'style': forms.TextInput(attrs={'class': 'form-control', 'id': 'description'}),
-            'standard': forms.NumberInput(attrs={'class': 'form-control', 'id': 'standard'}),
+            'part': forms.Select(attrs={'class': 'form-control', 'id': 'part'}),        
             'quantity': forms.NumberInput(attrs={'class': 'form-control', 'id': 'quantity'}),
             'limit' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'limit'}),
             'is_ppc' : forms.Select(attrs={'class': 'form-control', 'id': 'is_ppc'}),
-            'tax' : forms. NumberInput(attrs={'class': 'form-control', 'id': 'tax'}),
-            'price' : forms. NumberInput(attrs={'class': 'form-control', 'id': 'price'}),
-            'unit' : forms. NumberInput(attrs={'class': 'form-control', 'id': 'unit'}),
             'terms': forms.Select(attrs={'class': 'form-control', 'id': 'terms'}),
             'remarks': forms.Select(attrs={'class': 'form-control', 'id': 'remarks'}),
             'new_stock' : forms. NumberInput(attrs={'class': 'form-control', 'id': 'new_stock'}),

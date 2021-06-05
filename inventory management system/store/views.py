@@ -300,10 +300,6 @@ def generate_pdf_part(request):
 
     return response
 
-
-
-
-
 @login_required(login_url='login')
 def generate_pdf_do(request):
     response = HttpResponse(content_type='application/pdf')
@@ -523,14 +519,9 @@ def create_order(request):
             supplier = forms.cleaned_data['supplier']
             product = forms.cleaned_data['product']
             part = forms.cleaned_data['part']
-            style = forms.cleaned_data['style']
             quantity = forms.cleaned_data['quantity']
-            standard = forms.cleaned_data['standard']
             limit = forms.cleaned_data['limit']
             is_ppc = forms.cleaned_data['is_ppc']
-            tax = forms.cleaned_data['tax']
-            price = forms.cleaned_data['price']
-            unit = forms.cleaned_data['unit']
             new_stock = forms.cleaned_data['new_stock']
 
 
@@ -538,14 +529,9 @@ def create_order(request):
                 supplier=supplier,
                 product=product,
                 part=part,
-                style=style,
-                standard=standard,
                 quantity=quantity,
                 limit=limit,
                 is_ppc=is_ppc,
-                tax=tax,
-                price=price,
-                unit=unit,
                 terms=30,
                 remarks='Follow DI',
                 new_stock=new_stock,
