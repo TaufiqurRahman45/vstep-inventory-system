@@ -34,7 +34,7 @@ class Part(models.Model):
     stylepack = models.CharField(max_length=50, blank= True)
     standardpack = models.PositiveIntegerField(default= 0)
     unit = models.PositiveIntegerField(default= 0)
-    price = models.PositiveIntegerField(default= 0)
+    price = models.DecimalField(default= 0,max_digits=5, decimal_places=2)
     tax = models.PositiveIntegerField(default= 0)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -64,11 +64,11 @@ class Order(models.Model):
     quantity = models.PositiveIntegerField(default= 0)
     limit = models.PositiveIntegerField(default= 0)
     tax = models.PositiveIntegerField(default= 0)
-    price = models.PositiveIntegerField(default= 0)
+    price = models.DecimalField(default= 0,max_digits=5, decimal_places=2)
     created_date = models.DateField(auto_now_add=True)
     is_ppc = models.ForeignKey(User, on_delete=models.CASCADE, null=True,)
     unit = models.PositiveIntegerField(default=0, blank=True, null=True)
-    new_stock = models.PositiveIntegerField(default= 0, blank=True)
+    new_stock = models.PositiveIntegerField(default=0, blank=True, null=True)
 
     @property
     def amount(self):

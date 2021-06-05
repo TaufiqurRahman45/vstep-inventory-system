@@ -781,6 +781,7 @@ def deleteDI(request, pk):
 def updateDO(request, pk):
     action = 'update'
     deliveryorder = DeliveryOrder.objects.get(id=pk)
+    previous_do = deliveryorder.do_quantity
     form = DeliveryOrderForm(instance=deliveryorder)
 
     if request.method == 'POST':
@@ -792,7 +793,9 @@ def updateDO(request, pk):
             o = Order.objects.get(id=order.id)
             o.quantity -= do_quantity  # deduct quantity
             o.save()
-            form.save()
+            do = form.save()
+            create_log(request, do, object_repr=do.order.part.partname,
+                       change_message=f"do_quantity {previous_do} to {do.do_quantity}")
             return redirect('do-list')
 
     context = {'action': action, 'form': form}
