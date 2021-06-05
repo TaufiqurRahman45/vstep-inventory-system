@@ -60,7 +60,7 @@ class ProductForm(forms.ModelForm):
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['supplier', 'product', 'part', 'style', 'standard', 'quantity', 'limit', 'is_ppc', 'tax', 'price', 'unit', 'terms', 'remarks']
+        fields = ['supplier', 'product', 'part', 'style', 'standard', 'quantity', 'limit', 'is_ppc', 'tax', 'price', 'unit', 'terms', 'remarks', 'new_stock']
 
         widgets = {
             'supplier': forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),
@@ -76,6 +76,7 @@ class OrderForm(forms.ModelForm):
             'unit' : forms. NumberInput(attrs={'class': 'form-control', 'id': 'unit'}),
             'terms': forms.Select(attrs={'class': 'form-control', 'id': 'terms'}),
             'remarks': forms.Select(attrs={'class': 'form-control', 'id': 'remarks'}),
+            'new_stock' : forms. NumberInput(attrs={'class': 'form-control', 'id': 'new_stock'}),
         }
 
 class PartForm(forms.ModelForm):

@@ -18,8 +18,9 @@ from .views import (
     logs,
     generate_pdf,
     generate_pdf_part,
-    generate_pdf_po,
+    # generate_pdf_po,
     generate_pdf_do,
+    generate_pdf_di,
     DeliveryInsListView,
 )
 
@@ -55,9 +56,9 @@ urlpatterns = [
 
     path('generate-pdf_part/', generate_pdf_part, name='generate-pdf_part'),
 
-    path('generate-pdf_po/', generate_pdf_po, name='generate-pdf_po'),
-
     path('generate-pdf_do/', generate_pdf_do, name='generate-pdf_do'),
+
+    path('generate-pdf_di/', generate_pdf_di, name='generate-pdf_di'),
 
     path('update_order/<str:pk>/', views.updateOrder, name="update_order"),
 
@@ -70,4 +71,8 @@ urlpatterns = [
     path('update_do/<str:pk>/', views.updateDO, name="update_do"),
 
     path('delete_do/<str:pk>/', views.deleteDO, name="delete_do"),
+
+    path('update_di/<str:pk>/', views.updateDI, name="update_di"),
+
+    path('delete_di/<str:pk>/', views.deleteDI, name="delete_di"),
 ]

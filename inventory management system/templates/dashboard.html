@@ -12,12 +12,12 @@
                 </div>
         </div>    </div>
 
-        <div class="col-lg-3 col-md-6">
+        <div class="col-lg-3 offset-md-3 col-md-6">
             <div class="card">
-                <div class="card-body" style="background-color: green">
+                <div class="card-body" style="background-color: #6610f2; border-radius:25px" >
                     <div class="stat-widget-five">
                         <div class="stat-icon dib flat-color-2">
-                            <i class="fa fa-list"></i>
+                            <i class="fa fa-list" style="color: #ffff;" ></i>
                         </div>
                         <div class="stat-content" >
                             <div class="text-left dib">
@@ -32,10 +32,10 @@
 
         <div class="col-lg-3 col-md-6">
             <div class="card">
-                <div class="card-body" style="background-color: red">
+                <div class="card-body" style="background-color: #4caf50; border-radius:25px" >
                     <div class="stat-widget-five">
                         <div class="stat-icon dib flat-color-3">
-                            <i class="fa fa-user"></i>
+                            <i class="fa fa-user" style="color: #ffff;" ></i>
                         </div>
                         <div class="stat-content">
                             <div class="text-left dib">
@@ -65,7 +65,9 @@
                                 <thead>
                                     <tr>
                                         <th class="serial">#</th>
-                                        <th>Product</th>
+                                        <th>Part No</th>
+                                        <th>Part Name</th>
+                                        <th>Status</th>
                                         <th>Date</th>
                                         <th>Action</th>
                                         
@@ -75,11 +77,26 @@
                                     {% if orders %}
                                     {% for order in orders %}
                                     <tr>
-                                        <td class="serial">{{ forloop.counter }}</td>                                      
-                                        <td>{{ order.product }}</td>                                     
-                                        <td>{{ order.created_date }}</td>
+                                        <td class="serial">{{ forloop.counter }}</td> 
+                                        <td>{{ order.part.partno }}</td>                                      
+                                        <td>{{ order.part.partname }}</td>
+                                                                             
+                                        
                                         <td>
-                                        <a class="btn btn-info" href="{% url 'product-list'%}">More Details</a>                                   
+                                            {% if order.quantity <= order.limit   %}
+                                                <p style="color: #FF0000">
+                                                      Reorder
+                                                </p>
+                                             {% elif order.quantity  > order.limit  %}
+                                                 <p style="color:#008000">
+                                                     Available
+                                                 </p>
+                                              {% endif %}
+                                        </td>
+                                        <td>{{ order.created_date }}</td>
+                                        
+                                        <td>
+                                        <a class="btn btn-info" href="{% url 'order-list'%}">More Details</a>                                   
                                         </td>
                                     </tr>
                                     {% endfor %}

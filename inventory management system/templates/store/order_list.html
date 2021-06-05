@@ -7,9 +7,9 @@
     <div class="col-xl-12">
         <div class="card">
             <div class="card-body">
-                <h4 class="col-xl-3 box-title">Purchase Order List </h4> 
+                <h4 class="col-xl-3 box-title">Purchase Order List </h4>
                 <a href="{% url 'create-order' %}" class="col-xl-2 btn btn-primary" style="float: right;">Add New</a>
-                <a href="{% url 'generate-pdf' %}" class="col-xl-2 btn btn-success mx-2" style="float: right;">Export</a>
+                <a href="{% url 'generate-pdf' %}?{{ request.GET.urlencode }}" class="col-xl-2 btn btn-success mx-2" style="float: right;">Export</a>
             </div>
             <div class="row">
                 <div class="col">
@@ -39,7 +39,7 @@
                                 <th>PIC</th>
                                 <th>Date</th>
                                 <th>Status</th>
-                                <th>Action</th>                     
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -58,7 +58,7 @@
                                 <td>{{ order.amount }}</td>
                                 <td>{{ order.is_ppc}}</td>
                                 <td>{{ order.created_date }}</td>
-                                <td> 
+                                <td>
                                 {% if order.quantity <= order.limit   %}
                                     <p style="color: #FF0000">
                                           Reorder
@@ -73,7 +73,7 @@
                                     <a class="btn btn-sm btn-warning" href="{% url 'update_order' order.id %}" >Update</a>
                                     <a class="btn btn-sm btn-danger"  href="{% url 'delete_order' order.id %}">Delete</a>
                                 </td>
-                                
+
                             </tr>
                             {% endfor %}
                             {% else %}
@@ -86,6 +86,6 @@
         </div> <!-- /.card -->
     </div>  <!-- /.col-lg-8 -->
 
-    
+
 </div>
 {% endblock content %}
