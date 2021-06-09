@@ -6,6 +6,8 @@ from users.models import User
 
 import datetime
 
+import random
+
 class Supplier(models.Model):
     name = models.CharField(max_length=120, unique=True)
     address = models.CharField(max_length=220)
@@ -43,6 +45,11 @@ class Part(models.Model):
     def __str__(self):
         return self.partname
 
+
+def random_string():
+
+    return str(random.randint(1000, 9999))
+
 class Order(models.Model):
     terms = (
         ('30', '30'),
@@ -54,6 +61,7 @@ class Order(models.Model):
         ('follow di', 'Follow DI'),
         ('follow agent', 'Follow Agent'),
     )
+    po_id = models.CharField(max_length=4, default = random_string)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     part = models.ForeignKey(Part, on_delete=models.CASCADE)

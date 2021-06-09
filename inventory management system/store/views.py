@@ -23,6 +23,7 @@ from .filters import DIFilter
 from .filters import DOFilter
 from .filters import POFilter
 
+
 from users.models import User
 from .models import (
     Supplier,
@@ -504,6 +505,8 @@ class ProductListView(ListView):
         context['product'] = Product.objects.all().order_by('-id')
         return context
 
+def random_string():
+    return str(random.randint(10000, 99999))
 
 # Order views
 @login_required(login_url='login')
@@ -516,6 +519,7 @@ def create_order(request):
     if request.method == 'POST':
         forms = OrderForm(request.POST)
         if forms.is_valid():
+            po_id = forms.cleaned_data['po_id']
             supplier = forms.cleaned_data['supplier']
             product = forms.cleaned_data['product']
             part = forms.cleaned_data['part']
@@ -526,6 +530,7 @@ def create_order(request):
 
 
             order = Order.objects.create(
+                po_id=po_id,
                 supplier=supplier,
                 product=product,
                 part=part,

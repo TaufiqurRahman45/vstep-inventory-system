@@ -60,9 +60,11 @@ class ProductForm(forms.ModelForm):
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['supplier', 'product', 'part', 'quantity', 'limit', 'is_ppc', 'terms', 'remarks', 'new_stock']
+        fields = ['supplier', 'product', 'part', 'quantity', 'limit', 'is_ppc', 'terms', 'remarks', 'new_stock', 'po_id']
 
         widgets = {
+            # 'po_id': forms.NumberInput(attrs={'class': 'form-control', 'id': 'po_id'}),
+
             'supplier': forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),
             'product': forms.Select(attrs={'class': 'form-control', 'id': 'product'}),
             'part': forms.Select(attrs={'class': 'form-control', 'id': 'part'}),        
@@ -71,13 +73,13 @@ class OrderForm(forms.ModelForm):
             'is_ppc' : forms.Select(attrs={'class': 'form-control', 'id': 'is_ppc'}),
             'terms': forms.Select(attrs={'class': 'form-control', 'id': 'terms'}),
             'remarks': forms.Select(attrs={'class': 'form-control', 'id': 'remarks'}),
-            'new_stock' : forms. NumberInput(attrs={'class': 'form-control', 'id': 'new_stock'}),
+            'new_stock' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'new_stock'}),
         }
 
 class PartForm(forms.ModelForm):
     class Meta:
         model = Part
-        fields = ['partno', 'partname', 'stylepack', 'standardpack', 'supplier', 'product', 'unit', 'price', 'tax', ]
+        fields = ['partno', 'partname', 'stylepack', 'standardpack', 'supplier', 'product', 'unit', 'price', 'tax',  ]
 
         widgets = {
             'partno': forms.TextInput(attrs={'class': 'form-control', 'id': 'partno'}),
