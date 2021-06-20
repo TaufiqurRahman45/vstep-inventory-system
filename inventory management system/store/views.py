@@ -542,6 +542,7 @@ def create_order(request):
                 new_stock=new_stock,
 
             )
+            forms.save()
             create_log(request, order)
             return redirect('order-list')
     context = {

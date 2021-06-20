@@ -36,13 +36,13 @@
             <div class="card-header">
                 <strong class="card-title">Add Order</strong>
             </div>
-            <div class="card-body">
+            <div class="card-body1">
                 <!-- Credit Card -->
                 <div id="pay-invoice">
                     <div class="card-body">
-                        <form action="#" method="post"  novalidate="novalidate">
+                        <form action="#" method="post" id="form-container"  novalidate="novalidate">
                             {% csrf_token %}
-
+                        <div class="fomr">            
                             <div class="form-group">
                                 <label for="po_id" class="control-label mb-1">ID</label>
                                 {{ form.po_id }}
@@ -96,14 +96,39 @@
                                 </div>      
                             </div>
                                 
-                            
+                           
+                        </div>
+                        <button id="add-form" type="button">Add Another Order</button>
                             <div>
                                 <button id="payment-button" type="submit" class="btn btn-lg btn-success btn-block">
                                     <span id="payment-button-amount">Save</span>
                                 </button>
                             </div>
                         </form>
+                        <script>
+                            let poForm = document.querySelectorAll(".fomr")
+                            let container = document.querySelector("#form-container")
+                            let addButton = document.querySelector("#add-form")
+                            let totalForms = document.querySelector("#id_form-TOTAL_FORMS")
+                        
+                            let formNum = poForm.length-1
+                            addButton.addEventListener('click', addForm)
+                        
+                            function addForm(e){
+                                e.preventDefault()
+                        
+                                let newForm = poForm[0].cloneNode(true)
+                                let formRegex = RegExp(`form-(\\d){1}-`,'g')
+                        
+                                formNum++
+                                newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formNum}-`)
+                                container.insertBefore(newForm, addButton)
+                                
+                                totalForms.setAttribute('value', `${formNum+1}`)
+                            }
+                        </script>
                     </div>
+                    
                 </div>
 
             </div>
@@ -112,4 +137,7 @@
     </div><!--/.col-->
 </div>
 
+
+
 {% endblock content %}
+

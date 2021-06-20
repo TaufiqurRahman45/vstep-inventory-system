@@ -1,4 +1,5 @@
 from django import forms
+from django.forms import modelformset_factory
 
 from .models import Product, Order, Part, DeliveryOrder,DeliveryIns
 
@@ -63,8 +64,6 @@ class OrderForm(forms.ModelForm):
         fields = ['supplier', 'product', 'part', 'quantity', 'limit', 'is_ppc', 'terms', 'remarks', 'new_stock', 'po_id']
 
         widgets = {
-            # 'po_id': forms.NumberInput(attrs={'class': 'form-control', 'id': 'po_id'}),
-
             'supplier': forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),
             'product': forms.Select(attrs={'class': 'form-control', 'id': 'product'}),
             'part': forms.Select(attrs={'class': 'form-control', 'id': 'part'}),        
