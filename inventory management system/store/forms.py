@@ -56,13 +56,28 @@ class ProductForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control', 'id': 'name'}),
             'sortno': forms.NumberInput(attrs={'class': 'form-control', 'id': 'sortno'})
         }
-
 OrderForm = modelformset_factory(
         Order, 
         fields=('supplier', 'product', 'part', 'quantity', 'limit', 'is_ppc', 'terms', 'remarks', 'new_stock', 'po_id'), 
         extra=1, 
         
 )
+
+# Dependent/Chained Dropdown
+def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['part'].queryset = Part.objects.none()
+
+        if 'supplier' in self.data:
+            try:
+                supplier_id = int(self.data.get('supplier'))
+                self.fields['part'].queryset = Part.objects.filter(supplier_id=supplier_id).order_by('partname')
+            except (ValueError, TypeError):
+                pass 
+        elif self.instance.pk:
+            self.fields['part'].queryset = self.instance.supplier.supplier_set.order_by('partname')
+
+
 
 #  class OrderForm(forms.ModelForm):
 #      class Meta:

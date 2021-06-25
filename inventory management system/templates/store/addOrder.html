@@ -130,6 +130,25 @@
                                 totalForms.setAttribute('value', `${formNum+1}`) //Increment the number of total forms in the form management
                             }
                         </script>
+
+                        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+                        <script>
+                        $("#id_supplier").change(function () {
+                            var url = $("#form-container").attr("data-parts-url");
+                            var supplierId = $(this).val();
+
+                            $.ajax({
+                            url: url,
+                            data: {
+                                'supplier': supplierId
+                            },
+                            success: function (data) {
+                                $("#id_part").html(data);
+                            }
+                            });
+
+                        });
+                        </script>
                     </div>
                     
                 </div>
