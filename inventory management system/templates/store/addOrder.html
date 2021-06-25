@@ -42,7 +42,9 @@
                     <div class="card-body">
                         <form action="#" method="post" id="form-container"  novalidate="novalidate">
                             {% csrf_token %}
-                        <div class="fomr">            
+                            {{order_formset.management_form}}
+                            {% for form in order_formset %}
+                        <div class="order-form">            
                             <div class="form-group">
                                 <label for="po_id" class="control-label mb-1">ID</label>
                                 {{ form.po_id }}
@@ -98,6 +100,7 @@
                                 
                            
                         </div>
+                        {% endfor %}
                         <button id="add-form" type="button">Add Another Order</button>
                             <div>
                                 <button id="payment-button" type="submit" class="btn btn-lg btn-success btn-block">
@@ -106,25 +109,25 @@
                             </div>
                         </form>
                         <script>
-                            let poForm = document.querySelectorAll(".fomr")
+                            let orderForm = document.querySelectorAll(".order-form")
                             let container = document.querySelector("#form-container")
                             let addButton = document.querySelector("#add-form")
                             let totalForms = document.querySelector("#id_form-TOTAL_FORMS")
-                        
-                            let formNum = poForm.length-1
+                    
+                            let formNum = orderForm.length-1 //Get the number of the last form on the page with zero-based indexing
                             addButton.addEventListener('click', addForm)
-                        
+                    
                             function addForm(e){
                                 e.preventDefault()
-                        
-                                let newForm = poForm[0].cloneNode(true)
-                                let formRegex = RegExp(`form-(\\d){1}-`,'g')
-                        
-                                formNum++
-                                newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formNum}-`)
-                                container.insertBefore(newForm, addButton)
+                    
+                                let newForm = orderForm[0].cloneNode(true) //Clone the bird form
+                                let formRegex = RegExp(`form-(\\d){1}-`,'g') //Regex to find all instances of the form number
+                    
+                                formNum++ //Increment the form number
+                                newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formNum}-`) //Update the new form to have the correct form number
+                                container.insertBefore(newForm, addButton) //Insert the new form at the end of the list of forms
                                 
-                                totalForms.setAttribute('value', `${formNum+1}`)
+                                totalForms.setAttribute('value', `${formNum+1}`) //Increment the number of total forms in the form management
                             }
                         </script>
                     </div>

@@ -57,23 +57,29 @@ class ProductForm(forms.ModelForm):
             'sortno': forms.NumberInput(attrs={'class': 'form-control', 'id': 'sortno'})
         }
 
+OrderForm = modelformset_factory(
+        Order, 
+        fields=('supplier', 'product', 'part', 'quantity', 'limit', 'is_ppc', 'terms', 'remarks', 'new_stock', 'po_id'), 
+        extra=1, 
+        
+)
 
-class OrderForm(forms.ModelForm):
-    class Meta:
-        model = Order
-        fields = ['supplier', 'product', 'part', 'quantity', 'limit', 'is_ppc', 'terms', 'remarks', 'new_stock', 'po_id']
+#  class OrderForm(forms.ModelForm):
+#      class Meta:
+#          model = Order
+#          fields = ['supplier', 'product', 'part', 'quantity', 'limit', 'is_ppc', 'terms', 'remarks', 'new_stock', 'po_id']
 
-        widgets = {
-            'supplier': forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),
-            'product': forms.Select(attrs={'class': 'form-control', 'id': 'product'}),
-            'part': forms.Select(attrs={'class': 'form-control', 'id': 'part'}),        
-            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'id': 'quantity'}),
-            'limit' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'limit'}),
-            'is_ppc' : forms.Select(attrs={'class': 'form-control', 'id': 'is_ppc'}),
-            'terms': forms.Select(attrs={'class': 'form-control', 'id': 'terms'}),
-            'remarks': forms.Select(attrs={'class': 'form-control', 'id': 'remarks'}),
-            'new_stock' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'new_stock'}),
-        }
+#         widgets = {
+#             'supplier': forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),
+#             'product': forms.Select(attrs={'class': 'form-control', 'id': 'product'}),
+#             'part': forms.Select(attrs={'class': 'form-control', 'id': 'part'}),        
+#             'quantity': forms.NumberInput(attrs={'class': 'form-control', 'id': 'quantity'}),
+#             'limit' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'limit'}),
+#             'is_ppc' : forms.Select(attrs={'class': 'form-control', 'id': 'is_ppc'}),
+#             'terms': forms.Select(attrs={'class': 'form-control', 'id': 'terms'}),
+#             'remarks': forms.Select(attrs={'class': 'form-control', 'id': 'remarks'}),
+#             'new_stock' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'new_stock'}),
+#         }
 
 class PartForm(forms.ModelForm):
     class Meta:
