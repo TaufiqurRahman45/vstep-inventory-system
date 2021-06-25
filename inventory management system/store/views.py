@@ -23,6 +23,7 @@ from .filters import DIFilter
 from .filters import DOFilter
 from .filters import POFilter
 
+
 from users.models import User
 from .models import (
     Supplier,
@@ -300,10 +301,6 @@ def generate_pdf_part(request):
 
     return response
 
-
-
-
-
 @login_required(login_url='login')
 def generate_pdf_do(request):
     response = HttpResponse(content_type='application/pdf')
@@ -508,6 +505,8 @@ class ProductListView(ListView):
         context['product'] = Product.objects.all().order_by('-id')
         return context
 
+def random_string():
+    return str(random.randint(10000, 99999))
 
 # Order views
 @login_required(login_url='login')
@@ -520,37 +519,30 @@ def create_order(request):
     if request.method == 'POST':
         forms = OrderForm(request.POST)
         if forms.is_valid():
+            po_id = forms.cleaned_data['po_id']
             supplier = forms.cleaned_data['supplier']
             product = forms.cleaned_data['product']
             part = forms.cleaned_data['part']
-            style = forms.cleaned_data['style']
             quantity = forms.cleaned_data['quantity']
-            standard = forms.cleaned_data['standard']
             limit = forms.cleaned_data['limit']
             is_ppc = forms.cleaned_data['is_ppc']
-            tax = forms.cleaned_data['tax']
-            price = forms.cleaned_data['price']
-            unit = forms.cleaned_data['unit']
             new_stock = forms.cleaned_data['new_stock']
 
 
             order = Order.objects.create(
+                po_id=po_id,
                 supplier=supplier,
                 product=product,
                 part=part,
-                style=style,
-                standard=standard,
                 quantity=quantity,
                 limit=limit,
                 is_ppc=is_ppc,
-                tax=tax,
-                price=price,
-                unit=unit,
                 terms=30,
                 remarks='Follow DI',
                 new_stock=new_stock,
 
             )
+            forms.save()
             create_log(request, order)
             return redirect('order-list')
     context = {
