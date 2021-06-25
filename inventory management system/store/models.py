@@ -6,6 +6,8 @@ from users.models import User
 
 import datetime
 
+import random
+
 class Supplier(models.Model):
     name = models.CharField(max_length=120, unique=True)
     address = models.CharField(max_length=220)
@@ -43,6 +45,11 @@ class Part(models.Model):
     def __str__(self):
         return self.partname
 
+
+def random_string():
+
+    return str(random.randint(1000, 9999))
+
 class Order(models.Model):
     terms = (
         ('30', '30'),
@@ -54,20 +61,16 @@ class Order(models.Model):
         ('follow di', 'Follow DI'),
         ('follow agent', 'Follow Agent'),
     )
+    po_id = models.CharField(max_length=4, default = random_string)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     part = models.ForeignKey(Part, on_delete=models.CASCADE)
     terms = models.CharField(max_length=10, choices=terms)
     remarks = models.CharField(max_length=20, choices=remarks)
-    style = models.CharField(max_length=50, blank= True)
-    standard = models.PositiveIntegerField(default= 0)
     quantity = models.PositiveIntegerField(default= 0)
     limit = models.PositiveIntegerField(default= 0)
-    tax = models.PositiveIntegerField(default= 0)
-    price = models.DecimalField(default= 0,max_digits=5, decimal_places=2)
     created_date = models.DateField(auto_now_add=True)
     is_ppc = models.ForeignKey(User, on_delete=models.CASCADE, null=True,)
-    unit = models.PositiveIntegerField(default=0, blank=True, null=True)
     new_stock = models.PositiveIntegerField(default=0, blank=True, null=True)
 
     @property

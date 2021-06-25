@@ -42,6 +42,16 @@
                     <div class="card-body">
                         <form action="#" method="post" novalidate="novalidate">
                             {% csrf_token %}
+
+                            <div class="form-group">
+                                <label for="supplier" class="control-label mb-1">Supplier</label>
+                                {{ form.supplier }}
+                            </div>
+
+                            <div class="form-group">
+                                <label for="part" class="control-label mb-1">Part</label>
+                                {{ form.order }}
+                            </div>
                             
                             <div class="form-group">
                                 <label for="variant" class="control-label mb-1">Variant</label>
@@ -51,17 +61,7 @@
                             <div class="form-group">
                                 <label for="usage" class="control-label mb-1">Usage</label>
                                 {{ form.usage }}
-                            </div>
-
-                            <div class="form-group">
-                                <label for="part" class="control-label mb-1">Part</label>
-                                {{ form.order }}
-                            </div>
-
-                            <div class="form-group">
-                                <label for="supplier" class="control-label mb-1">Supplier</label>
-                                {{ form.supplier }}
-                            </div>
+                            </div>  
 
                             <div class="form-group">
                                 <label for="dimersion" class="control-label mb-1">DIMENSION PACKAGING L x W x H (cm)</label>

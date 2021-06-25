@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.admin.models import LogEntry
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from django.views.generic import ListView
+from django.views.generic import ListView,TemplateView
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from datetime import datetime, timedelta, date
@@ -22,6 +22,7 @@ from .filters import PartFilter
 from .filters import DIFilter
 from .filters import DOFilter
 from .filters import POFilter
+from django.urls import reverse_lazy
 
 from users.models import User
 from .models import (
@@ -203,7 +204,7 @@ def generate_pdf(request):
         elif tr.quantity > tr.limit:
             status = 'Available'
         table_row = [str(tr.created_date.strftime("%d-%m-%Y")), tr.part.partno,
-                     tr.style, tr.standard, tr.quantity, tr.is_ppc, status]
+                      tr.quantity, tr.is_ppc, status]
         table_data.append(table_row)
 
     table = Table(table_data, repeatRows=1, colWidths=[doc.width / 7.0] * 7)
@@ -299,10 +300,6 @@ def generate_pdf_part(request):
     response.write(pdf)
 
     return response
-
-
-
-
 
 @login_required(login_url='login')
 def generate_pdf_do(request):
@@ -508,55 +505,73 @@ class ProductListView(ListView):
         context['product'] = Product.objects.all().order_by('-id')
         return context
 
+def random_string():
+    return str(random.randint(10000, 99999))
 
 # Order views
-@login_required(login_url='login')
-def create_order(request):
-    from django import forms
-    form = OrderForm()
-    form.fields['is_ppc'].queryset = User.objects.filter(is_ppc=True)
-    form.fields['new_stock'].widget = forms.HiddenInput()
+# @login_required(login_url='login')
+# def create_order(request):
+#     from django import forms
+#     form = OrderForm()
+#     form.fields['is_ppc'].queryset = User.objects.filter(is_ppc=True)
+#     form.fields['new_stock'].widget = forms.HiddenInput()
 
-    if request.method == 'POST':
-        forms = OrderForm(request.POST)
-        if forms.is_valid():
-            supplier = forms.cleaned_data['supplier']
-            product = forms.cleaned_data['product']
-            part = forms.cleaned_data['part']
-            style = forms.cleaned_data['style']
-            quantity = forms.cleaned_data['quantity']
-            standard = forms.cleaned_data['standard']
-            limit = forms.cleaned_data['limit']
-            is_ppc = forms.cleaned_data['is_ppc']
-            tax = forms.cleaned_data['tax']
-            price = forms.cleaned_data['price']
-            unit = forms.cleaned_data['unit']
-            new_stock = forms.cleaned_data['new_stock']
+#     if request.method == 'POST':
+#         forms = OrderForm(request.POST)
+#         if forms.is_valid():
+#             po_id = forms.cleaned_data['po_id']
+#             supplier = forms.cleaned_data['supplier']
+#             product = forms.cleaned_data['product']
+#             part = forms.cleaned_data['part']
+#             quantity = forms.cleaned_data['quantity']
+#             limit = forms.cleaned_data['limit']
+#             is_ppc = forms.cleaned_data['is_ppc']
+#             new_stock = forms.cleaned_data['new_stock']
 
 
-            order = Order.objects.create(
-                supplier=supplier,
-                product=product,
-                part=part,
-                style=style,
-                standard=standard,
-                quantity=quantity,
-                limit=limit,
-                is_ppc=is_ppc,
-                tax=tax,
-                price=price,
-                unit=unit,
-                terms=30,
-                remarks='Follow DI',
-                new_stock=new_stock,
+#             order = Order.objects.create(
+#                 po_id=po_id,
+#                 supplier=supplier,
+#                 product=product,
+#                 part=part,
+#                 quantity=quantity,
+#                 limit=limit,
+#                 is_ppc=is_ppc,
+#                 terms=30,
+#                 remarks='Follow DI',
+#                 new_stock=new_stock,
 
-            )
-            create_log(request, order)
-            return redirect('order-list')
-    context = {
-        'form': form
-    }
-    return render(request, 'store/addOrder.html', context)
+#             )
+#             forms.save()
+#             create_log(request, order)
+#             return redirect('order-list')
+#     context = {
+#         'form': form
+#     }
+#     return render(request, 'store/addOrder.html', context)
+
+class create_order(TemplateView):
+    template_name = "store/addOrder.html"
+
+    def get(self, *args, **kwargs):
+        from django import forms
+        form = OrderForm()
+        
+        formset = OrderForm(queryset=Order.objects.none())
+        for form in formset:
+            form.fields['is_ppc'].queryset = User.objects.filter(is_ppc=True)
+            form.fields['new_stock'].widget = forms.HiddenInput()
+        return self.render_to_response({'order_formset': formset})
+
+    def post(self, *args, **kwargs):
+
+        formset = OrderForm(data=self.request.POST)
+
+        # Check if submitted forms are valid
+        if formset.is_valid():
+            formset.save()
+            return redirect(reverse_lazy("order-list"))
+        return self.render_to_response({'order_formset': formset})
 
 
 class OrderListView(ListView):
@@ -821,7 +836,7 @@ def update_Order(request):
 def updateOrder(request, pk):
     action = 'update'
     order = Order.objects.get(id=pk)
-    form = OrderForm(instance=order, initial={'new_stock': 0})
+    form = OrderForm()
 
     if request.method == 'POST':
         form = OrderForm(request.POST, instance=order)
@@ -848,7 +863,8 @@ def updateOrder(request, pk):
                 msg.send(fail_silently=True)
             create_log(request, order)
             return redirect('order-list')
-
+        else:
+            form = OrderForm()
     context = {'action': action, 'form': form}
     return render(request, 'store/update_order.html', context)
 

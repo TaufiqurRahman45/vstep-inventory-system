@@ -26,7 +26,7 @@
                     <table class="table table-striped ">
                         <thead>
                             <tr>
-                                <th class="serial">#</th>
+                                <th>ID</th>
                                 <th>Part No</th>
                                 <th>Part Name</th>
                                 <th>Style</th>
@@ -46,15 +46,15 @@
                             {% if order %}
                             {% for order in order %}
                             <tr>
-                                <td class="serial">{{ forloop.counter }}</td>
+                                <td>{{ order.po_id}}</td>
                                 <td>{{ order.part.partno}}</td>
-                                <td>{{ order.part.partname }}</td>
-                                <td>{{ order.style }}</td>
-                                <td>{{ order.standard }}</td>
-                                <td>{{ order.unit }}</td>
+                                <td>{{ order.part.partname}}</td>
+                                <td>{{ order.part.stylepack }}</td>
+                                <td>{{ order.part.standardpack }}</td>
+                                <td>{{ order.part.unit }}</td>
                                 <td>{{ order.quantity }}</td>
-                                <td>{{ order.tax }}%</td>
-                                <td>{{ order.price }}</td>
+                                <td>{{ order.part.tax }}%</td>
+                                <td>{{ order.part.price }}</td>
                                 <td>{{ order.amount }}</td>
                                 <td>{{ order.is_ppc}}</td>
                                 <td>{{ order.created_date }}</td>
