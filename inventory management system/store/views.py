@@ -517,39 +517,64 @@ def create_order(request):
     form.fields['new_stock'].widget = forms.HiddenInput()
 
     if request.method == 'POST':
-        forms = OrderForm(request.POST)
-        if forms.is_valid():
-            po_id = forms.cleaned_data['po_id']
-            supplier = forms.cleaned_data['supplier']
-            product = forms.cleaned_data['product']
-            part = forms.cleaned_data['part']
-            quantity = forms.cleaned_data['quantity']
-            limit = forms.cleaned_data['limit']
-            is_ppc = forms.cleaned_data['is_ppc']
-            new_stock = forms.cleaned_data['new_stock']
+        a = []
+        max_l = 0
+        for k, v in dict(request.POST.lists()).items():
+            if type(v) == list:
+                max_l = max(max_l, len(v))
+                a.append([(k, x) for x in v])
+            else:
+                a.append((k, v))
 
+        forms_data = [dict() for _ in range(max_l)]
+        for e in a:
+            if len(e) == 1:
+                k, v = e[0]
+                for d in forms_data:
+                    d[k] = v
+            else:
+                assert len(e) == max_l
+                for d, ee in zip(forms_data, e):
+                    k, v = ee
+                    d[k] = v
 
-            order = Order.objects.create(
-                po_id=po_id,
-                supplier=supplier,
-                product=product,
-                part=part,
-                quantity=quantity,
-                limit=limit,
-                is_ppc=is_ppc,
-                terms=30,
-                remarks='Follow DI',
-                new_stock=new_stock,
+        for form_data in forms_data:
+            forms = OrderForm(form_data)
+            if forms.is_valid():
+                po_id = forms.cleaned_data['po_id']
+                supplier = forms.cleaned_data['supplier']
+                product = forms.cleaned_data['product']
+                part = forms.cleaned_data['part']
+                quantity = forms.cleaned_data['quantity']
+                limit = forms.cleaned_data['limit']
+                is_ppc = forms.cleaned_data['is_ppc']
+                new_stock = forms.cleaned_data['new_stock']
 
-            )
-            forms.save()
-            create_log(request, order)
-            return redirect('order-list')
+                order = Order.objects.create(
+                    po_id=po_id,
+                    supplier=supplier,
+                    product=product,
+                    part=part,
+                    quantity=quantity,
+                    limit=limit,
+                    is_ppc=is_ppc,
+                    terms=30,
+                    remarks='Follow DI',
+                    new_stock=new_stock,
+                )
+
+                create_log(request, order)
+        return redirect('order-list')
     context = {
         'form': form
     }
     return render(request, 'store/addOrder.html', context)
 
+# Dependent/Chained Dropdown
+def load_parts(request):
+    supplier_id = request.GET.get('supplier')
+    parts = Part.objects.filter(supplier_id=supplier_id).order_by('partname')
+    return render(request, 'store/part_dropdown_list_options.html', {'parts': parts})
 
 class OrderListView(ListView):
     model = Order
