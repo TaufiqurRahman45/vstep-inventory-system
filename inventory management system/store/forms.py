@@ -64,6 +64,7 @@ class OrderForm(forms.ModelForm):
         fields = ['supplier', 'product', 'part', 'quantity', 'limit', 'is_ppc', 'terms', 'remarks', 'new_stock', 'po_id']
 
         widgets = {
+            'po_id': forms.NumberInput(attrs={'class': 'form-control', 'id': 'po_id', 'readonly':'readonly'}),
             'supplier': forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),
             'product': forms.Select(attrs={'class': 'form-control', 'id': 'product'}),
             'part': forms.Select(attrs={'class': 'form-control', 'id': 'part'}),        

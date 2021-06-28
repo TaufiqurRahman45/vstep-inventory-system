@@ -11,11 +11,12 @@ from datetime import datetime, timedelta, date
 from reportlab.pdfgen import canvas
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_LEFT, TA_RIGHT, TA_CENTER
-from reportlab.lib.pagesizes import letter
+from reportlab.lib.pagesizes import letter,A4
 from reportlab.lib.pagesizes import landscape
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Spacer, Table, TableStyle
 from reportlab.platypus.para import Paragraph
+from reportlab.lib.units import mm, inch
 from six import BytesIO
 from utils.user_log import create_log
 from .filters import PartFilter
@@ -50,18 +51,18 @@ def generate_pdf(request):
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="Purcahse Order.pdf"'+ today.strftime('%Y-%m-%d')
     pdf_buffer = BytesIO()
-    doc = SimpleDocTemplate(pdf_buffer, pagesize=landscape(letter))
+    pagesize = (15 * inch, 10 * inch)
+    doc = SimpleDocTemplate(pdf_buffer, pagesize=pagesize)
     doc.title = "Purcashe Order.pdf"
     styles = getSampleStyleSheet()
-    styles.add(ParagraphStyle(name='small_text', alignment=TA_LEFT, fontName='Helvetica', borderPadding=6,
-                              leading=14, fontSize=10))
+    styles.add(ParagraphStyle(name='small_text', alignment=TA_LEFT, fontName='Times-Roman', borderPadding=6,
+                              leading=16, fontSize=13))
     styles.add(ParagraphStyle(name='right_small_text', alignment=TA_RIGHT, fontName='Helvetica', borderPadding=6,
-                              leading=14, fontSize=10))
+                              leading=14, fontSize=12))
     styles.add(ParagraphStyle(name='large_text', leading=14, fontSize=15, spaceAfter = 12, spaceBefore = 10))
     styles.add(ParagraphStyle(name='center_text', alignment=TA_CENTER, leading=14, fontSize=20))
     styles.add(ParagraphStyle(name='footer_text', leading=14, fontSize=6))
     elements = []
-
     elements.append(Paragraph('Inovice Number: PO {}'.format("A"+ str(random.randint(1000, 2000))), styles["right_small_text"]))
 
     elements.append(Paragraph('Purchase Order', styles["right_small_text"]))
@@ -83,7 +84,7 @@ def generate_pdf(request):
     paragraph_text = 'SST No.: B16-1808-21004655'
 
     elements.append(Paragraph(paragraph_text, styles["small_text"]))
-    paragraph_text = 'Supplier'
+    paragraph_text = u"<b>Supplier: </b>"
     elements.append(Paragraph(paragraph_text, styles["large_text"]))
 
     table_data = []
@@ -136,6 +137,7 @@ def generate_pdf(request):
     table_data.append(table_phn)
 
     table = Table(table_data, repeatRows=0,  colWidths=None)
+    
     table.hAlign = "LEFT"
     
     elements.append(table)
@@ -162,7 +164,7 @@ def generate_pdf(request):
 
     table_sec = set()
     for tr in orders:
-        table_sec=[str(tr.product), tr.terms, tr.remarks]
+        table_sec=[str(tr.terms), tr.product, tr.remarks]
     table_data.append(table_sec)
     table = Table(table_data, repeatRows=1, colWidths=[doc.width / 7.0] * 7)
     table.setStyle(TableStyle([
@@ -179,46 +181,47 @@ def generate_pdf(request):
 #end prod
 
     columns = [
-        {'title': 'Date', 'field': 'created_date'},
         {'title': 'Part No', 'field': 'partno'},
-        {'title': 'Style Packaging', 'field': 'style'},
-        {'title': 'Standard', 'field': 'standard'},
+        {'title': 'Part Name', 'field': 'partname'},
+        {'title': 'Style P', 'field': 'style'},
+        {'title': 'Standard P', 'field': 'standardpack'},
+        {'title': 'Unit Per Car', 'field': 'unit'},
         {'title': 'Quantity PCS', 'field': 'quantity'},
-        {'title': 'PIC', 'field': 'is_ppc'},
-        {'title': 'Status', 'field': 'limit'},
+        {'title': 'Tax', 'field': 'tax'},
+        {'title': 'Unit Price', 'field': 'price'},
+        {'title': 'Amount', 'field': 'amount'},
     ]
 
     table_data = [[col['title'] for col in columns]]
-
+    table_data1 = []
     orders = Order.objects.all()
-    supplier = request.GET.get('supplier')
-    product = request.GET.get('product')
-    if supplier:
-        orders = orders.filter(supplier_id=supplier)
-    if product:
-        orders = orders.filter(product_id=product)
+    
+    amount = 0
     for tr in orders:
-        status = ''
-        if tr.quantity <= tr.limit:
-            status = 'Reorder'
-        elif tr.quantity > tr.limit:
-            status = 'Available'
-        table_row = [str(tr.created_date.strftime("%d-%m-%Y")), tr.part.partno,
-                     tr.style, tr.standard, tr.quantity, tr.is_ppc, status]
+        table_row = [str(tr.part.partno),tr.part.partname,
+                    tr.part.stylepack, tr.part.standardpack,tr.part.unit, tr.quantity, tr.part.tax, tr.part.price, tr.amount]      
         table_data.append(table_row)
 
-    table = Table(table_data, repeatRows=1, colWidths=[doc.width / 7.0] * 7)
+        amount += tr.amount
+    table_data1.append(['','','','','','','', 'GRAND TOTAL (RM)','', amount])
+    
+    table = Table(table_data, colWidths=[1.5*inch,4.5*inch,1*inch,1*inch, 1.5*inch,1.5*inch, 0.8*inch])
     table.setStyle(TableStyle([
         ('BOX', (0, 0), (-1, -1), 0.20, colors.dimgrey),
         ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('INNERGRID', (0, 0), (-1, -1), 0.1, colors.black),
-        # ('SIZE', (0, 0), (-1, -1), 6.5),
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('FONTSIZE', (0, 0), (-1, -1), 10),
-        # ('SPAN', (0, 0), (3, 0))
+        ('FONTSIZE', (0, 0), (-1, -1), 12),
     ]))
     elements.append(table)
 
+    table1 = Table(table_data1, colWidths=[1.4*inch])
+    table1.setStyle(TableStyle([
+        ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+    ]))
+    elements.append(table1)
     elements.append(Spacer(1, 50))
 
     
@@ -351,10 +354,8 @@ def generate_pdf_do(request):
         ('BOX', (0, 0), (-1, -1), 0.20, colors.dimgrey),
         ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('INNERGRID', (0, 0), (-1, -1), 0.1, colors.black),
-        # ('SIZE', (0, 0), (-1, -1), 6.5),
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
         ('FONTSIZE', (0, 0), (-1, -1), 10),
-        # ('SPAN', (0, 0), (3, 0))
     ]))
     elements.append(table)
 
