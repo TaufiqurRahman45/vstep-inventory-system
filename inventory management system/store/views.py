@@ -450,13 +450,52 @@ def generate_pdf_di(request):
     ]
     table_data = [[col['title'] for col in columns]]
     din = DeliveryIns.objects.all()
+
+    supplier = request.GET.get('supplier')
+    product = request.GET.get('product')
+    if supplier:
+        din = din.filter(supplier_id=supplier)
+    if product:
+        din = din.filter(product_id=product)
     
     for tr in din:
         table_row = [str(tr.variant),tr.usage,
                     tr.order.part.partno, tr.order, tr.supplier, tr.dimension, tr.box]      
         table_data.append(table_row)
+
+    columns = [
+            
+            {'title': 'Model', 'field': 'product'},
+        ]
+
+    table_data1 = [[col['title'] for col in columns]]
+
+    orders = Order.objects.all()
+    supplier = request.GET.get('supplier')
+    product = request.GET.get('product')
+    if supplier:
+        orders = orders.filter(supplier_id=supplier)
+    if product:
+        orders = orders.filter(product_id=product)
+
+    table_sec = set()
+    for tr in orders:
+        table_sec=[str(tr.product)]
+    table_data1.append(table_sec)
+
+    table = Table(table_data1, repeatRows=1, colWidths=[doc.width / 7.0] * 7)
+    table.setStyle(TableStyle([
+        ('BOX', (0, 0), (-1, -1), 0.20, colors.dimgrey),
+        ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('INNERGRID', (0, 0), (-1, -1), 0.1, colors.black),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+    ]))
+    elements.append(table)
+
+    elements.append(Spacer(1, 50))
     
-    table = Table(table_data, colWidths=[1*inch,1*inch,1.5*inch,4.5*inch,1.5*inch,1.5*inch, 0.8*inch], spaceBefore=10)
+    table = Table(table_data, colWidths=[1*inch,0.7*inch,1.5*inch,4.5*inch,3*inch,1.5*inch, 0.8*inch], spaceBefore=10)
     table.setStyle(TableStyle([
         ('BOX', (0, 0), (-1, -1), 0.20, colors.dimgrey),
         ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold'),
@@ -759,6 +798,7 @@ def create_deliveryins(request):
         forms = DeliveryInsForm(request.POST)
         if forms.is_valid():
             variant = forms.cleaned_data['variant']
+            product = forms.cleaned_data['product']
             usage = forms.cleaned_data['usage']
             order = forms.cleaned_data['order']
             supplier = forms.cleaned_data['supplier']
@@ -769,6 +809,7 @@ def create_deliveryins(request):
             deliveryins = DeliveryIns.objects.create(
                 variant=variant,
                 usage=usage,
+                product=product,
                 order=order,
                 supplier=supplier,
                 dimension=dimension,
@@ -792,6 +833,8 @@ class DeliveryInsListView(ListView):
         queryset = self.model.objects.all().order_by('-id')
         if self.request.GET.get('supplier'):
             queryset = queryset.filter(supplier_id=self.request.GET.get('supplier'))
+        elif self.request.GET.get('product'):
+            queryset = queryset.filter(product_id=self.request.GET.get('product'))
         return queryset
 
     def get_context_data(self, **kwargs):

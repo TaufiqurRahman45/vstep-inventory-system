@@ -18,7 +18,6 @@ from .views import (
     logs,
     generate_pdf,
     generate_pdf_part,
-    # generate_pdf_po,
     generate_pdf_do,
     generate_pdf_di,
     DeliveryInsListView,
