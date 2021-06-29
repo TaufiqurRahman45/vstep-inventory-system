@@ -108,6 +108,7 @@ class DeliveryIns(models.Model):
     )
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     dimension =  models.CharField(max_length=30)
     box = models.PositiveIntegerField(default= 0)  
     variant = models.CharField(max_length=20, choices=variant)

@@ -120,10 +120,11 @@ class DeliveryOrderForm(forms.ModelForm):
 class DeliveryInsForm(forms.ModelForm):
     class Meta:
         model = DeliveryIns
-        fields = ['variant','usage',  'supplier', 'dimension', 'box', 'remarks','order']
+        fields = ['variant','usage',  'supplier', 'dimension', 'box', 'remarks','order','product']
 
         widgets = {
             'order': forms.Select(attrs={'class': 'form-control', 'id': 'order'}),
+            'product': forms.Select(attrs={'class': 'form-control', 'id': 'product'}),
             'variant': forms.Select(attrs={'class': 'form-control', 'id': 'variant'}),
             'usage' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'usage'}),
             'supplier': forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),
