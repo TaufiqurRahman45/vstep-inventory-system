@@ -306,63 +306,94 @@ def generate_pdf_part(request):
 
 @login_required(login_url='login')
 def generate_pdf_do(request):
+    today = date.today()
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="DO List.pdf"'
+    response['Content-Disposition'] = 'attachment; filename="Delivery Order.pdf"'+ today.strftime('%Y-%m-%d')
     pdf_buffer = BytesIO()
-    doc = SimpleDocTemplate(pdf_buffer, pagesize=A4,
-                            rightMargin=48, leftMargin=48,
-                            topMargin=100, bottomMargin=120)
-    doc.title = "DO List.pdf"
+    pagesize = (15 * inch, 10 * inch)
+    doc = SimpleDocTemplate(pdf_buffer, pagesize=pagesize)
+    doc.title = "Delivery Order.pdf"
     styles = getSampleStyleSheet()
-    styles.add(ParagraphStyle(name='small_text', alignment=TA_LEFT, fontName='Helvetica', borderPadding=6,
-                              leading=14, fontSize=10))
+    styles.add(ParagraphStyle(name='small_text', alignment=TA_LEFT, fontName='Times-Roman', borderPadding=6,
+                              leading=16, fontSize=13))
     styles.add(ParagraphStyle(name='right_small_text', alignment=TA_RIGHT, fontName='Helvetica', borderPadding=6,
-                              leading=14, fontSize=10))
-    styles.add(ParagraphStyle(name='large_text', leading=14, fontSize=20))
+                              leading=14, fontSize=12))
+    styles.add(ParagraphStyle(name='large_text', leading=14, fontSize=15, spaceAfter = 12, spaceBefore = 10))
     styles.add(ParagraphStyle(name='center_text', alignment=TA_CENTER, leading=14, fontSize=20))
     styles.add(ParagraphStyle(name='footer_text', leading=14, fontSize=6))
-
     elements = []
-    paragraph_text = 'DO List'
+    elements.append(Paragraph('No: DO {}'.format(str(random.randint(1000, 2000))), styles["right_small_text"]))
+
+    elements.append(Paragraph('Delivery Order', styles["right_small_text"]))
+    elements.append(Paragraph('Date: {}'.format(str(datetime.now().date().strftime("%d-%m-%Y"))), styles["right_small_text"]))
+    paragraph_text = 'Victorious Step Sdn.Bhd. (667833-T)'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'No 5 Jalan Utarid U5/16,'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = '40150 Shah Alam'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'Selangor Darul Ehsan'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'Tel: 03-7847 1979 / 03-7734 0205 '
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'Fax: 03-77346310'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'Email: victorious.step@yahoo.com'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'SST No.: B16-1808-21004655'
+
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'To'
     elements.append(Paragraph(paragraph_text, styles["large_text"]))
-    elements.append(Spacer(1, 24))
+    paragraph_text = u"<b>PROTON TG MALIM SDN BHD  </b>"
+
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'JABATAN TRIM & FINAL'
+
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'MUKIM HULLU BERNAM TIMUR'
+
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'DAERAH MUALLIM'
+
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = '35950, TANJONG MALIM'
+
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'PERAK DARUL RIDZUAN'
+
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+
+    # table_data = []
 
     columns = [
-        {'title': 'Date', 'field': 'created_date'},
-        {'title': 'Quantity', 'field': 'do_quantity'},
+        {'title': 'Part No', 'field': 'partno'},
+        {'title': 'Part Name', 'field': 'partname'},
+        {'title': 'Quantity DO', 'field': 'do_quantity'},
+        {'title': 'Quantity PO', 'field': 'order'},
     ]
 
     table_data = [[col['title'] for col in columns]]
-
-    do_quantity = 0
-
-    deliveryorder = DeliveryOrder.objects.all()
-    supplier = request.GET.get('supplier')
-    if supplier:
-        deliveryorder = deliveryorder.filter(supplier_id=supplier)
-
-    for tr in deliveryorder:
-        table_row = [str(tr.created_date.strftime("%d-%m-%Y")),
-                     tr.do_quantity]
+    do = DeliveryOrder.objects.all()
+    
+    for tr in do:
+        table_row = [str(tr.order.part.partno),tr.order,
+                    tr.do_quantity, tr.order.quantity]      
         table_data.append(table_row)
-
-        do_quantity += tr.do_quantity
-    table_data.append(['', '', 'SUBTOTAL (RM)', "{:.2f}".format(do_quantity)])
-
-    table = Table(table_data, repeatRows=1, colWidths=[doc.width / 7.0] * 7)
+    
+    table = Table(table_data, colWidths=[1.5*inch,4.5*inch,1.5*inch,1.5*inch,], spaceBefore=10)
     table.setStyle(TableStyle([
         ('BOX', (0, 0), (-1, -1), 0.20, colors.dimgrey),
         ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('INNERGRID', (0, 0), (-1, -1), 0.1, colors.black),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTSIZE', (0, 0), (-1, -1), 12),
     ]))
     elements.append(table)
 
     elements.append(Spacer(1, 50))
 
     doc.build(elements)
-
     pdf = pdf_buffer.getvalue()
     pdf_buffer.close()
     response.write(pdf)
@@ -812,7 +843,7 @@ def updateDO(request, pk):
             o.quantity -= do_quantity  # deduct quantity
             o.save()
             do = form.save()
-            create_log(request, do, object_repr=do.order.part.partname,
+            create_log(request, do, object_repr=do.do_quantity,
                        change_message=f"do_quantity {previous_do} to {do.do_quantity}")
             return redirect('do-list')
 
