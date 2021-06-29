@@ -490,7 +490,7 @@ def create_supplier(request):
             phone = forms.cleaned_data['phone']
             supplier = Supplier.objects.create(name=name, email=email, address=address, address2=address2, address3=address3,
                                                postcode=postcode, phone=phone)
-            create_log(request, supplier)
+            # create_log(request, supplier)
         return redirect('supplier-list')
     context = {
         'form': forms
@@ -518,7 +518,7 @@ def create_product(request):
         forms = ProductForm(request.POST)
         if forms.is_valid():
             product = forms.save()
-            create_log(request, product)
+            # create_log(request, product)
             return redirect('product-list')
     context = {
         'form': forms
@@ -595,7 +595,7 @@ def create_order(request):
                     new_stock=new_stock,
                 )
 
-                create_log(request, order)
+                # create_log(request, order)
         return redirect('order-list')
     context = {
         'form': form
@@ -656,7 +656,7 @@ def create_part(request):
                 price=price,
                 tax=tax,
             )
-            create_log(request, part)
+            # create_log(request, part)
             return redirect('part-list')
     context = {
         'form': form
@@ -725,7 +725,7 @@ def create_deliveryorder(request):
             o.quantity -= do_quantity  # deduct quantity
             o.save()
             messages.success(request, "Delivery order created successfully")
-            create_log(request, deliveryorder)
+            # create_log(request, deliveryorder)
             return redirect('do-list')
     context = {
         'form': form
@@ -775,7 +775,7 @@ def create_deliveryins(request):
                 box=box,
                 remarks=remarks,
             )
-            create_log(request, deliveryins)
+            # create_log(request, deliveryins)
             return redirect('dins-list')
     context = {
         'form': form
@@ -804,12 +804,15 @@ class DeliveryInsListView(ListView):
 def updateDI(request, pk):
     action = 'update'
     deliveryins = DeliveryIns.objects.get(id=pk)
+    previous_dins = deliveryins.box
     form = DeliveryInsForm(instance=deliveryins)
 
     if request.method == 'POST':
         form = DeliveryInsForm(request.POST, instance=deliveryins)
         if form.is_valid():
-            form.save()
+            din = form.save()
+            create_log(request, din, object_repr=din.box,
+                       change_message=f"QTY {previous_dins} to {din.box} in Delivery Instructions")
             return redirect('dins-list')
 
     context = {'action': action, 'form': form}
