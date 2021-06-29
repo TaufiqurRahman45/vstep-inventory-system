@@ -33,7 +33,7 @@ from .models import (
     Part,
     DeliveryOrder,
     DeliveryIns,
-    EventManager
+    # EventManager
 )
 from .forms import (
     SupplierForm,
@@ -402,72 +402,72 @@ def generate_pdf_do(request):
 
 @login_required(login_url='login')
 def generate_pdf_di(request):
+    today = date.today()
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="Delivery Instruction.pdf"'
+    response['Content-Disposition'] = 'attachment; filename="Delivery Instructions.pdf"'+ today.strftime('%Y-%m-%d')
     pdf_buffer = BytesIO()
-    doc = SimpleDocTemplate(pdf_buffer, pagesize=A4,
-                            rightMargin=48, leftMargin=48,
-                            topMargin=100, bottomMargin=120)
-    doc.title = "Delivery Instruction.pdf"
+    pagesize = (15 * inch, 10 * inch)
+    doc = SimpleDocTemplate(pdf_buffer, pagesize=pagesize)
+    doc.title = "Delivery Instructions.pdf"
     styles = getSampleStyleSheet()
-    styles.add(ParagraphStyle(name='small_text', alignment=TA_LEFT, fontName='Helvetica', borderPadding=6,
-                              leading=14, fontSize=10))
+    styles.add(ParagraphStyle(name='small_text', alignment=TA_LEFT, fontName='Times-Roman', borderPadding=6,
+                              leading=16, fontSize=13))
     styles.add(ParagraphStyle(name='right_small_text', alignment=TA_RIGHT, fontName='Helvetica', borderPadding=6,
-                              leading=14, fontSize=10))
-    styles.add(ParagraphStyle(name='large_text', leading=14, fontSize=20))
+                              leading=14, fontSize=12))
+    styles.add(ParagraphStyle(name='large_text', leading=14, fontSize=15, spaceAfter = 12, spaceBefore = 10))
     styles.add(ParagraphStyle(name='center_text', alignment=TA_CENTER, leading=14, fontSize=20))
     styles.add(ParagraphStyle(name='footer_text', leading=14, fontSize=6))
-
     elements = []
-    paragraph_text = 'Delivery Instruction'
-    elements.append(Paragraph(paragraph_text, styles["large_text"]))
-    elements.append(Spacer(1, 24))
+    elements.append(Paragraph('Number: DI {}'.format(str(random.randint(1000, 2000))), styles["right_small_text"]))
+
+    elements.append(Paragraph('Delivery Instructions', styles["right_small_text"]))
+    elements.append(Paragraph('Date: {}'.format(str(datetime.now().date().strftime("%d-%m-%Y"))), styles["right_small_text"]))
+    paragraph_text = 'Victorious Step Sdn.Bhd. (667833-T)'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'No 5 Jalan Utarid U5/16,'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = '40150 Shah Alam'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'Selangor Darul Ehsan'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'Tel: 03-7847 1979 / 03-7734 0205 '
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'Fax: 03-77346310'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'Email: victorious.step@yahoo.com'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'SST No.: B16-1808-21004655'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
 
     columns = [
-        {'title': 'Date', 'field': 'created_date'},
         {'title': 'Variant', 'field': 'variant'},
         {'title': 'Usage', 'field': 'usage'},
-        {'title': 'Part', 'field': 'part'},
+        {'title': 'Part No', 'field': 'partno'},
+        {'title': 'Part Name', 'field': 'order'},
         {'title': 'Supplier', 'field': 'supplier'},
-        {'title': 'Dimension', 'field': 'dimension'},
-        {'title': 'Box/Qty', 'field': 'box'},
-        {'title': 'Remarks', 'field': 'remarks'},
-        
+        {'title': 'Dimension P', 'field': 'dimension'},
+        {'title': 'QTY/BOX', 'field': 'box'},
     ]
-
     table_data = [[col['title'] for col in columns]]
-
-    box = 0
-
-    deliveryins = DeliveryIns.objects.all()
-    supplier = request.GET.get('supplier')
-    if supplier:
-        deliveryins = deliveryins.filter(supplier_id=supplier)
-
-    for tr in deliveryins:
-        table_row = [str(tr.created_date.strftime("%d-%m-%Y")),
-                     tr.variant, tr.usage, tr.order.part.partno, tr.supplier, tr.dimension, tr.box, tr.remarks] 
+    din = DeliveryIns.objects.all()
+    
+    for tr in din:
+        table_row = [str(tr.variant),tr.usage,
+                    tr.order.part.partno, tr.order, tr.supplier, tr.dimension, tr.box]      
         table_data.append(table_row)
-
-        box += tr.box
-    table_data.append(['', '', 'SUBTOTAL (RM)', "{:.2f}".format(box)])
-
-    table = Table(table_data, repeatRows=1, colWidths=[doc.width / 7.0] * 7)
+    
+    table = Table(table_data, colWidths=[1*inch,1*inch,1.5*inch,4.5*inch,1.5*inch,1.5*inch, 0.8*inch], spaceBefore=10)
     table.setStyle(TableStyle([
         ('BOX', (0, 0), (-1, -1), 0.20, colors.dimgrey),
         ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('INNERGRID', (0, 0), (-1, -1), 0.1, colors.black),
-        # ('SIZE', (0, 0), (-1, -1), 6.5),
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('FONTSIZE', (0, 0), (-1, -1), 10),
-        # ('SPAN', (0, 0), (3, 0))
+        ('FONTSIZE', (0, 0), (-1, -1), 12),
     ]))
     elements.append(table)
-
     elements.append(Spacer(1, 50))
 
     doc.build(elements)
-
     pdf = pdf_buffer.getvalue()
     pdf_buffer.close()
     response.write(pdf)
