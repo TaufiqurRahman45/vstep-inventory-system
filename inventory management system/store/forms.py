@@ -87,7 +87,7 @@ class OrderForm(forms.ModelForm):
                 except (ValueError, TypeError):
                     pass 
             elif self.instance.pk:
-                self.fields['part'].queryset = self.instance.supplier.supplier_set.order_by('partname')
+                self.fields['part'].queryset = self.instance.supplier.part_set.order_by('partname')
                 
 class PartForm(forms.ModelForm):
     class Meta:

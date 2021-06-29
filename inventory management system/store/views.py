@@ -745,27 +745,49 @@ def create_deliveryorder(request):
     form = DeliveryOrderForm()
 
     if request.method == 'POST':
-        forms = DeliveryOrderForm(request.POST)
-        if forms.is_valid():
-            supplier = forms.cleaned_data['supplier']
-            do_quantity = forms.cleaned_data['do_quantity']
-            order = forms.cleaned_data['order']
+        a = []
+        max_l = 0
+        for k, v in dict(request.POST.lists()).items():
+            if type(v) == list:
+                max_l = max(max_l, len(v))
+                a.append([(k, x) for x in v])
+            else:
+                a.append((k, v))
 
-            o = Order.objects.get(id=order.id)
-            if do_quantity > o.quantity:
-                messages.warning(request, "Quantity can't be greater than order quantity")
-                return redirect('do-list')
+        formq_data = [dict() for _ in range(max_l)]
+        for e in a:
+            if len(e) == 1:
+                k, v = e[0]
+                for d in formq_data:
+                    d[k] = v
+            else:
+                assert len(e) == max_l
+                for d, ee in zip(formq_data, e):
+                    k, v = ee
+                    d[k] = v
 
-            deliveryorder = DeliveryOrder.objects.create(
-                supplier=supplier,
-                do_quantity=do_quantity,
-                order=order,
-            )
-            o.quantity -= do_quantity  # deduct quantity
-            o.save()
-            messages.success(request, "Delivery order created successfully")
-            # create_log(request, deliveryorder)
-            return redirect('do-list')
+        for form1_data in formq_data:
+            forms = DeliveryOrderForm(form1_data)
+            if forms.is_valid():
+                supplier = forms.cleaned_data['supplier']
+                do_quantity = forms.cleaned_data['do_quantity']
+                order = forms.cleaned_data['order']
+
+                o = Order.objects.get(id=order.id)
+                if do_quantity > o.quantity:
+                    messages.warning(request, "Quantity can't be greater than order quantity")
+                    return redirect('do-list')
+
+                deliveryorder = DeliveryOrder.objects.create(
+                    supplier=supplier,
+                    do_quantity=do_quantity,
+                    order=order,
+                )
+                o.quantity -= do_quantity  # deduct quantity
+                o.save()
+                # messages.success(request, "Delivery order created successfully")
+                # create_log(request, deliveryorder)
+        return redirect('do-list')
     context = {
         'form': form
     }
