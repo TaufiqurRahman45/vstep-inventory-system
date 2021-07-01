@@ -194,8 +194,14 @@ def generate_pdf(request):
 
     table_data = [[col['title'] for col in columns]]
     table_data1 = []
+    # orders = Order.objects.all()
     orders = Order.objects.all()
-    
+    supplier = request.GET.get('supplier')
+    product = request.GET.get('product')
+    if supplier:
+        orders = orders.filter(supplier_id=supplier)
+    if product:
+        orders = orders.filter(product_id=product)
     amount = 0
     for tr in orders:
         table_row = [str(tr.part.partno),tr.part.partname,
@@ -962,7 +968,7 @@ class DeliveryInsListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['filter'] = DIFilter(self.request.GET, queryset=self.get_queryset())
-        DeliveryIns._base_manager.filter(created_date__lt=timezone.now() - timezone.timedelta(days=1)).delete()
+        DeliveryIns._base_manager.filter(created_date__lt=timezone.now() - timezone.timedelta(days=7)).delete()
         return context
 
 @login_required(login_url="/login")
