@@ -106,7 +106,7 @@ class DeliveryIns(models.Model):
         ('STD/EXEC', 'STD/EXEC'),
         ('EXEC/PREM', 'EXEC/PREM'),
     )
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    part = models.ForeignKey(Part, on_delete=models.CASCADE)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     dimension =  models.CharField(max_length=30)
