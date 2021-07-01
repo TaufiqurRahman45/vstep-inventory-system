@@ -51,36 +51,45 @@ class SupplierForm(forms.Form):
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'sortno']
+        fields = ['name']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'id': 'name'}),
-            'sortno': forms.NumberInput(attrs={'class': 'form-control', 'id': 'sortno'})
         }
 
-OrderForm = modelformset_factory(
-        Order, 
-        fields=('supplier', 'product', 'part', 'quantity', 'limit', 'is_ppc', 'terms', 'remarks', 'new_stock', 'po_id'), 
-        extra=1, 
-        
-)
 
-#  class OrderForm(forms.ModelForm):
-#      class Meta:
-#          model = Order
-#          fields = ['supplier', 'product', 'part', 'quantity', 'limit', 'is_ppc', 'terms', 'remarks', 'new_stock', 'po_id']
+ class OrderForm(forms.ModelForm):
+     class Meta:
+         model = Order
+         fields = ['supplier', 'product', 'part', 'quantity', 'limit', 'is_ppc', 'terms', 'remarks', 'new_stock', 'po_id']
 
-#         widgets = {
-#             'supplier': forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),
-#             'product': forms.Select(attrs={'class': 'form-control', 'id': 'product'}),
-#             'part': forms.Select(attrs={'class': 'form-control', 'id': 'part'}),        
-#             'quantity': forms.NumberInput(attrs={'class': 'form-control', 'id': 'quantity'}),
-#             'limit' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'limit'}),
-#             'is_ppc' : forms.Select(attrs={'class': 'form-control', 'id': 'is_ppc'}),
-#             'terms': forms.Select(attrs={'class': 'form-control', 'id': 'terms'}),
-#             'remarks': forms.Select(attrs={'class': 'form-control', 'id': 'remarks'}),
-#             'new_stock' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'new_stock'}),
-#         }
 
+        widgets = {
+            'po_id': forms.NumberInput(attrs={'class': 'form-control', 'id': 'po_id', 'readonly':'readonly'}),
+            'supplier': forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),
+            'product': forms.Select(attrs={'class': 'form-control', 'id': 'product'}),
+            'part': forms.Select(attrs={'class': 'form-control', 'id': 'part'}),        
+            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'id': 'quantity'}),
+            'limit' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'limit'}),
+            'is_ppc' : forms.Select(attrs={'class': 'form-control', 'id': 'is_ppc'}),
+            'terms': forms.Select(attrs={'class': 'form-control', 'id': 'terms'}),
+            'remarks': forms.Select(attrs={'class': 'form-control', 'id': 'remarks'}),
+            'new_stock' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'new_stock'}),
+        }
+
+
+    def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.fields['part'].queryset = Part.objects.none()
+
+            if 'supplier' in self.data:
+                try:
+                    supplier_id = int(self.data.get('supplier'))
+                    self.fields['part'].queryset = Part.objects.filter(supplier_id=supplier_id).order_by('partname')
+                except (ValueError, TypeError):
+                    pass 
+            elif self.instance.pk:
+                self.fields['part'].queryset = self.instance.supplier.part_set.order_by('partname')
+                
 class PartForm(forms.ModelForm):
     class Meta:
         model = Part
@@ -112,10 +121,11 @@ class DeliveryOrderForm(forms.ModelForm):
 class DeliveryInsForm(forms.ModelForm):
     class Meta:
         model = DeliveryIns
-        fields = ['variant','usage',  'supplier', 'dimension', 'box', 'remarks','order']
+        fields = ['variant','usage',  'supplier', 'dimension', 'box', 'remarks','part','product']
 
         widgets = {
-            'order': forms.Select(attrs={'class': 'form-control', 'id': 'order'}),
+            'part': forms.Select(attrs={'class': 'form-control', 'id': 'part'}),
+            'product': forms.Select(attrs={'class': 'form-control', 'id': 'product'}),
             'variant': forms.Select(attrs={'class': 'form-control', 'id': 'variant'}),
             'usage' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'usage'}),
             'supplier': forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),

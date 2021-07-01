@@ -11,11 +11,12 @@ from datetime import datetime, timedelta, date
 from reportlab.pdfgen import canvas
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_LEFT, TA_RIGHT, TA_CENTER
-from reportlab.lib.pagesizes import letter
+from reportlab.lib.pagesizes import letter,A4
 from reportlab.lib.pagesizes import landscape
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Spacer, Table, TableStyle
 from reportlab.platypus.para import Paragraph
+from reportlab.lib.units import mm, inch
 from six import BytesIO
 from utils.user_log import create_log
 from .filters import PartFilter
@@ -32,7 +33,7 @@ from .models import (
     Part,
     DeliveryOrder,
     DeliveryIns,
-    EventManager
+    # EventManager
 )
 from .forms import (
     SupplierForm,
@@ -50,18 +51,18 @@ def generate_pdf(request):
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="Purcahse Order.pdf"'+ today.strftime('%Y-%m-%d')
     pdf_buffer = BytesIO()
-    doc = SimpleDocTemplate(pdf_buffer, pagesize=landscape(letter))
+    pagesize = (15 * inch, 10 * inch)
+    doc = SimpleDocTemplate(pdf_buffer, pagesize=pagesize)
     doc.title = "Purcashe Order.pdf"
     styles = getSampleStyleSheet()
-    styles.add(ParagraphStyle(name='small_text', alignment=TA_LEFT, fontName='Helvetica', borderPadding=6,
-                              leading=14, fontSize=10))
+    styles.add(ParagraphStyle(name='small_text', alignment=TA_LEFT, fontName='Times-Roman', borderPadding=6,
+                              leading=16, fontSize=13))
     styles.add(ParagraphStyle(name='right_small_text', alignment=TA_RIGHT, fontName='Helvetica', borderPadding=6,
-                              leading=14, fontSize=10))
+                              leading=14, fontSize=12))
     styles.add(ParagraphStyle(name='large_text', leading=14, fontSize=15, spaceAfter = 12, spaceBefore = 10))
     styles.add(ParagraphStyle(name='center_text', alignment=TA_CENTER, leading=14, fontSize=20))
     styles.add(ParagraphStyle(name='footer_text', leading=14, fontSize=6))
     elements = []
-
     elements.append(Paragraph('Inovice Number: PO {}'.format("A"+ str(random.randint(1000, 2000))), styles["right_small_text"]))
 
     elements.append(Paragraph('Purchase Order', styles["right_small_text"]))
@@ -83,7 +84,7 @@ def generate_pdf(request):
     paragraph_text = 'SST No.: B16-1808-21004655'
 
     elements.append(Paragraph(paragraph_text, styles["small_text"]))
-    paragraph_text = 'Supplier'
+    paragraph_text = u"<b>Supplier: </b>"
     elements.append(Paragraph(paragraph_text, styles["large_text"]))
 
     table_data = []
@@ -136,6 +137,7 @@ def generate_pdf(request):
     table_data.append(table_phn)
 
     table = Table(table_data, repeatRows=0,  colWidths=None)
+    
     table.hAlign = "LEFT"
     
     elements.append(table)
@@ -162,7 +164,7 @@ def generate_pdf(request):
 
     table_sec = set()
     for tr in orders:
-        table_sec=[str(tr.product), tr.terms, tr.remarks]
+        table_sec=[str(tr.terms), tr.product, tr.remarks]
     table_data.append(table_sec)
     table = Table(table_data, repeatRows=1, colWidths=[doc.width / 7.0] * 7)
     table.setStyle(TableStyle([
@@ -179,46 +181,47 @@ def generate_pdf(request):
 #end prod
 
     columns = [
-        {'title': 'Date', 'field': 'created_date'},
         {'title': 'Part No', 'field': 'partno'},
-        {'title': 'Style Packaging', 'field': 'style'},
-        {'title': 'Standard', 'field': 'standard'},
+        {'title': 'Part Name', 'field': 'partname'},
+        {'title': 'Style P', 'field': 'style'},
+        {'title': 'Standard P', 'field': 'standardpack'},
+        {'title': 'Unit Per Car', 'field': 'unit'},
         {'title': 'Quantity PCS', 'field': 'quantity'},
-        {'title': 'PIC', 'field': 'is_ppc'},
-        {'title': 'Status', 'field': 'limit'},
+        {'title': 'Tax', 'field': 'tax'},
+        {'title': 'Unit Price', 'field': 'price'},
+        {'title': 'Amount', 'field': 'amount'},
     ]
 
     table_data = [[col['title'] for col in columns]]
-
+    table_data1 = []
     orders = Order.objects.all()
-    supplier = request.GET.get('supplier')
-    product = request.GET.get('product')
-    if supplier:
-        orders = orders.filter(supplier_id=supplier)
-    if product:
-        orders = orders.filter(product_id=product)
+    
+    amount = 0
     for tr in orders:
-        status = ''
-        if tr.quantity <= tr.limit:
-            status = 'Reorder'
-        elif tr.quantity > tr.limit:
-            status = 'Available'
-        table_row = [str(tr.created_date.strftime("%d-%m-%Y")), tr.part.partno,
-                      tr.quantity, tr.is_ppc, status]
+        table_row = [str(tr.part.partno),tr.part.partname,
+                    tr.part.stylepack, tr.part.standardpack,tr.part.unit, tr.quantity, tr.part.tax, tr.part.price, tr.amount]      
         table_data.append(table_row)
 
-    table = Table(table_data, repeatRows=1, colWidths=[doc.width / 7.0] * 7)
+        amount += tr.amount
+    table_data1.append(['','','','','','','', 'GRAND TOTAL (RM)','', amount])
+    
+    table = Table(table_data, colWidths=[1.5*inch,4.5*inch,1*inch,1*inch, 1.5*inch,1.5*inch, 0.8*inch])
     table.setStyle(TableStyle([
         ('BOX', (0, 0), (-1, -1), 0.20, colors.dimgrey),
         ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('INNERGRID', (0, 0), (-1, -1), 0.1, colors.black),
-        # ('SIZE', (0, 0), (-1, -1), 6.5),
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('FONTSIZE', (0, 0), (-1, -1), 10),
-        # ('SPAN', (0, 0), (3, 0))
+        ('FONTSIZE', (0, 0), (-1, -1), 12),
     ]))
     elements.append(table)
 
+    table1 = Table(table_data1, colWidths=[1.4*inch])
+    table1.setStyle(TableStyle([
+        ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+    ]))
+    elements.append(table1)
     elements.append(Spacer(1, 50))
 
     
@@ -303,65 +306,94 @@ def generate_pdf_part(request):
 
 @login_required(login_url='login')
 def generate_pdf_do(request):
+    today = date.today()
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="DO List.pdf"'
+    response['Content-Disposition'] = 'attachment; filename="Delivery Order.pdf"'+ today.strftime('%Y-%m-%d')
     pdf_buffer = BytesIO()
-    doc = SimpleDocTemplate(pdf_buffer, pagesize=A4,
-                            rightMargin=48, leftMargin=48,
-                            topMargin=100, bottomMargin=120)
-    doc.title = "DO List.pdf"
+    pagesize = (15 * inch, 10 * inch)
+    doc = SimpleDocTemplate(pdf_buffer, pagesize=pagesize)
+    doc.title = "Delivery Order.pdf"
     styles = getSampleStyleSheet()
-    styles.add(ParagraphStyle(name='small_text', alignment=TA_LEFT, fontName='Helvetica', borderPadding=6,
-                              leading=14, fontSize=10))
+    styles.add(ParagraphStyle(name='small_text', alignment=TA_LEFT, fontName='Times-Roman', borderPadding=6,
+                              leading=16, fontSize=13))
     styles.add(ParagraphStyle(name='right_small_text', alignment=TA_RIGHT, fontName='Helvetica', borderPadding=6,
-                              leading=14, fontSize=10))
-    styles.add(ParagraphStyle(name='large_text', leading=14, fontSize=20))
+                              leading=14, fontSize=12))
+    styles.add(ParagraphStyle(name='large_text', leading=14, fontSize=15, spaceAfter = 12, spaceBefore = 10))
     styles.add(ParagraphStyle(name='center_text', alignment=TA_CENTER, leading=14, fontSize=20))
     styles.add(ParagraphStyle(name='footer_text', leading=14, fontSize=6))
-
     elements = []
-    paragraph_text = 'DO List'
+    elements.append(Paragraph('No: DO {}'.format(str(random.randint(1000, 2000))), styles["right_small_text"]))
+
+    elements.append(Paragraph('Delivery Order', styles["right_small_text"]))
+    elements.append(Paragraph('Date: {}'.format(str(datetime.now().date().strftime("%d-%m-%Y"))), styles["right_small_text"]))
+    paragraph_text = 'Victorious Step Sdn.Bhd. (667833-T)'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'No 5 Jalan Utarid U5/16,'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = '40150 Shah Alam'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'Selangor Darul Ehsan'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'Tel: 03-7847 1979 / 03-7734 0205 '
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'Fax: 03-77346310'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'Email: victorious.step@yahoo.com'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'SST No.: B16-1808-21004655'
+
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'To'
     elements.append(Paragraph(paragraph_text, styles["large_text"]))
-    elements.append(Spacer(1, 24))
+    paragraph_text = u"<b>PROTON TG MALIM SDN BHD  </b>"
+
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'JABATAN TRIM & FINAL'
+
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'MUKIM HULLU BERNAM TIMUR'
+
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'DAERAH MUALLIM'
+
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = '35950, TANJONG MALIM'
+
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'PERAK DARUL RIDZUAN'
+
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+
+    # table_data = []
 
     columns = [
-        {'title': 'Date', 'field': 'created_date'},
-        {'title': 'Quantity', 'field': 'do_quantity'},
+        {'title': 'Part No', 'field': 'partno'},
+        {'title': 'Part Name', 'field': 'partname'},
+        {'title': 'Quantity DO', 'field': 'do_quantity'},
+        {'title': 'Quantity PO', 'field': 'order'},
     ]
 
     table_data = [[col['title'] for col in columns]]
-
-    do_quantity = 0
-
-    deliveryorder = DeliveryOrder.objects.all()
-    supplier = request.GET.get('supplier')
-    if supplier:
-        deliveryorder = deliveryorder.filter(supplier_id=supplier)
-
-    for tr in deliveryorder:
-        table_row = [str(tr.created_date.strftime("%d-%m-%Y")),
-                     tr.do_quantity]
+    do = DeliveryOrder.objects.all()
+    
+    for tr in do:
+        table_row = [str(tr.order.part.partno),tr.order,
+                    tr.do_quantity, tr.order.quantity]      
         table_data.append(table_row)
-
-        do_quantity += tr.do_quantity
-    table_data.append(['', '', 'SUBTOTAL (RM)', "{:.2f}".format(do_quantity)])
-
-    table = Table(table_data, repeatRows=1, colWidths=[doc.width / 7.0] * 7)
+    
+    table = Table(table_data, colWidths=[1.5*inch,4.5*inch,1.5*inch,1.5*inch,], spaceBefore=10)
     table.setStyle(TableStyle([
         ('BOX', (0, 0), (-1, -1), 0.20, colors.dimgrey),
         ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('INNERGRID', (0, 0), (-1, -1), 0.1, colors.black),
-        # ('SIZE', (0, 0), (-1, -1), 6.5),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('FONTSIZE', (0, 0), (-1, -1), 10),
-        # ('SPAN', (0, 0), (3, 0))
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTSIZE', (0, 0), (-1, -1), 12),
     ]))
     elements.append(table)
 
     elements.append(Spacer(1, 50))
 
     doc.build(elements)
-
     pdf = pdf_buffer.getvalue()
     pdf_buffer.close()
     response.write(pdf)
@@ -370,72 +402,111 @@ def generate_pdf_do(request):
 
 @login_required(login_url='login')
 def generate_pdf_di(request):
+    today = date.today()
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="Delivery Instruction.pdf"'
+    response['Content-Disposition'] = 'attachment; filename="Delivery Instructions.pdf"'+ today.strftime('%Y-%m-%d')
     pdf_buffer = BytesIO()
-    doc = SimpleDocTemplate(pdf_buffer, pagesize=A4,
-                            rightMargin=48, leftMargin=48,
-                            topMargin=100, bottomMargin=120)
-    doc.title = "Delivery Instruction.pdf"
+    pagesize = (15 * inch, 10 * inch)
+    doc = SimpleDocTemplate(pdf_buffer, pagesize=pagesize)
+    doc.title = "Delivery Instructions.pdf"
     styles = getSampleStyleSheet()
-    styles.add(ParagraphStyle(name='small_text', alignment=TA_LEFT, fontName='Helvetica', borderPadding=6,
-                              leading=14, fontSize=10))
+    styles.add(ParagraphStyle(name='small_text', alignment=TA_LEFT, fontName='Times-Roman', borderPadding=6,
+                              leading=16, fontSize=13))
     styles.add(ParagraphStyle(name='right_small_text', alignment=TA_RIGHT, fontName='Helvetica', borderPadding=6,
-                              leading=14, fontSize=10))
-    styles.add(ParagraphStyle(name='large_text', leading=14, fontSize=20))
+                              leading=14, fontSize=12))
+    styles.add(ParagraphStyle(name='large_text', leading=14, fontSize=15, spaceAfter = 12, spaceBefore = 10))
     styles.add(ParagraphStyle(name='center_text', alignment=TA_CENTER, leading=14, fontSize=20))
     styles.add(ParagraphStyle(name='footer_text', leading=14, fontSize=6))
-
     elements = []
-    paragraph_text = 'Delivery Instruction'
-    elements.append(Paragraph(paragraph_text, styles["large_text"]))
-    elements.append(Spacer(1, 24))
+    elements.append(Paragraph('Number: DI {}'.format(str(random.randint(1000, 2000))), styles["right_small_text"]))
+
+    elements.append(Paragraph('Delivery Instructions', styles["right_small_text"]))
+    elements.append(Paragraph('Date: {}'.format(str(datetime.now().date().strftime("%d-%m-%Y"))), styles["right_small_text"]))
+    paragraph_text = 'Victorious Step Sdn.Bhd. (667833-T)'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'No 5 Jalan Utarid U5/16,'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = '40150 Shah Alam'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'Selangor Darul Ehsan'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'Tel: 03-7847 1979 / 03-7734 0205 '
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'Fax: 03-77346310'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'Email: victorious.step@yahoo.com'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = 'SST No.: B16-1808-21004655'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
 
     columns = [
-        {'title': 'Date', 'field': 'created_date'},
         {'title': 'Variant', 'field': 'variant'},
         {'title': 'Usage', 'field': 'usage'},
-        {'title': 'Part', 'field': 'part'},
+        {'title': 'Part No', 'field': 'partno'},
+        {'title': 'Part Name', 'field': 'order'},
         {'title': 'Supplier', 'field': 'supplier'},
-        {'title': 'Dimension', 'field': 'dimension'},
-        {'title': 'Box/Qty', 'field': 'box'},
-        {'title': 'Remarks', 'field': 'remarks'},
-        
+        {'title': 'Dimension P', 'field': 'dimension'},
+        {'title': 'QTY/BOX', 'field': 'box'},
     ]
-
     table_data = [[col['title'] for col in columns]]
+    din = DeliveryIns.objects.all()
 
-    box = 0
-
-    deliveryins = DeliveryIns.objects.all()
     supplier = request.GET.get('supplier')
+    product = request.GET.get('product')
     if supplier:
-        deliveryins = deliveryins.filter(supplier_id=supplier)
-
-    for tr in deliveryins:
-        table_row = [str(tr.created_date.strftime("%d-%m-%Y")),
-                     tr.variant, tr.usage, tr.order.part.partno, tr.supplier, tr.dimension, tr.box, tr.remarks] 
+        din = din.filter(supplier_id=supplier)
+    if product:
+        din = din.filter(product_id=product)
+    
+    for tr in din:
+        table_row = [str(tr.variant),tr.usage,
+                    tr.order.part.partno, tr.order, tr.supplier, tr.dimension, tr.box]      
         table_data.append(table_row)
 
-        box += tr.box
-    table_data.append(['', '', 'SUBTOTAL (RM)', "{:.2f}".format(box)])
+    columns = [
+            
+            {'title': 'Model', 'field': 'product'},
+        ]
 
-    table = Table(table_data, repeatRows=1, colWidths=[doc.width / 7.0] * 7)
+    table_data1 = [[col['title'] for col in columns]]
+
+    orders = Order.objects.all()
+    supplier = request.GET.get('supplier')
+    product = request.GET.get('product')
+    if supplier:
+        orders = orders.filter(supplier_id=supplier)
+    if product:
+        orders = orders.filter(product_id=product)
+
+    table_sec = set()
+    for tr in orders:
+        table_sec=[str(tr.product)]
+    table_data1.append(table_sec)
+
+    table = Table(table_data1, repeatRows=1, colWidths=[doc.width / 7.0] * 7)
     table.setStyle(TableStyle([
         ('BOX', (0, 0), (-1, -1), 0.20, colors.dimgrey),
         ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('INNERGRID', (0, 0), (-1, -1), 0.1, colors.black),
-        # ('SIZE', (0, 0), (-1, -1), 6.5),
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
         ('FONTSIZE', (0, 0), (-1, -1), 10),
-        # ('SPAN', (0, 0), (3, 0))
     ]))
     elements.append(table)
 
     elements.append(Spacer(1, 50))
+    
+    table = Table(table_data, colWidths=[1*inch,0.7*inch,1.5*inch,4.5*inch,3*inch,1.5*inch, 0.8*inch], spaceBefore=10)
+    table.setStyle(TableStyle([
+        ('BOX', (0, 0), (-1, -1), 0.20, colors.dimgrey),
+        ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('INNERGRID', (0, 0), (-1, -1), 0.1, colors.black),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTSIZE', (0, 0), (-1, -1), 12),
+    ]))
+    elements.append(table)
+    elements.append(Spacer(1, 50))
 
     doc.build(elements)
-
     pdf = pdf_buffer.getvalue()
     pdf_buffer.close()
     response.write(pdf)
@@ -458,7 +529,7 @@ def create_supplier(request):
             phone = forms.cleaned_data['phone']
             supplier = Supplier.objects.create(name=name, email=email, address=address, address2=address2, address3=address3,
                                                postcode=postcode, phone=phone)
-            create_log(request, supplier)
+            # create_log(request, supplier)
         return redirect('supplier-list')
     context = {
         'form': forms
@@ -486,7 +557,7 @@ def create_product(request):
         forms = ProductForm(request.POST)
         if forms.is_valid():
             product = forms.save()
-            create_log(request, product)
+            # create_log(request, product)
             return redirect('product-list')
     context = {
         'form': forms
@@ -509,70 +580,72 @@ def random_string():
     return str(random.randint(10000, 99999))
 
 # Order views
-# @login_required(login_url='login')
-# def create_order(request):
-#     from django import forms
-#     form = OrderForm()
-#     form.fields['is_ppc'].queryset = User.objects.filter(is_ppc=True)
-#     form.fields['new_stock'].widget = forms.HiddenInput()
+@login_required(login_url='login')
+def create_order(request):
+    from django import forms
+    form = OrderForm()
+    form.fields['is_ppc'].queryset = User.objects.filter(is_ppc=True)
+    form.fields['new_stock'].widget = forms.HiddenInput()
 
-#     if request.method == 'POST':
-#         forms = OrderForm(request.POST)
-#         if forms.is_valid():
-#             po_id = forms.cleaned_data['po_id']
-#             supplier = forms.cleaned_data['supplier']
-#             product = forms.cleaned_data['product']
-#             part = forms.cleaned_data['part']
-#             quantity = forms.cleaned_data['quantity']
-#             limit = forms.cleaned_data['limit']
-#             is_ppc = forms.cleaned_data['is_ppc']
-#             new_stock = forms.cleaned_data['new_stock']
+    if request.method == 'POST':
+        a = []
+        max_l = 0
+        for k, v in dict(request.POST.lists()).items():
+            if type(v) == list:
+                max_l = max(max_l, len(v))
+                a.append([(k, x) for x in v])
+            else:
+                a.append((k, v))
 
+        forms_data = [dict() for _ in range(max_l)]
+        for e in a:
+            if len(e) == 1:
+                k, v = e[0]
+                for d in forms_data:
+                    d[k] = v
+            else:
+                assert len(e) == max_l
+                for d, ee in zip(forms_data, e):
+                    k, v = ee
+                    d[k] = v
 
-#             order = Order.objects.create(
-#                 po_id=po_id,
-#                 supplier=supplier,
-#                 product=product,
-#                 part=part,
-#                 quantity=quantity,
-#                 limit=limit,
-#                 is_ppc=is_ppc,
-#                 terms=30,
-#                 remarks='Follow DI',
-#                 new_stock=new_stock,
+        for form_data in forms_data:
+            forms = OrderForm(form_data)
+            if forms.is_valid():
+                po_id = forms.cleaned_data['po_id']
+                supplier = forms.cleaned_data['supplier']
+                product = forms.cleaned_data['product']
+                part = forms.cleaned_data['part']
+                quantity = forms.cleaned_data['quantity']
+                limit = forms.cleaned_data['limit']
+                is_ppc = forms.cleaned_data['is_ppc']
+                new_stock = forms.cleaned_data['new_stock']
 
-#             )
-#             forms.save()
-#             create_log(request, order)
-#             return redirect('order-list')
-#     context = {
-#         'form': form
-#     }
-#     return render(request, 'store/addOrder.html', context)
+                order = Order.objects.create(
+                    po_id=po_id,
+                    supplier=supplier,
+                    product=product,
+                    part=part,
+                    quantity=quantity,
+                    limit=limit,
+                    is_ppc=is_ppc,
+                    terms=30,
+                    remarks='Follow DI',
+                    new_stock=new_stock,
+                )
 
-class create_order(TemplateView):
-    template_name = "store/addOrder.html"
+                # create_log(request, order)
+        return redirect('order-list')
+    context = {
+        'form': form
+    }
+    return render(request, 'store/addOrder.html', context)
 
-    def get(self, *args, **kwargs):
-        from django import forms
-        form = OrderForm()
-        
-        formset = OrderForm(queryset=Order.objects.none())
-        for form in formset:
-            form.fields['is_ppc'].queryset = User.objects.filter(is_ppc=True)
-            form.fields['new_stock'].widget = forms.HiddenInput()
-        return self.render_to_response({'order_formset': formset})
-
-    def post(self, *args, **kwargs):
-
-        formset = OrderForm(data=self.request.POST)
-
-        # Check if submitted forms are valid
-        if formset.is_valid():
-            formset.save()
-            return redirect(reverse_lazy("order-list"))
-        return self.render_to_response({'order_formset': formset})
-
+# Dependent/Chained Dropdown
+def load_parts(request):
+    supplier_id = request.GET.get('supplier')
+    parts = Part.objects.filter(supplier_id=supplier_id).order_by('partname')
+    return render(request, 'store/part_dropdown_list_options.html', {'parts': parts})
 
 class OrderListView(ListView):
     model = Order
@@ -622,7 +695,7 @@ def create_part(request):
                 price=price,
                 tax=tax,
             )
-            create_log(request, part)
+            # create_log(request, part)
             return redirect('part-list')
     context = {
         'form': form
@@ -672,27 +745,49 @@ def create_deliveryorder(request):
     form = DeliveryOrderForm()
 
     if request.method == 'POST':
-        forms = DeliveryOrderForm(request.POST)
-        if forms.is_valid():
-            supplier = forms.cleaned_data['supplier']
-            do_quantity = forms.cleaned_data['do_quantity']
-            order = forms.cleaned_data['order']
+        a = []
+        max_l = 0
+        for k, v in dict(request.POST.lists()).items():
+            if type(v) == list:
+                max_l = max(max_l, len(v))
+                a.append([(k, x) for x in v])
+            else:
+                a.append((k, v))
 
-            o = Order.objects.get(id=order.id)
-            if do_quantity > o.quantity:
-                messages.warning(request, "Quantity can't be greater than order quantity")
-                return redirect('do-list')
+        formq_data = [dict() for _ in range(max_l)]
+        for e in a:
+            if len(e) == 1:
+                k, v = e[0]
+                for d in formq_data:
+                    d[k] = v
+            else:
+                assert len(e) == max_l
+                for d, ee in zip(formq_data, e):
+                    k, v = ee
+                    d[k] = v
 
-            deliveryorder = DeliveryOrder.objects.create(
-                supplier=supplier,
-                do_quantity=do_quantity,
-                order=order,
-            )
-            o.quantity -= do_quantity  # deduct quantity
-            o.save()
-            messages.success(request, "Delivery order created successfully")
-            create_log(request, deliveryorder)
-            return redirect('do-list')
+        for form1_data in formq_data:
+            forms = DeliveryOrderForm(form1_data)
+            if forms.is_valid():
+                supplier = forms.cleaned_data['supplier']
+                do_quantity = forms.cleaned_data['do_quantity']
+                order = forms.cleaned_data['order']
+
+                o = Order.objects.get(id=order.id)
+                if do_quantity > o.quantity:
+                    messages.warning(request, "Quantity can't be greater than order quantity")
+                    return redirect('do-list')
+
+                deliveryorder = DeliveryOrder.objects.create(
+                    supplier=supplier,
+                    do_quantity=do_quantity,
+                    order=order,
+                )
+                o.quantity -= do_quantity  # deduct quantity
+                o.save()
+                # messages.success(request, "Delivery order created successfully")
+                # create_log(request, deliveryorder)
+        return redirect('do-list')
     context = {
         'form': form
     }
@@ -725,8 +820,9 @@ def create_deliveryins(request):
         forms = DeliveryInsForm(request.POST)
         if forms.is_valid():
             variant = forms.cleaned_data['variant']
+            product = forms.cleaned_data['product']
             usage = forms.cleaned_data['usage']
-            order = forms.cleaned_data['order']
+            part = forms.cleaned_data['part']
             supplier = forms.cleaned_data['supplier']
             dimension = forms.cleaned_data['dimension']
             box = forms.cleaned_data['box']
@@ -735,13 +831,14 @@ def create_deliveryins(request):
             deliveryins = DeliveryIns.objects.create(
                 variant=variant,
                 usage=usage,
-                order=order,
+                product=product,
+                part=part,
                 supplier=supplier,
                 dimension=dimension,
                 box=box,
                 remarks=remarks,
             )
-            create_log(request, deliveryins)
+            # create_log(request, deliveryins)
             return redirect('dins-list')
     context = {
         'form': form
@@ -758,6 +855,8 @@ class DeliveryInsListView(ListView):
         queryset = self.model.objects.all().order_by('-id')
         if self.request.GET.get('supplier'):
             queryset = queryset.filter(supplier_id=self.request.GET.get('supplier'))
+        elif self.request.GET.get('product'):
+            queryset = queryset.filter(product_id=self.request.GET.get('product'))
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -770,12 +869,15 @@ class DeliveryInsListView(ListView):
 def updateDI(request, pk):
     action = 'update'
     deliveryins = DeliveryIns.objects.get(id=pk)
+    previous_dins = deliveryins.box
     form = DeliveryInsForm(instance=deliveryins)
 
     if request.method == 'POST':
         form = DeliveryInsForm(request.POST, instance=deliveryins)
         if form.is_valid():
-            form.save()
+            din = form.save()
+            create_log(request, din, object_repr=din.box,
+                       change_message=f"QTY {previous_dins} to {din.box} in Delivery Instructions")
             return redirect('dins-list')
 
     context = {'action': action, 'form': form}
@@ -785,7 +887,7 @@ def updateDI(request, pk):
 def deleteDI(request, pk):
     deliveryins = DeliveryIns.objects.get(id=pk)
     if request.method == 'POST':
-        deliveryins_id = deliveryins.order
+        deliveryins_id = deliveryins.part
         deliveryins.delete()
         return redirect('dins-list')
 
@@ -809,7 +911,7 @@ def updateDO(request, pk):
             o.quantity -= do_quantity  # deduct quantity
             o.save()
             do = form.save()
-            create_log(request, do, object_repr=do.order.part.partname,
+            create_log(request, do, object_repr=do.do_quantity,
                        change_message=f"do_quantity {previous_do} to {do.do_quantity}")
             return redirect('do-list')
 

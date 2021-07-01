@@ -24,7 +24,6 @@ class Supplier(models.Model):
 
 class Product(models.Model):
     name = models.CharField(max_length=120, unique=True)
-    sortno = models.PositiveIntegerField()
     created_date = models.DateField(auto_now_add=True)
 
     def __str__(self):
@@ -87,12 +86,12 @@ class DeliveryOrder(models.Model):
     do_quantity = models.PositiveIntegerField(default= 0)
     created_date = models.DateField(auto_now_add=True)
 
-class EventManager(models.Manager):
+# class EventManager(models.Manager):
 
-    def get_queryset(self):
-        return super().get_queryset().filter(
-            created_date__gte=timezone.now()-timezone.timedelta(days=1)
-        )
+#     def get_queryset(self):
+#         return super().get_queryset().filter(
+#             created_date__gte=timezone.now()-timezone.timedelta(days=1)
+#         )
 
 class DeliveryIns(models.Model):
     variant = (
@@ -106,14 +105,15 @@ class DeliveryIns(models.Model):
         ('STD/EXEC', 'STD/EXEC'),
         ('EXEC/PREM', 'EXEC/PREM'),
     )
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    part = models.ForeignKey(Part, on_delete=models.CASCADE)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     dimension =  models.CharField(max_length=30)
     box = models.PositiveIntegerField(default= 0)  
     variant = models.CharField(max_length=20, choices=variant)
     usage = models.PositiveIntegerField(default= 0) 
     remarks = models.CharField(max_length=500, blank= True)
     created_date = models.DateTimeField(default=timezone.now)
-    objects = EventManager()
+    # objects = EventManager()
 
    

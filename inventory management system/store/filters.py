@@ -13,7 +13,7 @@ class PartFilter(django_filters.FilterSet):
 class DIFilter(django_filters.FilterSet):
     class Meta:
         model = DeliveryIns
-        fields = ['supplier']
+        fields = ['product','supplier']
 
 
 class DOFilter(django_filters.FilterSet):

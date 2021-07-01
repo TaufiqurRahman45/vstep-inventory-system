@@ -18,7 +18,6 @@ from .views import (
     logs,
     generate_pdf,
     generate_pdf_part,
-    # generate_pdf_po,
     generate_pdf_do,
     generate_pdf_di,
     DeliveryInsListView,
@@ -39,7 +38,8 @@ urlpatterns = [
 
     path('logs/', logs, name='logs'),
 
-
+    path('ajax/load-parts/', views.load_parts, name='ajax_load_parts'), # Dependent/Chained Dropdown
+    
     path('supplier-list/', SupplierListView.as_view(), name='supplier-list'),
 
     path('product-list/', ProductListView.as_view(), name='product-list'),

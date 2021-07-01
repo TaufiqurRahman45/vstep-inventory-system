@@ -34,7 +34,6 @@
                                 <th>Supplier</th>
                                 <th>Dimension</th> 
                                 <th>QTY/Box</th>   
-                                <th>Remarks</th>           
                                 <th>Date</th>
                                 <th>Action</th>                     
                             </tr>
@@ -46,12 +45,11 @@
                                 <td class="serial">{{ forloop.counter }}</td>
                                 <td>{{ deliveryins.variant }}</td>
                                 <td>{{ deliveryins.usage }}</td>
-                                <td>{{ deliveryins.order.part.partno }}</td>
-                                <td>{{ deliveryins.order }}</td>
+                                <td>{{ deliveryins.part.partno }}</td>
+                                <td>{{ deliveryins.part.partname }}</td>
                                 <td>{{ deliveryins.supplier }}</td>
                                 <td>{{ deliveryins.dimension }}</td>
                                 <td>{{ deliveryins.box }}</td>
-                                <td>{{ deliveryins.remarks }}</td>
                                 <td>{{ deliveryins.created_date }}</td>
                                 <td>
                                     <a class="btn btn-sm btn-warning" href="{% url 'update_di' deliveryins.id %}" >Update</a>
