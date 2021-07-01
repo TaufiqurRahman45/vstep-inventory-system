@@ -57,10 +57,11 @@ class ProductForm(forms.ModelForm):
         }
 
 
-class OrderForm(forms.ModelForm):
-    class Meta:
-        model = Order
-        fields = ['supplier', 'product', 'part', 'quantity', 'limit', 'is_ppc', 'terms', 'remarks', 'new_stock', 'po_id']
+ class OrderForm(forms.ModelForm):
+     class Meta:
+         model = Order
+         fields = ['supplier', 'product', 'part', 'quantity', 'limit', 'is_ppc', 'terms', 'remarks', 'new_stock', 'po_id']
+
 
         widgets = {
             'po_id': forms.NumberInput(attrs={'class': 'form-control', 'id': 'po_id', 'readonly':'readonly'}),
@@ -74,6 +75,7 @@ class OrderForm(forms.ModelForm):
             'remarks': forms.Select(attrs={'class': 'form-control', 'id': 'remarks'}),
             'new_stock' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'new_stock'}),
         }
+
 
     def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)

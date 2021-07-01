@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.admin.models import LogEntry
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from django.views.generic import ListView
+from django.views.generic import ListView,TemplateView
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from datetime import datetime, timedelta, date
@@ -23,7 +23,7 @@ from .filters import PartFilter
 from .filters import DIFilter
 from .filters import DOFilter
 from .filters import POFilter
-
+from django.urls import reverse_lazy
 
 from users.models import User
 from .models import (
@@ -938,7 +938,7 @@ def update_Order(request):
 def updateOrder(request, pk):
     action = 'update'
     order = Order.objects.get(id=pk)
-    form = OrderForm(instance=order, initial={'new_stock': 0})
+    form = OrderForm()
 
     if request.method == 'POST':
         form = OrderForm(request.POST, instance=order)
@@ -965,7 +965,8 @@ def updateOrder(request, pk):
                 msg.send(fail_silently=True)
             create_log(request, order)
             return redirect('order-list')
-
+        else:
+            form = OrderForm()
     context = {'action': action, 'form': form}
     return render(request, 'store/update_order.html', context)
 
