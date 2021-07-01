@@ -617,9 +617,10 @@ def create_order(request):
                 product = forms.cleaned_data['product']
                 part = forms.cleaned_data['part']
                 quantity = forms.cleaned_data['quantity']
-                limit = forms.cleaned_data['limit']
                 is_ppc = forms.cleaned_data['is_ppc']
                 new_stock = forms.cleaned_data['new_stock']
+
+                q = Part.objects.get(id=part.id)
 
                 order = Order.objects.create(
                     po_id=po_id,
@@ -627,12 +628,14 @@ def create_order(request):
                     product=product,
                     part=part,
                     quantity=quantity,
-                    limit=limit,
                     is_ppc=is_ppc,
                     terms=30,
                     remarks='Follow DI',
                     new_stock=new_stock,
                 )
+
+                q.quan += quantity  # deduct quantity
+                q.save()
 
                 # create_log(request, order)
         return redirect('order-list')
@@ -665,6 +668,44 @@ class OrderListView(ListView):
         context['filter'] = POFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
+@login_required(login_url='login')
+def update_Order(request):
+    return render(request, 'store/updateOrder.html')
+
+
+@login_required(login_url="/login")
+def updateOrder(request, pk):
+    action = 'update'
+    order = Order.objects.get(id=pk)
+    form = OrderForm(instance=order, initial={'new_stock': 0})
+
+    if request.method == 'POST':
+        form = OrderForm(request.POST, instance=order)
+        if form.is_valid():
+            part = form.cleaned_data['part']
+            quantity = form.cleaned_data['quantity']
+
+            q = Part.objects.get(id=part.id)
+            q.quan += quantity  # add quantity
+            q.save()
+            PO = form.save()
+            return redirect('order-list')
+
+    context = {'action': action, 'form': form}
+    return render(request, 'store/update_order.html', context)
+
+
+@login_required(login_url="/login")
+def deleteOrder(request, pk):
+    order = Order.objects.get(id=pk)
+    if request.method == 'POST':
+        order_id = order.part.partno
+        order.delete()
+        create_log(request, order, 3)
+        return redirect('order-list')
+
+    return render(request, 'store/delete.html', {'item': order})
+
 
 @login_required(login_url='login')
 def create_part(request):
@@ -683,6 +724,8 @@ def create_part(request):
             unit = forms.cleaned_data['unit']
             price = forms.cleaned_data['price']
             tax = forms.cleaned_data['tax']
+            quan = forms.cleaned_data['quan']
+            limit = forms.cleaned_data['limit']
 
             part = Part.objects.create(
                 supplier=supplier,
@@ -694,6 +737,8 @@ def create_part(request):
                 unit=unit,
                 price=price,
                 tax=tax,
+                quan=quan,
+                limit=limit,
             )
             # create_log(request, part)
             return redirect('part-list')
@@ -724,6 +769,22 @@ def updatePart(request, pk):
         form = PartForm(request.POST, instance=part)
         if form.is_valid():
             form.save()
+
+            if part.quan <= part.limit:
+                from django.core.mail import EmailMessage
+
+                # to = order.is_ppc.email
+                to = "toufiqurrahman45@gmail.com"
+
+                msg = EmailMessage(subject="Status: Reorder", from_email="Webmaster@victoriousstep.com",
+                                   to=[to])
+                msg.template_name = 'REORDER'
+                msg.template_content = {
+                    'PART_NO': part.partno,
+                    'PART_NAME': part.partname,
+                    'AVAILABLE STOCK': part.quan,
+                }
+                msg.send(fail_silently=True)
             return redirect('part-list')
 
     context = {'action': action, 'form': form}
@@ -810,6 +871,40 @@ class DeliveryOrderListView(ListView):
         context['filter'] = DOFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
+@login_required(login_url="/login")
+def updateDO(request, pk):
+    action = 'update'
+    deliveryorder = DeliveryOrder.objects.get(id=pk)
+    previous_do = deliveryorder.do_quantity
+    form = DeliveryOrderForm(instance=deliveryorder)
+
+    if request.method == 'POST':
+        form = DeliveryOrderForm(request.POST, instance=deliveryorder)
+        if form.is_valid():
+            order = form.cleaned_data['order']
+            do_quantity = form.cleaned_data['do_quantity']
+
+            o = Order.objects.get(id=order.id)
+            o.quantity -= do_quantity  # deduct quantity
+            o.save()
+            do = form.save()
+            create_log(request, do, object_repr=do.do_quantity,
+                       change_message=f"do_quantity {previous_do} to {do.do_quantity}")
+            return redirect('do-list')
+
+    context = {'action': action, 'form': form}
+    return render(request, 'store/update_do.html', context)
+
+
+def deleteDO(request, pk):
+    deliveryorder = DeliveryOrder.objects.get(id=pk)
+    if request.method == 'POST':
+        deliveryorder_id = deliveryorder.order
+        deliveryorder.delete()
+        return redirect('do-list')
+
+    return render(request, 'store/delete_do.html', {'item': deliveryorder})
+
 
 @login_required(login_url='login')
 def create_deliveryins(request):
@@ -828,6 +923,8 @@ def create_deliveryins(request):
             box = forms.cleaned_data['box']
             remarks = forms.cleaned_data['remarks']
 
+            q = Part.objects.get(id=part.id)
+
             deliveryins = DeliveryIns.objects.create(
                 variant=variant,
                 usage=usage,
@@ -838,6 +935,9 @@ def create_deliveryins(request):
                 box=box,
                 remarks=remarks,
             )
+
+            q.quan -= box  # deduct quantity
+            q.save()
             # create_log(request, deliveryins)
             return redirect('dins-list')
     context = {
@@ -875,6 +975,12 @@ def updateDI(request, pk):
     if request.method == 'POST':
         form = DeliveryInsForm(request.POST, instance=deliveryins)
         if form.is_valid():
+            part = form.cleaned_data['part']
+            box = form.cleaned_data['box']
+
+            q = Part.objects.get(id=part.id)
+            q.quan -= box
+            q.save()
             din = form.save()
             create_log(request, din, object_repr=din.box,
                        change_message=f"QTY {previous_dins} to {din.box} in Delivery Instructions")
@@ -892,96 +998,6 @@ def deleteDI(request, pk):
         return redirect('dins-list')
 
     return render(request, 'store/delete_dins.html', {'item': deliveryins})
-
-
-@login_required(login_url="/login")
-def updateDO(request, pk):
-    action = 'update'
-    deliveryorder = DeliveryOrder.objects.get(id=pk)
-    previous_do = deliveryorder.do_quantity
-    form = DeliveryOrderForm(instance=deliveryorder)
-
-    if request.method == 'POST':
-        form = DeliveryOrderForm(request.POST, instance=deliveryorder)
-        if form.is_valid():
-            order = form.cleaned_data['order']
-            do_quantity = form.cleaned_data['do_quantity']
-
-            o = Order.objects.get(id=order.id)
-            o.quantity -= do_quantity  # deduct quantity
-            o.save()
-            do = form.save()
-            create_log(request, do, object_repr=do.do_quantity,
-                       change_message=f"do_quantity {previous_do} to {do.do_quantity}")
-            return redirect('do-list')
-
-    context = {'action': action, 'form': form}
-    return render(request, 'store/update_do.html', context)
-
-
-def deleteDO(request, pk):
-    deliveryorder = DeliveryOrder.objects.get(id=pk)
-    if request.method == 'POST':
-        deliveryorder_id = deliveryorder.order
-        deliveryorder.delete()
-        return redirect('do-list')
-
-    return render(request, 'store/delete_do.html', {'item': deliveryorder})
-
-
-@login_required(login_url='login')
-def update_Order(request):
-    return render(request, 'store/updateOrder.html')
-
-
-@login_required(login_url="/login")
-def updateOrder(request, pk):
-    action = 'update'
-    order = Order.objects.get(id=pk)
-    form = OrderForm()
-
-    if request.method == 'POST':
-        form = OrderForm(request.POST, instance=order)
-        if form.is_valid():
-            order = form.save()
-            try:
-                order.quantity += order.new_stock
-                order.save()
-            except:
-                pass
-            if order.quantity <= order.limit:
-                from django.core.mail import EmailMessage
-
-                # to = order.is_ppc.email
-                to = "toufiqurrahman45@gmail.com"
-
-                msg = EmailMessage(subject="Status: Reorder", from_email="Webmaster@victoriousstep.com",
-                                   to=[to])
-                msg.template_name = 'REORDER'
-                msg.template_content = {
-                    'ORDER_ID': order.id,
-                    'PRODUCT_ID': order.product_id,
-                }
-                msg.send(fail_silently=True)
-            create_log(request, order)
-            return redirect('order-list')
-        else:
-            form = OrderForm()
-    context = {'action': action, 'form': form}
-    return render(request, 'store/update_order.html', context)
-
-
-@login_required(login_url="/login")
-def deleteOrder(request, pk):
-    order = Order.objects.get(id=pk)
-    if request.method == 'POST':
-        order_id = order.part.partno
-        order.delete()
-        create_log(request, order, 3)
-        return redirect('order-list')
-
-    return render(request, 'store/delete.html', {'item': order})
-
 
 @login_required(login_url='/login')
 def logs(request):
