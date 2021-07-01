@@ -27,15 +27,15 @@
                         <thead>
                             <tr>
                                 <th class="serial">#</th>
-                                <th>Part No</th>
-                                <th>Part Name</th>
+                                <th>No</th>
+                                <th>Name</th>
+                                <th>Quantity</th>
                                 <th>Style</th>
                                 <th>Packaging</th>
                                 <th>Price</th>
-                                <!-- <th>Product</th>
-                                <th>Supplier</th> -->
                                 <th>Unit per car</th>
                                 <th>Tax</th>
+                                <th>Stock</th>
                                 <th>Date</th>
                                 <th>Action</th>                     
                             </tr>
@@ -47,13 +47,23 @@
                                 <td class="serial">{{ forloop.counter }}</td>
                                 <td>{{ part.partno }}</td>
                                 <td>{{ part.partname }}</td>
+                                <td>{{ part.quan }}</td>
                                 <td>{{ part.stylepack }}</td>
                                 <td>{{ part.standardpack }}</td>
-                                <td>{{ part.price}}</td>
-                                <!-- <td>{{ part.product.name }}</td>
-                                <td>{{ part.supplier.name }}</td> -->
+                                <td>{{ part.price}}</td>         
                                 <td>{{ part.unit }}</td>
                                 <td>{{ part.tax }} %</td>
+                                <td>
+                                    {% if part.quan <= part.limit   %}
+                                        <p style="color: #FF0000">
+                                              Reorder
+                                        </p>
+                                     {% elif part.quan  > part.limit  %}
+                                         <p style="color:#008000">
+                                             Available
+                                         </p>
+                                      {% endif %}
+                                    </td>
                                 <td>{{ part.created_date }}</td>      
                                 <td>
                                     <a class="btn btn-sm btn-warning" href="{% url 'update_part' part.id %}" >Update</a>

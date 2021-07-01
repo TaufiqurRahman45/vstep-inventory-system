@@ -38,7 +38,6 @@
                                 <th>Amount</th>
                                 <th>PIC</th>
                                 <th>Date</th>
-                                <th>Status</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -58,17 +57,7 @@
                                 <td>{{ order.amount }}</td>
                                 <td>{{ order.is_ppc}}</td>
                                 <td>{{ order.created_date }}</td>
-                                <td>
-                                {% if order.quantity <= order.limit   %}
-                                    <p style="color: #FF0000">
-                                          Reorder
-                                    </p>
-                                 {% elif order.quantity  > order.limit  %}
-                                     <p style="color:#008000">
-                                         Available
-                                     </p>
-                                  {% endif %}
-                                </td>
+                                
                                 <td>
                                     <a class="btn btn-sm btn-warning" href="{% url 'update_order' order.id %}" >Update</a>
                                     <a class="btn btn-sm btn-danger"  href="{% url 'delete_order' order.id %}">Delete</a>
