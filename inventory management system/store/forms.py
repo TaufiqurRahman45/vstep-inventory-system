@@ -74,6 +74,7 @@ class OrderForm(forms.ModelForm):
             'new_stock' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'new_stock'}),
         }
 
+
     def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             self.fields['part'].queryset = Part.objects.none()

@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.admin.models import LogEntry
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from django.views.generic import ListView
+from django.views.generic import ListView,TemplateView
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from datetime import datetime, timedelta, date
@@ -23,7 +23,7 @@ from .filters import PartFilter
 from .filters import DIFilter
 from .filters import DOFilter
 from .filters import POFilter
-
+from django.urls import reverse_lazy
 
 from users.models import User
 from .models import (
