@@ -57,11 +57,10 @@ class ProductForm(forms.ModelForm):
         }
 
 
- class OrderForm(forms.ModelForm):
-     class Meta:
-         model = Order
-         fields = ['supplier', 'product', 'part', 'quantity', 'limit', 'is_ppc', 'terms', 'remarks', 'new_stock', 'po_id']
-
+class OrderForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ['supplier', 'product', 'part', 'quantity',  'is_ppc', 'terms', 'remarks', 'new_stock', 'po_id']
 
         widgets = {
             'po_id': forms.NumberInput(attrs={'class': 'form-control', 'id': 'po_id', 'readonly':'readonly'}),
@@ -69,7 +68,6 @@ class ProductForm(forms.ModelForm):
             'product': forms.Select(attrs={'class': 'form-control', 'id': 'product'}),
             'part': forms.Select(attrs={'class': 'form-control', 'id': 'part'}),        
             'quantity': forms.NumberInput(attrs={'class': 'form-control', 'id': 'quantity'}),
-            'limit' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'limit'}),
             'is_ppc' : forms.Select(attrs={'class': 'form-control', 'id': 'is_ppc'}),
             'terms': forms.Select(attrs={'class': 'form-control', 'id': 'terms'}),
             'remarks': forms.Select(attrs={'class': 'form-control', 'id': 'remarks'}),
@@ -93,7 +91,7 @@ class ProductForm(forms.ModelForm):
 class PartForm(forms.ModelForm):
     class Meta:
         model = Part
-        fields = ['partno', 'partname', 'stylepack', 'standardpack', 'supplier', 'product', 'unit', 'price', 'tax',  ]
+        fields = ['partno', 'partname', 'stylepack', 'standardpack', 'supplier', 'product', 'unit', 'price', 'tax', 'quan', 'limit']
 
         widgets = {
             'partno': forms.TextInput(attrs={'class': 'form-control', 'id': 'partno'}),
@@ -104,6 +102,8 @@ class PartForm(forms.ModelForm):
             'product': forms.Select(attrs={'class': 'form-control', 'id': 'product'}),
             'unit': forms.NumberInput(attrs={'class': 'form-control', 'id': 'unit'}),
             'price' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'price'}),
+            'quan' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'quan'}),
+            'limit' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'limit'}),
         }
 
 class DeliveryOrderForm(forms.ModelForm):

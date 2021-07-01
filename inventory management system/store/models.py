@@ -34,6 +34,8 @@ class Part(models.Model):
     partname = models.CharField(max_length=50)
     stylepack = models.CharField(max_length=50, blank= True)
     standardpack = models.PositiveIntegerField(default= 0)
+    quan = models.PositiveIntegerField(default= 0)
+    limit = models.PositiveIntegerField(default= 0)
     unit = models.PositiveIntegerField(default= 0)
     price = models.DecimalField(default= 0,max_digits=5, decimal_places=2)
     tax = models.PositiveIntegerField(default= 0)
@@ -67,7 +69,6 @@ class Order(models.Model):
     terms = models.CharField(max_length=10, choices=terms)
     remarks = models.CharField(max_length=20, choices=remarks)
     quantity = models.PositiveIntegerField(default= 0)
-    limit = models.PositiveIntegerField(default= 0)
     created_date = models.DateField(auto_now_add=True)
     is_ppc = models.ForeignKey(User, on_delete=models.CASCADE, null=True,)
     new_stock = models.PositiveIntegerField(default=0, blank=True, null=True)
@@ -86,12 +87,12 @@ class DeliveryOrder(models.Model):
     do_quantity = models.PositiveIntegerField(default= 0)
     created_date = models.DateField(auto_now_add=True)
 
-# class EventManager(models.Manager):
+class EventManager(models.Manager):
 
-#     def get_queryset(self):
-#         return super().get_queryset().filter(
-#             created_date__gte=timezone.now()-timezone.timedelta(days=1)
-#         )
+    def get_queryset(self):
+        return super().get_queryset().filter(
+            created_date__gte=timezone.now()-timezone.timedelta(days=1)
+        )
 
 class DeliveryIns(models.Model):
     variant = (
@@ -114,6 +115,6 @@ class DeliveryIns(models.Model):
     usage = models.PositiveIntegerField(default= 0) 
     remarks = models.CharField(max_length=500, blank= True)
     created_date = models.DateTimeField(default=timezone.now)
-    # objects = EventManager()
+    objects = EventManager()
 
    
