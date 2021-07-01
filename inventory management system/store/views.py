@@ -822,7 +822,7 @@ def create_deliveryins(request):
             variant = forms.cleaned_data['variant']
             product = forms.cleaned_data['product']
             usage = forms.cleaned_data['usage']
-            order = forms.cleaned_data['order']
+            part = forms.cleaned_data['part']
             supplier = forms.cleaned_data['supplier']
             dimension = forms.cleaned_data['dimension']
             box = forms.cleaned_data['box']
@@ -832,7 +832,7 @@ def create_deliveryins(request):
                 variant=variant,
                 usage=usage,
                 product=product,
-                order=order,
+                part=part,
                 supplier=supplier,
                 dimension=dimension,
                 box=box,
@@ -887,7 +887,7 @@ def updateDI(request, pk):
 def deleteDI(request, pk):
     deliveryins = DeliveryIns.objects.get(id=pk)
     if request.method == 'POST':
-        deliveryins_id = deliveryins.order
+        deliveryins_id = deliveryins.part
         deliveryins.delete()
         return redirect('dins-list')
 
