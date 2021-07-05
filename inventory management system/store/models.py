@@ -81,6 +81,7 @@ class Order(models.Model):
         return self.part.partname
 
 
+
 class DeliveryOrder(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
