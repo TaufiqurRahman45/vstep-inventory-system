@@ -95,6 +95,10 @@ class EventManager(models.Manager):
             created_date__gte=timezone.now()-timezone.timedelta(days=1)
         )
 
+def di_id():
+
+    return str(random.randint(1000, 9999))
+
 class DeliveryIns(models.Model):
     variant = (
         ('STD', 'STD'),
@@ -107,6 +111,7 @@ class DeliveryIns(models.Model):
         ('STD/EXEC', 'STD/EXEC'),
         ('EXEC/PREM', 'EXEC/PREM'),
     )
+    di_id = models.CharField(max_length=4, default = di_id)
     part = models.ForeignKey(Part, on_delete=models.CASCADE)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
