@@ -33,7 +33,7 @@ from .models import (
     Part,
     DeliveryOrder,
     DeliveryIns,
-    # EventManager
+    EventManager
 )
 from .forms import (
     SupplierForm,
@@ -918,34 +918,57 @@ def create_deliveryins(request):
     form = DeliveryInsForm()
 
     if request.method == 'POST':
-        forms = DeliveryInsForm(request.POST)
-        if forms.is_valid():
-            variant = forms.cleaned_data['variant']
-            product = forms.cleaned_data['product']
-            usage = forms.cleaned_data['usage']
-            part = forms.cleaned_data['part']
-            supplier = forms.cleaned_data['supplier']
-            dimension = forms.cleaned_data['dimension']
-            box = forms.cleaned_data['box']
-            remarks = forms.cleaned_data['remarks']
+        a = []
+        max_l = 0
+        for k, v in dict(request.POST.lists()).items():
+            if type(v) == list:
+                max_l = max(max_l, len(v))
+                a.append([(k, x) for x in v])
+            else:
+                a.append((k, v))
 
-            q = Part.objects.get(id=part.id)
+        forms_data = [dict() for _ in range(max_l)]
+        for e in a:
+            if len(e) == 1:
+                k, v = e[0]
+                for d in forms_data:
+                    d[k] = v
+            else:
+                assert len(e) == max_l
+                for d, ee in zip(forms_data, e):
+                    k, v = ee
+                    d[k] = v
+        for form_data in forms_data:
+            forms = DeliveryInsForm(form_data)
+            if forms.is_valid():
+                di_id = forms.cleaned_data['di_id']
+                variant = forms.cleaned_data['variant']
+                product = forms.cleaned_data['product']
+                usage = forms.cleaned_data['usage']
+                part = forms.cleaned_data['part']
+                supplier = forms.cleaned_data['supplier']
+                dimension = forms.cleaned_data['dimension']
+                box = forms.cleaned_data['box']
+                remarks = forms.cleaned_data['remarks']
 
-            deliveryins = DeliveryIns.objects.create(
-                variant=variant,
-                usage=usage,
-                product=product,
-                part=part,
-                supplier=supplier,
-                dimension=dimension,
-                box=box,
-                remarks=remarks,
-            )
+                q = Part.objects.get(id=part.id)
 
-            q.quan -= box  # deduct quantity
-            q.save()
-            # create_log(request, deliveryins)
-            return redirect('dins-list')
+                deliveryins = DeliveryIns.objects.create(
+                    di_id=di_id,
+                    variant=variant,
+                    usage=usage,
+                    product=product,
+                    part=part,
+                    supplier=supplier,
+                    dimension=dimension,
+                    box=box,
+                    remarks=remarks,
+                )
+
+                q.quan -= box  # deduct quantity
+                q.save()
+                # create_log(request, deliveryins)
+        return redirect('dins-list')
     context = {
         'form': form
     }

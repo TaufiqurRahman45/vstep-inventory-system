@@ -27,11 +27,12 @@
                         <thead>
                             <tr>
                                 <th class="serial">#</th>
+                                <th>ID</th>
                                 <th>Variant</th>
                                 <th>Usage</th>
                                 <th>Part No</th>
                                 <th>Part Name</th>                            
-                                <th>Supplier</th>
+                                <!-- <th>Supplier</th> -->
                                 <th>Dimension</th> 
                                 <th>QTY/Box</th>   
                                 <th>Date</th>
@@ -43,11 +44,12 @@
                             {% for deliveryins in deliveryins %}
                             <tr>
                                 <td class="serial">{{ forloop.counter }}</td>
+                                <td>{{ deliveryins.di_id }}</td>
                                 <td>{{ deliveryins.variant }}</td>
                                 <td>{{ deliveryins.usage }}</td>
                                 <td>{{ deliveryins.part.partno }}</td>
                                 <td>{{ deliveryins.part.partname }}</td>
-                                <td>{{ deliveryins.supplier }}</td>
+                                <!-- <td>{{ deliveryins.supplier }}</td> -->
                                 <td>{{ deliveryins.dimension }}</td>
                                 <td>{{ deliveryins.box }}</td>
                                 <td>{{ deliveryins.created_date }}</td>
