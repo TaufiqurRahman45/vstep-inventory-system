@@ -58,56 +58,74 @@
                                 <label for="description" class="control-label mb-1">Part Name</label>
                                 {{ form.partname }}
                             </div>
-                            <div class="form-group">
-                                <label for="variant" class="control-label mb-1">Variant</label>
-                                {{ form.variant }}
-                            </div>
-                            <div class="form-group">
-                                <label for="usage" class="control-label mb-1">Usage</label>
-                                {{ form.usage }}
-                            </div>
+                            
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <label for="variant" class="control-label mb-1">Variant</label>
+                                        {{ form.variant }}
+                                    </div>
+                                </div>
 
-                            <div class="form-group">
-                                <label for="style" class="control-label mb-1">Style Packaging</label>
-                                {{ form.stylepack }}
-                            </div>
 
-                            <div class="form-group">
-                                <label for="standard" class="control-label mb-1">Standard Packaging</label>
-                                {{ form.standardpack }}
-                            </div>
+                                <div class="col-2">
+                                    <div class="form-group">
+                                        <label for="usage" class="control-label mb-1">Usage</label>
+                                        {{ form.usage }}
+                                    </div>
+                                </div>
 
-                            <div class="form-group">
-                                <label for="is_ppc" class="control-label mb-1">Unit per car</label>
-                                {{ form.unit }}
+                                <div class="col-2">
+                                    <div class="form-group">
+                                        <label for="style" class="control-label mb-1">Style Packaging</label>
+                                        {{ form.stylepack }}
+                                    </div>
+                                </div>
+                                <div class="col-2">
+                                    <div class="form-group">
+                                        <label for="standard" class="control-label mb-1">Standard Packaging</label>
+                                        {{ form.standardpack }}
+                                    </div>
+                                </div>
+                                <div class="col-2">
+                                    <div class="form-group">
+                                        <label for="is_ppc" class="control-label mb-1">Unit per car</label>
+                                        {{ form.unit }}
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="row">
-                                <div class="col-4">
+                                <div class="col-3">
                                     <div class="form-group">
                                         <label for="quantity" class="control-label mb-1">Price</label>
                                         {{ form.price }}
                                     </div>
                                 </div>
-                                <div class="col-4">
-                                    <div class="form-group">
-                                        <label for="limit" class="control-label mb-1">Tax</label>
-                                        {{ form.tax }}
-                                    </div>
-                                </div>
 
-                                <div class="col-4">
+
+                                <div class="col-2">
                                     <div class="form-group">
                                         <label for="quan" class="control-label mb-1">Quantity</label>
                                         {{ form.quan }}
                                     </div>
+                                </div>
+
+                                <div class="col-2">
+                                    <div class="form-group">
+                                        <label for="tax" class="control-label mb-1">Tax</label>
+                                        {{ form.tax }}
+                                    </div>
+                                </div>
+                                <div class="col-2">
                                     <div class="form-group">
                                         <label for="limit" class="control-label mb-1">Minimum Limit</label>
                                         {{ form.limit }}
                                     </div>
                                 </div>
-
+                                
                             </div>
+
                             <div>
                                 <button id="payment-button" type="submit" class="btn btn-lg btn-success btn-block">
                                     <span id="payment-button-amount">Save</span>
