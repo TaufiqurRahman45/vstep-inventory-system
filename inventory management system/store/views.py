@@ -727,6 +727,8 @@ def create_part(request):
             partname = forms.cleaned_data['partname']
             stylepack = forms.cleaned_data['stylepack']
             standardpack = forms.cleaned_data['standardpack']
+            usage = forms.cleaned_data['usage']
+            variant = forms.cleaned_data['variant']
             unit = forms.cleaned_data['unit']
             price = forms.cleaned_data['price']
             tax = forms.cleaned_data['tax']
@@ -737,6 +739,8 @@ def create_part(request):
                 supplier=supplier,
                 product=product,
                 partno=partno,
+                variant=variant,
+                usage=usage,
                 partname=partname,
                 stylepack=stylepack,
                 standardpack=standardpack,
@@ -757,10 +761,18 @@ def create_part(request):
 class PartListView(ListView):
     model = Part
     template_name = 'store/part_list.html'
+    context_object_name = 'part'
+
+    def get_queryset(self):
+        queryset = self.model.objects.all().order_by('-id')
+        if self.request.GET.get('supplier'):
+            queryset = queryset.filter(supplier_id=self.request.GET.get('supplier'))
+        elif self.request.GET.get('product'):
+            queryset = queryset.filter(product_id=self.request.GET.get('product'))
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['part'] = Part.objects.all().order_by('-id')
         context['filter'] = PartFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
@@ -942,9 +954,7 @@ def create_deliveryins(request):
             forms = DeliveryInsForm(form_data)
             if forms.is_valid():
                 di_id = forms.cleaned_data['di_id']
-                variant = forms.cleaned_data['variant']
                 product = forms.cleaned_data['product']
-                usage = forms.cleaned_data['usage']
                 part = forms.cleaned_data['part']
                 supplier = forms.cleaned_data['supplier']
                 dimension = forms.cleaned_data['dimension']
@@ -955,8 +965,6 @@ def create_deliveryins(request):
 
                 deliveryins = DeliveryIns.objects.create(
                     di_id=di_id,
-                    variant=variant,
-                    usage=usage,
                     product=product,
                     part=part,
                     supplier=supplier,
