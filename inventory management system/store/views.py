@@ -63,27 +63,28 @@ def generate_pdf(request):
     styles.add(ParagraphStyle(name='center_text', alignment=TA_CENTER, leading=14, fontSize=20))
     styles.add(ParagraphStyle(name='footer_text', leading=14, fontSize=6))
     elements = []
-    elements.append(Paragraph('Inovice Number: PO {}'.format("A"+ str(random.randint(1000, 2000))), styles["right_small_text"]))
+    
+    # elements.append(Paragraph('Inovice Number: PO {}'.format("A"+ str(random.randint(1000, 2000))), styles["right_small_text"]))
 
-    elements.append(Paragraph('Purchase Order', styles["right_small_text"]))
-    elements.append(Paragraph('Date: {}'.format(str(datetime.now().date().strftime("%d-%m-%Y"))), styles["right_small_text"]))
+    # elements.append(Paragraph('Purchase Order', styles["right_small_text"]))
+    # elements.append(Paragraph('Date: {}'.format(str(datetime.now().date().strftime("%d-%m-%Y"))), styles["right_small_text"]))
     paragraph_text = 'Victorious Step Sdn.Bhd. (667833-T)'
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["right_small_text"]))
     paragraph_text = 'No 5 Jalan Utarid U5/16,'
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["right_small_text"]))
     paragraph_text = '40150 Shah Alam'
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["right_small_text"]))
     paragraph_text = 'Selangor Darul Ehsan'
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["right_small_text"]))
     paragraph_text = 'Tel: 03-7847 1979 / 03-7734 0205 '
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["right_small_text"]))
     paragraph_text = 'Fax: 03-77346310'
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["right_small_text"]))
     paragraph_text = 'Email: victorious.step@yahoo.com'
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["right_small_text"]))
     paragraph_text = 'SST No.: B16-1808-21004655'
 
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["right_small_text"]))
     paragraph_text = u"<b>Supplier: </b>"
     elements.append(Paragraph(paragraph_text, styles["large_text"]))
 
@@ -147,6 +148,7 @@ def generate_pdf(request):
 
 # Prod
     columns = [
+            {'title': 'Inovice Number', 'field': 'po_id'},
             {'title': 'Payment Terms', 'field': 'terms'},
             {'title': 'Model', 'field': 'product'},
             {'title': 'Remarks', 'field': 'remarks'},
@@ -164,7 +166,7 @@ def generate_pdf(request):
 
     table_sec = set()
     for tr in orders:
-        table_sec=[str(tr.terms), tr.product, tr.remarks]
+        table_sec=[str(tr.po_id),tr.terms, tr.product, tr.remarks]
     table_data.append(table_sec)
     table = Table(table_data, repeatRows=1, colWidths=[doc.width / 7.0] * 7)
     table.setStyle(TableStyle([
@@ -194,7 +196,6 @@ def generate_pdf(request):
 
     table_data = [[col['title'] for col in columns]]
     table_data1 = []
-    # orders = Order.objects.all()
     orders = Order.objects.all()
     supplier = request.GET.get('supplier')
     product = request.GET.get('product')
@@ -230,7 +231,18 @@ def generate_pdf(request):
     elements.append(table1)
     elements.append(Spacer(1, 50))
 
-    
+    paragraph_text = u"<b>ORDERS TERMS AND CONDITIONS: </b>"
+    elements.append(Paragraph(paragraph_text, styles["large_text"]))
+    paragraph_text = '1.Invoice must bear and exact same prices and terms or authorization for chages must be recieved from VSTEP in writing prior to shipping.'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = '2.Goods not accordance with specifications will be rejected and held at vendors risk awaiting disposal.Supplier must pay freight on all rejected items.'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = '3.VSTEP reserve the right to cancell all or part of this order if not delivered within the time specified.'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = '4.The poperty and risks in the goods shall remian with seller untill they are delivered and accepted by VSTEP.'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = '5.In the event of interruption of our business in whole or in part by reason of fire, windstrom, earthquake, war, strike, acts of God or any causes beyond our control, VSTEP shall have the option of cancelling undelivered orders in whole part.'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
 
     doc.build(elements)
     pdf = pdf_buffer.getvalue()
@@ -582,8 +594,8 @@ class ProductListView(ListView):
         context['product'] = Product.objects.all().order_by('-id')
         return context
 
-def random_string():
-    return str(random.randint(10000, 99999))
+# def random_string():
+#     return str('PO' + random.randint(10000, 99999))
 
 # Order views
 @login_required(login_url='login')
@@ -629,7 +641,7 @@ def create_order(request):
                 q = Part.objects.get(id=part.id)
 
                 order = Order.objects.create(
-                    po_id=po_id,
+                    po_id='PO'+po_id,
                     supplier=supplier,
                     product=product,
                     part=part,
