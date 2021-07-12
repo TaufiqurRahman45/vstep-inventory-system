@@ -67,7 +67,7 @@ def generate_pdf(request):
     # elements.append(Paragraph('Inovice Number: PO {}'.format("A"+ str(random.randint(1000, 2000))), styles["right_small_text"]))
 
     # elements.append(Paragraph('Purchase Order', styles["right_small_text"]))
-    # elements.append(Paragraph('Date: {}'.format(str(datetime.now().date().strftime("%d-%m-%Y"))), styles["right_small_text"]))
+    elements.append(Paragraph('Date: {}'.format(str(datetime.now().date().strftime("%d-%m-%Y"))), styles["right_small_text"]))
     paragraph_text = 'Victorious Step Sdn.Bhd. (667833-T)'
     elements.append(Paragraph(paragraph_text, styles["right_small_text"]))
     paragraph_text = 'No 5 Jalan Utarid U5/16,'
@@ -679,6 +679,10 @@ class OrderListView(ListView):
             queryset = queryset.filter(supplier_id=self.request.GET.get('supplier'))
         elif self.request.GET.get('product'):
             queryset = queryset.filter(product_id=self.request.GET.get('product'))
+            
+        elif self.request.GET.get('created_date'):
+            queryset = queryset.filter(created_date=self.request.GET['created_date'])
+
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -1006,6 +1010,8 @@ class DeliveryInsListView(ListView):
             queryset = queryset.filter(supplier_id=self.request.GET.get('supplier'))
         elif self.request.GET.get('product'):
             queryset = queryset.filter(product_id=self.request.GET.get('product'))
+        elif self.request.GET.get('created_date'):
+            queryset = queryset.filter(created_date=self.request.GET['created_date'])
         return queryset
 
     def get_context_data(self, **kwargs):

@@ -1,5 +1,6 @@
 import django_filters
 from django_filters import DateFilter
+from django import forms
 
 from .models import *
 
@@ -11,10 +12,13 @@ class PartFilter(django_filters.FilterSet):
 
 
 class DIFilter(django_filters.FilterSet):
+    created_date = django_filters.CharFilter( widget=forms.TextInput(attrs={
+            'placeholder': 'YYYY-MM-DD'}))
     class Meta:
         model = DeliveryIns
-        fields = ['product','supplier']
-
+        fields = ['product','supplier', 'created_date']
+        
+        
 
 class DOFilter(django_filters.FilterSet):
     class Meta:
@@ -24,5 +28,7 @@ class DOFilter(django_filters.FilterSet):
 
 class POFilter(django_filters.FilterSet):
     class Meta:
+        created_date = django_filters.CharFilter( widget=forms.TextInput(attrs={
+            'placeholder': 'YYYY-MM-DD'}))
         model = Order
-        fields = ['product', 'supplier']
+        fields = ['product', 'supplier', 'created_date']
