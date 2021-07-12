@@ -43,61 +43,95 @@
                         <form action="#" method="post" id="form-container" novalidate="novalidate"
                             data-parts-url="{% url 'ajax_load_parts' %}">
                             {% csrf_token %}
-                            <div class="order-form">
-                                <div class="form-group">
-                                    <label for="po_id" class="control-label mb-1">ID</label>
-                                    {{ form.po_id }}
-                                </div>
-                                <div class="form-group">
-                                    <label for="supplier" class="control-label mb-1">Supplier</label>
-                                    {{ form.supplier }}
-                                </div>
-                                <div class="form-group">
-                                    <label for="product" class="control-label mb-1">Product</label>
-                                    {{ form.product }}
-                                </div>
+                                <div class="order-form">
+                                    <label class="control-label mb-1">Date</label>  
+                                    <input type="date" required autocomplete="off" name="po_date">
 
-                                
+                                        <div class="form-group">
+                                            <label for="po_id" class="control-label mb-1">ID</label>
+                                            {{ form.po_id }}
+                                        </div>
+                                        
+                                        
 
-                                <div class="form-expand">
-                                    <div class="form-group">
-                                        <label for="part" class="control-label mb-1">Part Name</label>
-                                        {{ form.part }}
+                                        <div class="row">
+                                            
+
+                                            <div class="col-6">
+                                                
+                                                <div class="form-group">
+                                                    <label for="supplier" class="control-label mb-1">Supplier</label>
+                                                    {{ form.supplier }}
+                                                </div>
+                                            </div> 
+                                            <div class="col-6">
+                                                <div class="form-group">
+                                                    <label for="product" class="control-label mb-1">Product</label>
+                                                    {{ form.product }}
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="co">
+                                                <div class="form-group">
+                                                    
+                                                </div>
+                                            </div> 
+                                            
+                                        </div>
+
+                                        <div class="row"> 
+                                            <div class="col-4">
+                                                <div class="form-group">
+                                                    <label for="price" class="control-label mb-1">Terms</i></label>
+                                                    {{ form.terms }}
+                                                </div>
+                                            </div> 
+                                            <div class="col-4">
+                                                <div class="form-group">
+                                                    <label for="price" class="control-label mb-1">Remarks</i></label>
+                                                    {{ form.remarks }}
+                                                </div>
+                                            </div>
+                                            <div class="col-4">
+                                                <div class="form-group">
+                                                    <label for="is_ppc" class="control-label mb-1">PPC</i></label>
+                                                    {{ form.is_ppc }}
+                                                </div>
+                                            </div> 
+                                        </div>
+                                        
+
+                                       
+
+                                            
+
+                                        
+                                            
+                                            
+                                    <!-- </div> -->
+
+                                    <div class="form-expand">
+
+                                        <div class="row"> 
+                                            <div class="col-9">
+                                                <div class="form-group">
+                                                    <label for="part" class="control-label mb-1">Part Name</label>
+                                                    {{ form.part }}
+                                                </div>
+                                            </div> 
+                                            <div class="col-3">
+                                                <div class="form-group">
+                                                    <label for="quantity" class="control-label mb-1">Quantity
+                                                        PCS</label>
+                                                    {{ form.quantity }}
+                                                </div>
+                                            </div>    
+                                        </div>
                                     </div>
-
-                                    <div class="row">
-                                        <div class="col-3">
-                                            <div class="form-group">
-                                                <label for="quantity" class="control-label mb-1">Quantity
-                                                    PCS</label>
-                                                {{ form.quantity }}
-                                            </div>
-                                        </div>
-
-
-                                        <div class="col-2">
-                                            <div class="form-group">
-                                                <label for="price" class="control-label mb-1">Terms</i></label>
-                                                {{ form.terms }}
-                                            </div>
-                                        </div>
-
-                                        <div class="col-2">
-                                            <div class="form-group">
-                                                <label for="price" class="control-label mb-1">Remarks</i></label>
-                                                {{ form.remarks }}
-                                            </div>
-                                        </div>
-                                        <div class="col-2">
-                                            <div class="form-group">
-                                                <label for="is_ppc" class="control-label mb-1">PIC</label>
-                                                {{ form.is_ppc }}
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
-                            </div>
-                            <button id="add-form" type="button">Add Another Order</button>
+                            
+
+                            <button id="add-form" type="button" style="margin-bottom: 10px">Add Another Order</button>
                             <div>
                                 <button id="payment-button" type="submit" class="btn btn-lg btn-success btn-block">
                                     <span id="payment-button-amount">Save</span>

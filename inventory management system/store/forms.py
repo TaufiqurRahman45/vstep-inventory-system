@@ -1,6 +1,8 @@
 from django import forms
 
-from .models import Product, Order, Part, DeliveryOrder,DeliveryIns
+from django.forms.widgets import NumberInput
+
+from .models import Product, Order, Part,DeliveryIns, DeliveryOrder
 
 
 class SupplierForm(forms.Form):
@@ -59,8 +61,8 @@ class ProductForm(forms.ModelForm):
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['supplier', 'product', 'part', 'quantity',  'is_ppc', 'terms', 'remarks', 'new_stock', 'po_id']
-
+        fields = ['supplier', 'product', 'part', 'quantity',  'is_ppc', 'terms', 'remarks', 'new_stock', 'po_id', 'po_date']
+        po_date = forms.DateField(widget=NumberInput(attrs={'type': 'date'}))
         widgets = {
             'po_id': forms.NumberInput(attrs={'class': 'form-control', 'id': 'po_id', 'readonly':'readonly'}),
             'supplier': forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),
