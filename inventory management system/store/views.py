@@ -637,6 +637,7 @@ def create_order(request):
                 quantity = forms.cleaned_data['quantity']
                 is_ppc = forms.cleaned_data['is_ppc']
                 new_stock = forms.cleaned_data['new_stock']
+                po_date = forms.cleaned_data['po_date']
 
                 q = Part.objects.get(id=part.id)
 
@@ -650,6 +651,7 @@ def create_order(request):
                     terms=30,
                     remarks='Follow DI',
                     new_stock=new_stock,
+                    po_date=po_date,
                 )
 
                 q.quan += quantity  # deduct quantity
@@ -680,8 +682,8 @@ class OrderListView(ListView):
         elif self.request.GET.get('product'):
             queryset = queryset.filter(product_id=self.request.GET.get('product'))
             
-        elif self.request.GET.get('created_date'):
-            queryset = queryset.filter(created_date=self.request.GET['created_date'])
+        elif self.request.GET.get('po_date'):
+            queryset = queryset.filter(po_date=self.request.GET['po_date'])
 
         return queryset
 
