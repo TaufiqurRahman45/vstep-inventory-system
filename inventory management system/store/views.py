@@ -93,10 +93,13 @@ def generate_pdf(request):
     orders = Order.objects.all()
     supplier = request.GET.get('supplier')
     product = request.GET.get('product')
+    po_date = request.GET.get('po_date')
     if supplier:
         orders = orders.filter(supplier_id=supplier)
     if product:
         orders = orders.filter(product_id=product)
+    if product:
+        orders = orders.filter(po_date=po_date)
 
     table_row = set()
     for tr in orders:
@@ -156,17 +159,19 @@ def generate_pdf(request):
 
     table_data = [[col['title'] for col in columns]]
 
-    orders = Order.objects.all()
     supplier = request.GET.get('supplier')
     product = request.GET.get('product')
+    po_date = request.GET.get('po_date')
     if supplier:
         orders = orders.filter(supplier_id=supplier)
     if product:
         orders = orders.filter(product_id=product)
+    if product:
+        orders = orders.filter(po_date=po_date)
 
     table_sec = set()
     for tr in orders:
-        table_sec=[str(tr.po_id),tr.terms, tr.product, tr.remarks]
+        table_sec=[str('PO'+ tr.po_id),tr.terms, tr.product, tr.remarks]
     table_data.append(table_sec)
     table = Table(table_data, repeatRows=1, colWidths=[doc.width / 7.0] * 7)
     table.setStyle(TableStyle([
@@ -477,8 +482,8 @@ def generate_pdf_di(request):
         din = din.filter(product_id=product)
     
     for tr in din:
-        table_row = [str(tr.variant),tr.usage,
-                    tr.order.part.partno, tr.order, tr.supplier, tr.dimension, tr.box]      
+        table_row = [str(tr.part.variant),tr.part.usage,
+                    tr.part.partno,tr.part.partname, tr.supplier, tr.dimension, tr.box]      
         table_data.append(table_row)
 
     columns = [
@@ -594,9 +599,6 @@ class ProductListView(ListView):
         context['product'] = Product.objects.all().order_by('-id')
         return context
 
-# def random_string():
-#     return str('PO' + random.randint(10000, 99999))
-
 # Order views
 @login_required(login_url='login')
 def create_order(request):
@@ -642,7 +644,7 @@ def create_order(request):
                 q = Part.objects.get(id=part.id)
 
                 order = Order.objects.create(
-                    po_id='PO'+po_id,
+                    po_id=po_id,
                     supplier=supplier,
                     product=product,
                     part=part,
@@ -692,16 +694,12 @@ class OrderListView(ListView):
         context['filter'] = POFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
-@login_required(login_url='login')
-def update_Order(request):
-    return render(request, 'store/updateOrder.html')
-
-
 @login_required(login_url="/login")
 def updateOrder(request, pk):
     action = 'update'
     order = Order.objects.get(id=pk)
     form = OrderForm(instance=order, initial={'new_stock': 0})
+    previous_quantity = order.quantity
 
     if request.method == 'POST':
         form = OrderForm(request.POST, instance=order)
@@ -713,6 +711,8 @@ def updateOrder(request, pk):
             q.quan += quantity  # add quantity
             q.save()
             PO = form.save()
+            create_log(request, order, object_repr="Purchase Order",
+                       change_message=f"Order Quantity {previous_quantity} to {order.quantity}")
             return redirect('order-list')
 
     context = {'action': action, 'form': form}
@@ -882,8 +882,7 @@ def create_deliveryorder(request):
                 )
                 o.quantity -= do_quantity  # deduct quantity
                 o.save()
-                # messages.success(request, "Delivery order created successfully")
-                # create_log(request, deliveryorder)
+
         return redirect('do-list')
     context = {
         'form': form
@@ -924,8 +923,8 @@ def updateDO(request, pk):
             o.quantity -= do_quantity  # deduct quantity
             o.save()
             do = form.save()
-            create_log(request, do, object_repr=do.do_quantity,
-                       change_message=f"do_quantity {previous_do} to {do.do_quantity}")
+            create_log(request, do, object_repr="Delivery Order",
+                       change_message=f"DO Quantity {previous_do} to {do.do_quantity}")
             return redirect('do-list')
 
     context = {'action': action, 'form': form}
@@ -1039,8 +1038,8 @@ def updateDI(request, pk):
             q.quan -= box
             q.save()
             din = form.save()
-            create_log(request, din, object_repr=din.box,
-                       change_message=f"QTY {previous_dins} to {din.box} in Delivery Instructions")
+            create_log(request, din, object_repr="Delivery Instructions",
+                       change_message=f"QTY {previous_dins} to {din.box}")
             return redirect('dins-list')
 
     context = {'action': action, 'form': form}
