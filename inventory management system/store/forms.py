@@ -94,7 +94,7 @@ class OrderForm(forms.ModelForm):
 class PartForm(forms.ModelForm):
     class Meta:
         model = Part
-        fields = ['partno', 'partname', 'stylepack', 'standardpack', 'supplier', 'product', 'unit', 'price', 'tax', 'quan', 'limit']
+        fields = ['partno', 'partname', 'stylepack', 'standardpack', 'supplier', 'product', 'variant','usage','unit', 'price', 'tax', 'quan', 'limit']
 
         widgets = {
             'partno': forms.TextInput(attrs={'class': 'form-control', 'id': 'partno'}),
