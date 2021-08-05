@@ -82,7 +82,7 @@ class Order(models.Model):
     terms = models.CharField(max_length=10, choices=terms)
     remarks = models.CharField(max_length=20, choices=remarks)
     quantity = models.PositiveIntegerField(default= 0)
-    po_date = models.DateField()
+    created_date = models.DateField()
     is_ppc = models.ForeignKey(User, on_delete=models.CASCADE, null=True,)
     new_stock = models.PositiveIntegerField(default=0, blank=True, null=True)
 

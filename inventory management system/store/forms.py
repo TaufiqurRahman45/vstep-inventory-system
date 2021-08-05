@@ -1,4 +1,6 @@
 from django import forms
+from django.forms import modelformset_factory
+from django.forms.widgets import NumberInput
 
 from django.forms.widgets import NumberInput
 
@@ -61,8 +63,8 @@ class ProductForm(forms.ModelForm):
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['supplier', 'product', 'part', 'quantity',  'is_ppc', 'terms', 'remarks', 'new_stock', 'po_id', 'po_date']
-        po_date = forms.DateField(widget=NumberInput(attrs={'type': 'date'}))
+        fields = ['supplier', 'product', 'part', 'quantity',  'is_ppc', 'terms', 'remarks', 'new_stock', 'po_id', 'created_date']
+        created_date = forms.DateField(widget=NumberInput(attrs={'type': 'date'}))
         widgets = {
             'po_id': forms.NumberInput(attrs={'class': 'form-control', 'id': 'po_id', 'readonly':'readonly'}),
             'supplier': forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),
@@ -92,7 +94,7 @@ class OrderForm(forms.ModelForm):
 class PartForm(forms.ModelForm):
     class Meta:
         model = Part
-        fields = ['partno', 'partname', 'stylepack', 'standardpack', 'supplier', 'product', 'unit','variant','usage', 'price', 'tax', 'quan', 'limit']
+        fields = ['partno', 'partname', 'stylepack', 'standardpack', 'supplier', 'product', 'unit', 'price', 'tax', 'quan', 'limit']
 
         widgets = {
             'partno': forms.TextInput(attrs={'class': 'form-control', 'id': 'partno'}),

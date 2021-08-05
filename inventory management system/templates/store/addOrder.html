@@ -45,20 +45,16 @@
                             {% csrf_token %}
                                 <div class="order-form">
                                     <label class="control-label mb-1">Date</label>  
-                                    <input type="date" required autocomplete="off" name="po_date">
+                                    <input type="date" required autocomplete="off" name="created_date">
 
                                         <div class="form-group">
                                             <label for="po_id" class="control-label mb-1">ID</label>
                                             {{ form.po_id }}
                                         </div>
                                         
-                                        
-
                                         <div class="row">
-                                            
+                                            <div class="col-6">                                               
 
-                                            <div class="col-6">
-                                                
                                                 <div class="form-group">
                                                     <label for="supplier" class="control-label mb-1">Supplier</label>
                                                     {{ form.supplier }}
@@ -99,15 +95,7 @@
                                                 </div>
                                             </div> 
                                         </div>
-                                        
-
-                                       
-
-                                            
-
-                                        
-                                            
-                                            
+                                               
                                     <!-- </div> -->
 
                                     <div class="form-expand">

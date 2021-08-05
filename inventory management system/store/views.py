@@ -639,7 +639,7 @@ def create_order(request):
                 quantity = forms.cleaned_data['quantity']
                 is_ppc = forms.cleaned_data['is_ppc']
                 new_stock = forms.cleaned_data['new_stock']
-                po_date = forms.cleaned_data['po_date']
+                created_date = forms.cleaned_data['created_date']
 
                 q = Part.objects.get(id=part.id)
 
@@ -653,7 +653,7 @@ def create_order(request):
                     terms=30,
                     remarks='Follow DI',
                     new_stock=new_stock,
-                    po_date=po_date,
+                    created_date=created_date,
                 )
 
                 q.quan += quantity  # deduct quantity
