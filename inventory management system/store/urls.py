@@ -28,7 +28,7 @@ urlpatterns = [
 
     path('create-product/', create_product, name='create-product'),
 
-    path('create-order/', create_order.as_view(), name='create-order'),
+    path('create-order/', create_order, name='create-order'),
 
     path('create-part/', create_part, name='create-part'),
 
