@@ -2,7 +2,9 @@ from django import forms
 from django.forms import modelformset_factory
 from django.forms.widgets import NumberInput
 
-from .models import Product, Order, Part, DeliveryOrder,DeliveryIns
+from django.forms.widgets import NumberInput
+
+from .models import Product, Order, Part,DeliveryIns, DeliveryOrder
 
 
 class SupplierForm(forms.Form):
@@ -93,6 +95,7 @@ class PartForm(forms.ModelForm):
     class Meta:
         model = Part
         fields = ['partno', 'partname', 'stylepack', 'standardpack', 'supplier', 'product', 'unit', 'price', 'tax', 'quan', 'limit']
+
         widgets = {
             'partno': forms.TextInput(attrs={'class': 'form-control', 'id': 'partno'}),
             'partname': forms.TextInput(attrs={'class': 'form-control', 'id': 'partname'}),
@@ -101,6 +104,8 @@ class PartForm(forms.ModelForm):
             'supplier': forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),
             'product': forms.Select(attrs={'class': 'form-control', 'id': 'product'}),
             'unit': forms.NumberInput(attrs={'class': 'form-control', 'id': 'unit'}),
+            'variant': forms.Select(attrs={'class': 'form-control', 'id': 'variant'}),
+            'usage' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'usage'}),
             'price' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'price'}),
             'quan' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'quan'}),
             'limit' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'limit'}),
@@ -121,13 +126,12 @@ class DeliveryOrderForm(forms.ModelForm):
 class DeliveryInsForm(forms.ModelForm):
     class Meta:
         model = DeliveryIns
-        fields = ['variant','usage',  'supplier', 'dimension', 'box', 'remarks','part','product']
+        fields = [ 'supplier', 'dimension', 'part','box', 'di_id', 'remarks','product']
 
         widgets = {
+            'di_id': forms.NumberInput(attrs={'class': 'form-control', 'id': 'di_id', 'readonly':'readonly'}),
             'part': forms.Select(attrs={'class': 'form-control', 'id': 'part'}),
             'product': forms.Select(attrs={'class': 'form-control', 'id': 'product'}),
-            'variant': forms.Select(attrs={'class': 'form-control', 'id': 'variant'}),
-            'usage' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'usage'}),
             'supplier': forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),
             'dimension': forms.TextInput(attrs={'class': 'form-control', 'id': 'dimension'}),
             'box': forms.NumberInput(attrs={'class': 'form-control', 'id': 'box'}),

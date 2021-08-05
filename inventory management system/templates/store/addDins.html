@@ -1,6 +1,6 @@
 {% extends 'base/base.html' %}
 
-{% block title %}Add Delievery Instructions{% endblock title %}
+{% block title %}Add Delivery Intructions{% endblock title %}
 
 {% block breadcrumbs %}
 <div class="breadcrumbs">
@@ -18,7 +18,7 @@
                     <div class="page-title">
                         <ol class="breadcrumb text-right">
                             <li><a href="#">Dashboard</a></li>
-                            <li><a href="#">Delivery Instructions</a></li>
+                            <li><a href="#">Deliery Instructions</a></li>
                             <li class="active">Add</li>
                         </ol>
                     </div>
@@ -36,63 +36,131 @@
             <div class="card-header">
                 <strong class="card-title">Add Delivery Instructions</strong>
             </div>
-            <div class="card-body">
+            <div class="card-body1">
                 <!-- Credit Card -->
                 <div id="pay-invoice">
                     <div class="card-body">
-                        <form action="#" method="post" novalidate="novalidate">
+                        <form action="#" method="post" id="form-container" novalidate="novalidate"
+                            data-parts-url="{% url 'ajax_load_parts' %}">
                             {% csrf_token %}
-                            <div class="form-group">
-                                <label for="product" class="control-label mb-1">Product</label>
-                                {{ form.product }}
-                            </div>
-                            <div class="form-group">
-                                <label for="supplier" class="control-label mb-1">Supplier</label>
-                                {{ form.supplier }}
-                            </div>
+                            <div class="order-form">
 
-                            <div class="form-group">
-                                <label for="part" class="control-label mb-1">Part</label>
-                                {{ form.part }}
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="variant" class="control-label mb-1">Variant</label>
-                                {{ form.variant }}
-                            </div>
+                                <div class="form-group">
+                                    <label for="di_id" class="control-label mb-1">ID</label>
+                                    {{ form.di_id }}
+                                </div>
 
-                            <div class="form-group">
-                                <label for="usage" class="control-label mb-1">Usage</label>
-                                {{ form.usage }}
-                            </div>  
+                                <div class="form-group">      
+                                    <label for="supplier" class="control-label mb-1">Supplier</label>
+                                    {{ form.supplier }}
+                                </div>
+                                <div class="form-group">
+                                    <label for="product" class="control-label mb-1">Product</label>
+                                    {{ form.product }}
+                                </div>
+                                
+                                
 
-                            <div class="form-group">
-                                <label for="dimersion" class="control-label mb-1">DIMENSION PACKAGING L x W x H (cm)</label>
-                                {{ form.dimension }}
-                            </div>
+                                
 
-                            <div class="form-group">
-                                <label for="box" class="control-label mb-1">QTY/BOX</label>
-                                {{ form.box }}
-                            </div>
+                                <div class="form-expand">
+                                    <div class="form-group">
+                                        <label for="part" class="control-label mb-1">Part</label>
+                                        {{ form.part }}
+                                    </div>
+                                                                        
 
-                            <div class="form-group">
-                                <label for="remarks" class="control-label mb-1">Remarks</label>
-                                {{ form.remarks }}
+                                    <div class="row">                                       
+
+
+                                        <div class="col-2">
+                                            <div class="form-group">
+                                                <label for="dimension" class="control-label mb-1">Dimension</i></label>
+                                                {{ form.dimension }}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-2">
+                                            <div class="form-group">
+                                                <label for="box" class="control-label mb-1">Box</i></label>
+                                                {{ form.box }}
+                                            </div>
+                                        </div>
+                                        <div class="col-2">
+                                            <div class="form-group">
+                                                <label for="remarks" class="control-label mb-1">Remarks</label>
+                                                {{ form.remarks }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                           
+                            <button id="add-form" type="button">Add Another DI</button>
                             <div>
                                 <button id="payment-button" type="submit" class="btn btn-lg btn-success btn-block">
                                     <span id="payment-button-amount">Save</span>
                                 </button>
                             </div>
                         </form>
+                        <script>
+                            let orderForm = document.querySelectorAll(".form-expand")
+                            let container = document.querySelector("#form-container")
+                            let addButton = document.querySelector("#add-form")
+                            let totalForms = document.querySelector("#id_form-TOTAL_FORMS")
+
+                            let formNum = orderForm.length -
+                                1 //Get the number of the last form on the page with zero-based indexing
+                            addButton.addEventListener('click', addForm)
+
+                            function addForm(e) {
+                                e.preventDefault()
+
+                                let newForm = orderForm[0].cloneNode(true) //Clone the bird form
+                                let formRegex = RegExp(`form-(\\d){1}-`,
+                                    'g') //Regex to find all instances of the form number
+
+                                formNum++ //Increment the form number
+                                newForm.innerHTML = newForm.innerHTML.replace(formRegex,
+                                    `form-${formNum}-`) //Update the new form to have the correct form number
+                                container.insertBefore(newForm,
+                                    addButton) //Insert the new form at the end of the list of forms
+
+                                totalForms.setAttribute('value',
+                                    `${formNum + 1}`) //Increment the number of total forms in the form management
+                            }
+                        </script>
+
+                        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+                        <script>
+                            $("#supplier").change(function () {
+                                var url = $("#form-container").attr("data-parts-url");
+                                var supplierId = $(this).val();
+                                console.log('changed')
+
+                                console.log(url)
+                                $.ajax({
+                                    url: url,
+                                    data: {
+                                        'supplier': supplierId
+                                    },
+                                    success: function (data) {
+                                        // console.log('got data', data);
+                                        $("#part").html(data);
+                                    }
+                                });
+
+                            });
+                        </script>
                     </div>
                 </div>
 
             </div>
         </div> <!-- .card -->
 
-    </div><!--/.col-->
+    </div>
+    <!--/.col-->
 </div>
+
+
+
 {% endblock content %}

@@ -45,19 +45,18 @@
                             {% if order %}
                             {% for order in order %}
                             <tr>
-                                <td>{{ order.po_id}}</td>
+                                <td>PO{{ order.po_id}}</td>
                                 <td>{{ order.part.partno}}</td>
                                 <td>{{ order.part.partname}}</td>
                                 <td>{{ order.part.stylepack }}</td>
                                 <td>{{ order.part.standardpack }}</td>
                                 <td>{{ order.part.unit }}</td>
                                 <td>{{ order.quantity }}</td>
-                                <td>{{ order.part.tax }}%</td>
+                                <td>{{ order.part.tax }}</td>
                                 <td>{{ order.part.price }}</td>
                                 <td>{{ order.amount }}</td>
                                 <td>{{ order.is_ppc}}</td>
-                                <td>{{ order.created_date }}</td>
-                                
+                                <td>{{ order.po_date }}</td>                                
                                 <td>
                                     <a class="btn btn-sm btn-warning" href="{% url 'update_order' order.id %}" >Update</a>
                                     <a class="btn btn-sm btn-danger"  href="{% url 'delete_order' order.id %}">Delete</a>

@@ -30,6 +30,17 @@ class Product(models.Model):
         return self.name
 
 class Part(models.Model):
+    variant = (
+        ('STD', 'STD'),
+        ('EXEC', 'EXEC'),
+        ('PREM', 'PREM'),
+        ('SE', 'SE'),
+        ('ALL', 'ALL'),
+        ('PREM/FLAG', 'PREM/FLAG'),
+        ('FLAG', 'FLAG'),
+        ('STD/EXEC', 'STD/EXEC'),
+        ('EXEC/PREM', 'EXEC/PREM'),
+    )
     partno = models.CharField(max_length=50)
     partname = models.CharField(max_length=50)
     stylepack = models.CharField(max_length=50, blank= True)
@@ -41,6 +52,8 @@ class Part(models.Model):
     tax = models.PositiveIntegerField(default= 0)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    variant = models.CharField(max_length=20, choices=variant)
+    usage = models.PositiveIntegerField(default= 0) 
     created_date = models.DateField(auto_now_add=True)
 
     def __str__(self):
@@ -81,40 +94,33 @@ class Order(models.Model):
         return self.part.partname
 
 
+
 class DeliveryOrder(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     do_quantity = models.PositiveIntegerField(default= 0)
     created_date = models.DateField(auto_now_add=True)
 
-# class EventManager(models.Manager):
+class EventManager(models.Manager):
 
-#     def get_queryset(self):
-#         return super().get_queryset().filter(
-#             created_date__gte=timezone.now()-timezone.timedelta(days=1)
-#         )
+    def get_queryset(self):
+        return super().get_queryset().filter(
+            created_date__gte=timezone.now()-timezone.timedelta(days=1)
+        )
+
+def di_id():
+
+    return str(random.randint(1000, 9999))
 
 class DeliveryIns(models.Model):
-    variant = (
-        ('STD', 'STD'),
-        ('EXEC', 'EXEC'),
-        ('PREM', 'PREM'),
-        ('SE', 'SE'),
-        ('ALL', 'ALL'),
-        ('PREM/FLAG', 'PREM/FLAG'),
-        ('FLAG', 'FLAG'),
-        ('STD/EXEC', 'STD/EXEC'),
-        ('EXEC/PREM', 'EXEC/PREM'),
-    )
+    di_id = models.CharField(max_length=4, default = di_id)
     part = models.ForeignKey(Part, on_delete=models.CASCADE)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     dimension =  models.CharField(max_length=30)
     box = models.PositiveIntegerField(default= 0)  
-    variant = models.CharField(max_length=20, choices=variant)
-    usage = models.PositiveIntegerField(default= 0) 
     remarks = models.CharField(max_length=500, blank= True)
     created_date = models.DateTimeField(default=timezone.now)
-    # objects = EventManager()
+    objects = EventManager()
 
    
