@@ -453,31 +453,105 @@ def generate_pdf_di(request):
                               leading=16, fontSize=13))
     styles.add(ParagraphStyle(name='right_small_text', alignment=TA_RIGHT, fontName='Helvetica', borderPadding=6,
                               leading=14, fontSize=12))
+    styles.add(ParagraphStyle(name='company_text', alignment=TA_CENTER, fontName='Helvetica', borderPadding=6,
+                              leading=14, fontSize=14))
     styles.add(ParagraphStyle(name='large_text', leading=14, fontSize=15, spaceAfter = 12, spaceBefore = 10))
     styles.add(ParagraphStyle(name='center_text', alignment=TA_CENTER, leading=14, fontSize=20))
     styles.add(ParagraphStyle(name='footer_text', leading=14, fontSize=6))
     elements = []
-    elements.append(Paragraph('Number: DI {}'.format(str(random.randint(1000, 2000))), styles["right_small_text"]))
-
-    elements.append(Paragraph('Delivery Instructions', styles["right_small_text"]))
-    elements.append(Paragraph('Date: {}'.format(str(datetime.now().date().strftime("%d-%m-%Y"))), styles["right_small_text"]))
+    elements.append(Paragraph('Date: {}'.format(str(datetime.now().date().strftime("%d-%m-%Y"))), styles["small_text"]))
     paragraph_text = 'Victorious Step Sdn.Bhd. (667833-T)'
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = 'No 5 Jalan Utarid U5/16,'
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = '40150 Shah Alam'
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = 'Selangor Darul Ehsan'
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = 'Tel: 03-7847 1979 / 03-7734 0205 '
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = 'Fax: 03-77346310'
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = 'Email: victorious.step@yahoo.com'
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = 'SST No.: B16-1808-21004655'
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
+    paragraph_text = u"<b>Supplier: </b>"
+    elements.append(Paragraph(paragraph_text, styles["large_text"]))
 
+    table_data = []
+
+    deliveryIns = DeliveryIns.objects.all()
+    supplier = request.GET.get('supplier')
+    product = request.GET.get('product')
+    created_date = request.GET.get('created_date')
+    if supplier:
+        deliveryIns = deliveryIns.filter(supplier_id=supplier)
+    if product:
+        deliveryIns = deliveryIns.filter(product_id=product)
+    if product:
+        deliveryIns = deliveryIns.filter(created_date=created_date)
+
+    table_row = set()
+    for tr in deliveryIns:
+
+        table_row.add(str(tr.supplier))
+        
+    table_data.append(table_row)
+
+# address 1
+    table_add = set()
+    for tr in deliveryIns:
+
+        table_add.add(str(tr.supplier.address))
+        
+    table_data.append(table_add)
+
+# address 2
+    table_add2 = set()
+    for tr in deliveryIns:
+
+        table_add2.add(str(tr.supplier.address2))
+        
+    table_data.append(table_add2)
+
+# address 3
+    table_add3 = set()
+    for tr in deliveryIns:
+
+        table_add3.add(str(tr.supplier.address3))
+    
+    table_data.append(table_add3)
+
+# phone
+    table_phn = set()
+    for tr in deliveryIns:
+
+        table_phn.add(str(tr.supplier.phone))
+        
+    table_data.append(table_phn)
+# Attn Details
+    table_attn = set()
+    for tr in deliveryIns:
+
+        table_attn.add(str(tr.supplier.attn))
+        
+    table_data.append(table_attn)
+
+    table_attnemail = set()
+    for tr in deliveryIns:
+
+        table_attnemail.add(str(tr.supplier.attn_email))
+        
+    table_data.append(table_attnemail)
+
+    table = Table(table_data, repeatRows=0,  colWidths=None)
+    
+    table.hAlign = "LEFT"
+    
+    elements.append(table)
+
+    elements.append(Spacer(5, 5))
     columns = [
         {'title': 'Variant', 'field': 'variant'},
         {'title': 'Usage', 'field': 'usage'},
@@ -492,10 +566,13 @@ def generate_pdf_di(request):
 
     supplier = request.GET.get('supplier')
     product = request.GET.get('product')
+    created_date = request.GET.get('created_date')
     if supplier:
         din = din.filter(supplier_id=supplier)
     if product:
         din = din.filter(product_id=product)
+    if created_date:
+        din = din.filter(created_date=created_date)
     
     for tr in din:
         table_row = [str(tr.part.variant),tr.part.usage,
@@ -504,22 +581,26 @@ def generate_pdf_di(request):
 
     columns = [
             
+            {'title': 'Invoice DI', 'field': 'di_id'},
             {'title': 'Model', 'field': 'product'},
         ]
 
     table_data1 = [[col['title'] for col in columns]]
 
-    orders = Order.objects.all()
+    dins = DeliveryIns.objects.all()
     supplier = request.GET.get('supplier')
     product = request.GET.get('product')
+    created_date = request.GET.get('created_date')
     if supplier:
-        orders = orders.filter(supplier_id=supplier)
+        dins = dins.filter(supplier_id=supplier)
     if product:
-        orders = orders.filter(product_id=product)
+        dins = dins.filter(product_id=product)
+    if product:
+        dins = dins.filter(created_date=created_date)
 
     table_sec = set()
-    for tr in orders:
-        table_sec=[str(tr.product)]
+    for tr in dins:
+        table_sec=[str('DI'+ tr.di_id),tr.product]
     table_data1.append(table_sec)
 
     table = Table(table_data1, repeatRows=1, colWidths=[doc.width / 7.0] * 7)
