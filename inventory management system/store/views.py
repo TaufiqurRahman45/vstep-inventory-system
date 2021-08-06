@@ -93,13 +93,13 @@ def generate_pdf(request):
     orders = Order.objects.all()
     supplier = request.GET.get('supplier')
     product = request.GET.get('product')
-    po_date = request.GET.get('po_date')
+    created_date = request.GET.get('created_date')
     if supplier:
         orders = orders.filter(supplier_id=supplier)
     if product:
         orders = orders.filter(product_id=product)
     if product:
-        orders = orders.filter(po_date=po_date)
+        orders = orders.filter(created_date=created_date)
 
     table_row = set()
     for tr in orders:
@@ -161,13 +161,13 @@ def generate_pdf(request):
 
     supplier = request.GET.get('supplier')
     product = request.GET.get('product')
-    po_date = request.GET.get('po_date')
+    created_date = request.GET.get('created_date')
     if supplier:
         orders = orders.filter(supplier_id=supplier)
     if product:
         orders = orders.filter(product_id=product)
     if product:
-        orders = orders.filter(po_date=po_date)
+        orders = orders.filter(created_date=created_date)
 
     table_sec = set()
     for tr in orders:
@@ -204,10 +204,14 @@ def generate_pdf(request):
     orders = Order.objects.all()
     supplier = request.GET.get('supplier')
     product = request.GET.get('product')
+    created_date = request.GET.get('created_date')
     if supplier:
         orders = orders.filter(supplier_id=supplier)
     if product:
         orders = orders.filter(product_id=product)
+    if created_date:
+        orders = orders.filter(created_date=created_date)
+        
     amount = 0
     for tr in orders:
         table_row = [str(tr.part.partno),tr.part.partname,
@@ -550,8 +554,10 @@ def create_supplier(request):
             postcode = forms.cleaned_data['postcode']
             email = forms.cleaned_data['email']
             phone = forms.cleaned_data['phone']
+            attn = forms.cleaned_data['attn']
+            attn_email = forms.cleaned_data['attn_email']
             supplier = Supplier.objects.create(name=name, email=email, address=address, address2=address2, address3=address3,
-                                               postcode=postcode, phone=phone)
+                                               postcode=postcode, phone=phone, attn=attn, attn_email=attn_email)
             # create_log(request, supplier)
         return redirect('supplier-list')
     context = {
@@ -684,8 +690,8 @@ class OrderListView(ListView):
         elif self.request.GET.get('product'):
             queryset = queryset.filter(product_id=self.request.GET.get('product'))
             
-        elif self.request.GET.get('po_date'):
-            queryset = queryset.filter(po_date=self.request.GET['po_date'])
+        elif self.request.GET.get('created_date'):
+            queryset = queryset.filter(created_date=self.request.GET['created_date'])
 
         return queryset
 

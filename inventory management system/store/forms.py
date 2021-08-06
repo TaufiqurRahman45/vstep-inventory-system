@@ -50,6 +50,18 @@ class SupplierForm(forms.Form):
         'data-val': 'true',
         'data-val-required': 'Please enter phone number',
     }))
+    attn = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'id': 'attn',
+        'data-val': 'true',
+        'data-val-required': 'Please enter Attn name',
+    }))
+    attn_email = forms.CharField(widget=forms.EmailInput(attrs={
+        'class': 'form-control',
+        'id': 'attn_email',
+        'data-val': 'true',
+        'data-val-required': 'Please enter Attn email',
+    }))
 
 class ProductForm(forms.ModelForm):
     class Meta:

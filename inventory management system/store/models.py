@@ -16,6 +16,8 @@ class Supplier(models.Model):
     postcode = models.CharField(max_length=10, default="No Postcode")
     phone = models.CharField(max_length=20)
     email = models.CharField(max_length=220)
+    attn = models.CharField(max_length=120, default= "Attn Name")
+    attn_email = models.CharField(max_length=220, default= "Attn Email")
     created_date = models.DateField(auto_now_add=True)
 
     def __str__(self):
