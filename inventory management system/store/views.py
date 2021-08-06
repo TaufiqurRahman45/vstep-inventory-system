@@ -906,6 +906,8 @@ class PartListView(ListView):
             queryset = queryset.filter(supplier_id=self.request.GET.get('supplier'))
         elif self.request.GET.get('product'):
             queryset = queryset.filter(product_id=self.request.GET.get('product'))
+        elif self.request.GET.get('partno'):
+            queryset = queryset.filter(partno=self.request.GET.get('partno'))
         return queryset
 
     def get_context_data(self, **kwargs):
