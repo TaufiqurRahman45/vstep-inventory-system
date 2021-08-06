@@ -476,9 +476,6 @@ def generate_pdf_di(request):
     elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = 'SST No.: B16-1808-21004655'
     elements.append(Paragraph(paragraph_text, styles["company_text"]))
-    paragraph_text = u"<b>Supplier: </b>"
-    elements.append(Paragraph(paragraph_text, styles["large_text"]))
-
     table_data = []
 
     deliveryIns = DeliveryIns.objects.all()
@@ -836,38 +833,61 @@ def create_part(request):
     form = PartForm()
 
     if request.method == 'POST':
-        forms = PartForm(request.POST)
-        if forms.is_valid():
-            supplier = forms.cleaned_data['supplier']
-            product = forms.cleaned_data['product']
-            partno = forms.cleaned_data['partno']
-            partname = forms.cleaned_data['partname']
-            stylepack = forms.cleaned_data['stylepack']
-            standardpack = forms.cleaned_data['standardpack']
-            usage = forms.cleaned_data['usage']
-            variant = forms.cleaned_data['variant']
-            unit = forms.cleaned_data['unit']
-            price = forms.cleaned_data['price']
-            tax = forms.cleaned_data['tax']
-            quan = forms.cleaned_data['quan']
-            limit = forms.cleaned_data['limit']
+        a = []
+        max_l = 0
+        for k, v in dict(request.POST.lists()).items():
+            if type(v) == list:
+                max_l = max(max_l, len(v))
+                a.append([(k, x) for x in v])
+            else:
+                a.append((k, v))
 
-            part = Part.objects.create(
-                supplier=supplier,
-                product=product,
-                partno=partno,
-                variant=variant,
-                usage=usage,
-                partname=partname,
-                stylepack=stylepack,
-                standardpack=standardpack,
-                unit=unit,
-                price=price,
-                tax=tax,
-                quan=quan,
-                limit=limit,
-            )
-            # create_log(request, part)
+        forms_data = [dict() for _ in range(max_l)]
+        for e in a:
+            if len(e) == 1:
+                k, v = e[0]
+                for d in forms_data:
+                    d[k] = v
+            else:
+                assert len(e) == max_l
+                for d, ee in zip(forms_data, e):
+                    k, v = ee
+                    d[k] = v
+
+        for form_data in forms_data:
+            forms = PartForm(form_data)
+            if forms.is_valid():
+                supplier = forms.cleaned_data['supplier']
+                product = forms.cleaned_data['product']
+                partno = forms.cleaned_data['partno']
+                partname = forms.cleaned_data['partname']
+                stylepack = forms.cleaned_data['stylepack']
+                standardpack = forms.cleaned_data['standardpack']
+                usage = forms.cleaned_data['usage']
+                variant = forms.cleaned_data['variant']
+                unit = forms.cleaned_data['unit']
+                price = forms.cleaned_data['price']
+                tax = forms.cleaned_data['tax']
+                quan = forms.cleaned_data['quan']
+                limit = forms.cleaned_data['limit']
+
+                part = Part.objects.create(
+                    supplier=supplier,
+                    product=product,
+                    partno=partno,
+                    variant=variant,
+                    usage=usage,
+                    partname=partname,
+                    stylepack=stylepack,
+                    standardpack=standardpack,
+                    unit=unit,
+                    price=price,
+                    tax=tax,
+                    quan=quan,
+                    limit=limit,
+                )
+                part.save()
+                # create_log(request, part)
             return redirect('part-list')
     context = {
         'form': form

@@ -121,6 +121,7 @@ class PartForm(forms.ModelForm):
             'price' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'price'}),
             'quan' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'quan'}),
             'limit' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'limit'}),
+            'tax' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'tax'}),
         }
 
 class DeliveryOrderForm(forms.ModelForm):
