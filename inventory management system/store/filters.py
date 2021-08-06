@@ -27,8 +27,8 @@ class DOFilter(django_filters.FilterSet):
 
 
 class POFilter(django_filters.FilterSet):
-    po_date = django_filters.CharFilter( widget=forms.TextInput(attrs={
+    created_date = django_filters.CharFilter( widget=forms.TextInput(attrs={
             'placeholder': 'YYYY-MM-DD'}))
     class Meta:
         model = Order
-        fields = ['product', 'supplier', 'po_date']
+        fields = ['product', 'supplier', 'created_date']
