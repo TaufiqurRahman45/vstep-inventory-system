@@ -53,6 +53,11 @@
     <!-- /Widgets -->
     
     <div class="clearfix"></div>
+    <div id="myBtnContainer">
+        <button class="btn active" onclick="filterSelection('all')"> Show all</button>
+        <button class="btn" onclick="filterSelection('Reorder')"> Reorder</button>
+
+    </div>
 
     <!-- Orders -->
     <div class="orders">
@@ -67,41 +72,43 @@
                                         <th class="serial">#</th>
                                         <th>Part No</th>
                                         <th>Part Name</th>
-                                        <th>Status</th>
+                                        <th>Quantity</th>
+                                        <th class="filterDiv status">Status</th>
                                         <th>Date</th>
                                         <th>Action</th>
                                         
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% if orders %}
-                                    {% for order in orders %}
+                                    {% if parts %}
+                                    {% for part in parts %}
                                     <tr>
                                         <td class="serial">{{ forloop.counter }}</td> 
-                                        <td>{{ order.part.partno }}</td>                                      
-                                        <td>{{ order.part.partname }}</td>
+                                        <td>{{ part.partno }}</td>                                      
+                                        <td>{{ part.partname }}</td>
+                                        <td>{{ part.quan }}</td>
                                                                              
                                         
                                         <td>
-                                            {% if order.quantity <= order.limit   %}
+                                            {% if part.quan <= part.limit   %}
                                                 <p style="color: #FF0000">
                                                       Reorder
                                                 </p>
-                                             {% elif order.quantity  > order.limit  %}
+                                             {% elif part.quan  > part.limit  %}
                                                  <p style="color:#008000">
                                                      Available
                                                  </p>
                                               {% endif %}
                                         </td>
-                                        <td>{{ order.created_date }}</td>
+                                        <td>{{ part.created_date }}</td>
                                         
                                         <td>
-                                        <a class="btn btn-info" href="{% url 'order-list'%}">More Details</a>                                   
+                                        <a class="btn btn-info" href="{% url 'part-list'%}">More Details</a>                                   
                                         </td>
                                     </tr>
                                     {% endfor %}
                                     {% else %}
-                                        <tr><td>No Order Data</td></tr>
+                                        <tr><td>No Part Data</td></tr>
                                     {% endif %}
                                 </tbody>
                             </table>
