@@ -111,7 +111,7 @@ class PartForm(forms.ModelForm):
         widgets = {
             'partno': forms.TextInput(attrs={'class': 'form-control', 'id': 'partno'}),
             'partname': forms.TextInput(attrs={'class': 'form-control', 'id': 'partname'}),
-            'stylepack': forms.TextInput(attrs={'class': 'form-control', 'id': 'stylepack'}),
+            'stylepack': forms.Select(attrs={'class': 'form-control', 'id': 'stylepack'}),
             'standardpack': forms.NumberInput(attrs={'class': 'form-control', 'id': 'standardpack'}),
             'supplier': forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),
             'product': forms.Select(attrs={'class': 'form-control', 'id': 'product'}),

@@ -43,9 +43,14 @@ class Part(models.Model):
         ('STD/EXEC', 'STD/EXEC'),
         ('EXEC/PREM', 'EXEC/PREM'),
     )
+    stylepack = (
+        ('Polybox', 'Polybox'),
+        ('Rack', 'Rack'),
+        ('Others', 'Others'),
+    )
     partno = models.CharField(max_length=50)
     partname = models.CharField(max_length=50)
-    stylepack = models.CharField(max_length=50, blank= True)
+    stylepack = models.CharField(max_length=20, choices=stylepack)
     standardpack = models.PositiveIntegerField(default= 0)
     quan = models.PositiveIntegerField(default= 0)
     limit = models.PositiveIntegerField(default= 0)
