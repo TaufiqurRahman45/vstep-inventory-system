@@ -10,9 +10,11 @@
                 <div class="card-body">
                     <h4 class="box-title" style="text-align: center;"> Hi, welcome! </h4>
                 </div>
-        </div>    </div>
+        
+            </div>    
+        </div>
 
-        <div class="col-lg-3 offset-md-3 col-md-6">
+        <div class="col-lg-3 offset-md-1 col-md-6">
             <div class="card">
                 <div class="card-body" style="background-color: #6610f2; border-radius:25px" >
                     <div class="stat-widget-five">
@@ -48,16 +50,29 @@
             </div>
         </div>
 
+        <div class="col-lg-3 col-md-6">
+            <div class="card">
+                <div class="card-body" style="background-color: #c4141c; border-radius:25px" >
+                    <div class="stat-widget-five">
+                        <div class="stat-icon dib flat-color-3">
+                            <i class="fa fa-user" style="color: #ffff;" ></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="text-left dib">
+                                <div class="stat-text"><span class="count" style="color: white">{{ parts.count }}</span></div>
+                                <div class="stat-heading" style="color: white">Reorder</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         
     </div>
     <!-- /Widgets -->
     
     <div class="clearfix"></div>
-    <div id="myBtnContainer">
-        <button class="btn active" onclick="filterSelection('all')"> Show all</button>
-        <button class="btn" onclick="filterSelection('Reorder')"> Reorder</button>
-
-    </div>
 
     <!-- Orders -->
     <div class="orders">
@@ -73,7 +88,7 @@
                                         <th>Part No</th>
                                         <th>Part Name</th>
                                         <th>Quantity</th>
-                                        <th class="filterDiv status">Status</th>
+                                        <th>Status</th>
                                         <th>Date</th>
                                         <th>Action</th>
                                         
