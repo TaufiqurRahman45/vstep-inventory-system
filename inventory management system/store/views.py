@@ -59,32 +59,30 @@ def generate_pdf(request):
                               leading=16, fontSize=13))
     styles.add(ParagraphStyle(name='right_small_text', alignment=TA_RIGHT, fontName='Helvetica', borderPadding=6,
                               leading=14, fontSize=12))
+    styles.add(ParagraphStyle(name='company_text', alignment=TA_CENTER, fontName='Helvetica', borderPadding=6,
+                              leading=14, fontSize=14))
     styles.add(ParagraphStyle(name='large_text', leading=14, fontSize=15, spaceAfter = 12, spaceBefore = 10))
     styles.add(ParagraphStyle(name='center_text', alignment=TA_CENTER, leading=14, fontSize=20))
     styles.add(ParagraphStyle(name='footer_text', leading=14, fontSize=6))
     elements = []
-    
-    # elements.append(Paragraph('Inovice Number: PO {}'.format("A"+ str(random.randint(1000, 2000))), styles["right_small_text"]))
-
-    # elements.append(Paragraph('Purchase Order', styles["right_small_text"]))
-    elements.append(Paragraph('Date: {}'.format(str(datetime.now().date().strftime("%d-%m-%Y"))), styles["right_small_text"]))
+    elements.append(Paragraph('Date: {}'.format(str(datetime.now().date().strftime("%d-%m-%Y"))), styles["small_text"]))
     paragraph_text = 'Victorious Step Sdn.Bhd. (667833-T)'
-    elements.append(Paragraph(paragraph_text, styles["right_small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = 'No 5 Jalan Utarid U5/16,'
-    elements.append(Paragraph(paragraph_text, styles["right_small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = '40150 Shah Alam'
-    elements.append(Paragraph(paragraph_text, styles["right_small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = 'Selangor Darul Ehsan'
-    elements.append(Paragraph(paragraph_text, styles["right_small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = 'Tel: 03-7847 1979 / 03-7734 0205 '
-    elements.append(Paragraph(paragraph_text, styles["right_small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = 'Fax: 03-77346310'
-    elements.append(Paragraph(paragraph_text, styles["right_small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = 'Email: victorious.step@yahoo.com'
-    elements.append(Paragraph(paragraph_text, styles["right_small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = 'SST No.: B16-1808-21004655'
 
-    elements.append(Paragraph(paragraph_text, styles["right_small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = u"<b>Supplier: </b>"
     elements.append(Paragraph(paragraph_text, styles["large_text"]))
 
@@ -139,6 +137,20 @@ def generate_pdf(request):
         table_phn.add(str(tr.supplier.phone))
         
     table_data.append(table_phn)
+# Attn Details
+    table_attn = set()
+    for tr in orders:
+
+        table_attn.add(str(tr.supplier.attn))
+        
+    table_data.append(table_attn)
+
+    table_attnemail = set()
+    for tr in orders:
+
+        table_attnemail.add(str(tr.supplier.attn_email))
+        
+    table_data.append(table_attnemail)
 
     table = Table(table_data, repeatRows=0,  colWidths=None)
     
