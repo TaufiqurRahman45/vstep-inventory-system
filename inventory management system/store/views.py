@@ -33,7 +33,7 @@ from .models import (
     Part,
     DeliveryOrder,
     DeliveryIns,
-    # EventManager
+    EventManager
 )
 from .forms import (
     SupplierForm,
@@ -59,31 +59,30 @@ def generate_pdf(request):
                               leading=16, fontSize=13))
     styles.add(ParagraphStyle(name='right_small_text', alignment=TA_RIGHT, fontName='Helvetica', borderPadding=6,
                               leading=14, fontSize=12))
+    styles.add(ParagraphStyle(name='company_text', alignment=TA_CENTER, fontName='Helvetica', borderPadding=6,
+                              leading=14, fontSize=14))
     styles.add(ParagraphStyle(name='large_text', leading=14, fontSize=15, spaceAfter = 12, spaceBefore = 10))
     styles.add(ParagraphStyle(name='center_text', alignment=TA_CENTER, leading=14, fontSize=20))
     styles.add(ParagraphStyle(name='footer_text', leading=14, fontSize=6))
     elements = []
-    elements.append(Paragraph('Inovice Number: PO {}'.format("A"+ str(random.randint(1000, 2000))), styles["right_small_text"]))
-
-    elements.append(Paragraph('Purchase Order', styles["right_small_text"]))
-    elements.append(Paragraph('Date: {}'.format(str(datetime.now().date().strftime("%d-%m-%Y"))), styles["right_small_text"]))
+    elements.append(Paragraph('Date: {}'.format(str(datetime.now().date().strftime("%d-%m-%Y"))), styles["small_text"]))
     paragraph_text = 'Victorious Step Sdn.Bhd. (667833-T)'
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = 'No 5 Jalan Utarid U5/16,'
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = '40150 Shah Alam'
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = 'Selangor Darul Ehsan'
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = 'Tel: 03-7847 1979 / 03-7734 0205 '
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = 'Fax: 03-77346310'
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = 'Email: victorious.step@yahoo.com'
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = 'SST No.: B16-1808-21004655'
 
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = u"<b>Supplier: </b>"
     elements.append(Paragraph(paragraph_text, styles["large_text"]))
 
@@ -92,10 +91,13 @@ def generate_pdf(request):
     orders = Order.objects.all()
     supplier = request.GET.get('supplier')
     product = request.GET.get('product')
+    created_date = request.GET.get('created_date')
     if supplier:
         orders = orders.filter(supplier_id=supplier)
     if product:
         orders = orders.filter(product_id=product)
+    if product:
+        orders = orders.filter(created_date=created_date)
 
     table_row = set()
     for tr in orders:
@@ -135,6 +137,20 @@ def generate_pdf(request):
         table_phn.add(str(tr.supplier.phone))
         
     table_data.append(table_phn)
+# Attn Details
+    table_attn = set()
+    for tr in orders:
+
+        table_attn.add(str(tr.supplier.attn))
+        
+    table_data.append(table_attn)
+
+    table_attnemail = set()
+    for tr in orders:
+
+        table_attnemail.add(str(tr.supplier.attn_email))
+        
+    table_data.append(table_attnemail)
 
     table = Table(table_data, repeatRows=0,  colWidths=None)
     
@@ -147,6 +163,7 @@ def generate_pdf(request):
 
 # Prod
     columns = [
+            {'title': 'Inovice Number', 'field': 'po_id'},
             {'title': 'Payment Terms', 'field': 'terms'},
             {'title': 'Model', 'field': 'product'},
             {'title': 'Remarks', 'field': 'remarks'},
@@ -154,17 +171,19 @@ def generate_pdf(request):
 
     table_data = [[col['title'] for col in columns]]
 
-    orders = Order.objects.all()
     supplier = request.GET.get('supplier')
     product = request.GET.get('product')
+    created_date = request.GET.get('created_date')
     if supplier:
         orders = orders.filter(supplier_id=supplier)
     if product:
         orders = orders.filter(product_id=product)
+    if product:
+        orders = orders.filter(created_date=created_date)
 
     table_sec = set()
     for tr in orders:
-        table_sec=[str(tr.terms), tr.product, tr.remarks]
+        table_sec=[str('PO'+ tr.po_id),tr.terms, tr.product, tr.remarks]
     table_data.append(table_sec)
     table = Table(table_data, repeatRows=1, colWidths=[doc.width / 7.0] * 7)
     table.setStyle(TableStyle([
@@ -194,14 +213,17 @@ def generate_pdf(request):
 
     table_data = [[col['title'] for col in columns]]
     table_data1 = []
-    # orders = Order.objects.all()
     orders = Order.objects.all()
     supplier = request.GET.get('supplier')
     product = request.GET.get('product')
+    created_date = request.GET.get('created_date')
     if supplier:
         orders = orders.filter(supplier_id=supplier)
     if product:
         orders = orders.filter(product_id=product)
+    if created_date:
+        orders = orders.filter(created_date=created_date)
+        
     amount = 0
     for tr in orders:
         table_row = [str(tr.part.partno),tr.part.partname,
@@ -230,7 +252,18 @@ def generate_pdf(request):
     elements.append(table1)
     elements.append(Spacer(1, 50))
 
-    
+    paragraph_text = u"<b>ORDERS TERMS AND CONDITIONS: </b>"
+    elements.append(Paragraph(paragraph_text, styles["large_text"]))
+    paragraph_text = '1.Invoice must bear and exact same prices and terms or authorization for chages must be recieved from VSTEP in writing prior to shipping.'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = '2.Goods not accordance with specifications will be rejected and held at vendors risk awaiting disposal.Supplier must pay freight on all rejected items.'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = '3.VSTEP reserve the right to cancell all or part of this order if not delivered within the time specified.'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = '4.The poperty and risks in the goods shall remian with seller untill they are delivered and accepted by VSTEP.'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    paragraph_text = '5.In the event of interruption of our business in whole or in part by reason of fire, windstrom, earthquake, war, strike, acts of God or any causes beyond our control, VSTEP shall have the option of cancelling undelivered orders in whole part.'
+    elements.append(Paragraph(paragraph_text, styles["small_text"]))
 
     doc.build(elements)
     pdf = pdf_buffer.getvalue()
@@ -420,31 +453,102 @@ def generate_pdf_di(request):
                               leading=16, fontSize=13))
     styles.add(ParagraphStyle(name='right_small_text', alignment=TA_RIGHT, fontName='Helvetica', borderPadding=6,
                               leading=14, fontSize=12))
+    styles.add(ParagraphStyle(name='company_text', alignment=TA_CENTER, fontName='Helvetica', borderPadding=6,
+                              leading=14, fontSize=14))
     styles.add(ParagraphStyle(name='large_text', leading=14, fontSize=15, spaceAfter = 12, spaceBefore = 10))
     styles.add(ParagraphStyle(name='center_text', alignment=TA_CENTER, leading=14, fontSize=20))
     styles.add(ParagraphStyle(name='footer_text', leading=14, fontSize=6))
     elements = []
-    elements.append(Paragraph('Number: DI {}'.format(str(random.randint(1000, 2000))), styles["right_small_text"]))
-
-    elements.append(Paragraph('Delivery Instructions', styles["right_small_text"]))
-    elements.append(Paragraph('Date: {}'.format(str(datetime.now().date().strftime("%d-%m-%Y"))), styles["right_small_text"]))
+    elements.append(Paragraph('Date: {}'.format(str(datetime.now().date().strftime("%d-%m-%Y"))), styles["small_text"]))
     paragraph_text = 'Victorious Step Sdn.Bhd. (667833-T)'
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = 'No 5 Jalan Utarid U5/16,'
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = '40150 Shah Alam'
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = 'Selangor Darul Ehsan'
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = 'Tel: 03-7847 1979 / 03-7734 0205 '
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = 'Fax: 03-77346310'
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = 'Email: victorious.step@yahoo.com'
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
     paragraph_text = 'SST No.: B16-1808-21004655'
-    elements.append(Paragraph(paragraph_text, styles["small_text"]))
+    elements.append(Paragraph(paragraph_text, styles["company_text"]))
+    table_data = []
 
+    deliveryIns = DeliveryIns.objects.all()
+    supplier = request.GET.get('supplier')
+    product = request.GET.get('product')
+    created_date = request.GET.get('created_date')
+    if supplier:
+        deliveryIns = deliveryIns.filter(supplier_id=supplier)
+    if product:
+        deliveryIns = deliveryIns.filter(product_id=product)
+    if product:
+        deliveryIns = deliveryIns.filter(created_date=created_date)
+
+    table_row = set()
+    for tr in deliveryIns:
+
+        table_row.add(str(tr.supplier))
+        
+    table_data.append(table_row)
+
+# address 1
+    table_add = set()
+    for tr in deliveryIns:
+
+        table_add.add(str(tr.supplier.address))
+        
+    table_data.append(table_add)
+
+# address 2
+    table_add2 = set()
+    for tr in deliveryIns:
+
+        table_add2.add(str(tr.supplier.address2))
+        
+    table_data.append(table_add2)
+
+# address 3
+    table_add3 = set()
+    for tr in deliveryIns:
+
+        table_add3.add(str(tr.supplier.address3))
+    
+    table_data.append(table_add3)
+
+# phone
+    table_phn = set()
+    for tr in deliveryIns:
+
+        table_phn.add(str(tr.supplier.phone))
+        
+    table_data.append(table_phn)
+# Attn Details
+    table_attn = set()
+    for tr in deliveryIns:
+
+        table_attn.add(str(tr.supplier.attn))
+        
+    table_data.append(table_attn)
+
+    table_attnemail = set()
+    for tr in deliveryIns:
+
+        table_attnemail.add(str(tr.supplier.attn_email))
+        
+    table_data.append(table_attnemail)
+
+    table = Table(table_data, repeatRows=0,  colWidths=None)
+    
+    table.hAlign = "LEFT"
+    
+    elements.append(table)
+
+    elements.append(Spacer(5, 5))
     columns = [
         {'title': 'Variant', 'field': 'variant'},
         {'title': 'Usage', 'field': 'usage'},
@@ -459,34 +563,41 @@ def generate_pdf_di(request):
 
     supplier = request.GET.get('supplier')
     product = request.GET.get('product')
+    created_date = request.GET.get('created_date')
     if supplier:
         din = din.filter(supplier_id=supplier)
     if product:
         din = din.filter(product_id=product)
+    if created_date:
+        din = din.filter(created_date=created_date)
     
     for tr in din:
-        table_row = [str(tr.variant),tr.usage,
-                    tr.order.part.partno, tr.order, tr.supplier, tr.dimension, tr.box]      
+        table_row = [str(tr.part.variant),tr.part.usage,
+                    tr.part.partno,tr.part.partname, tr.supplier, tr.dimension, tr.box]      
         table_data.append(table_row)
 
     columns = [
             
+            {'title': 'Invoice DI', 'field': 'di_id'},
             {'title': 'Model', 'field': 'product'},
         ]
 
     table_data1 = [[col['title'] for col in columns]]
 
-    orders = Order.objects.all()
+    dins = DeliveryIns.objects.all()
     supplier = request.GET.get('supplier')
     product = request.GET.get('product')
+    created_date = request.GET.get('created_date')
     if supplier:
-        orders = orders.filter(supplier_id=supplier)
+        dins = dins.filter(supplier_id=supplier)
     if product:
-        orders = orders.filter(product_id=product)
+        dins = dins.filter(product_id=product)
+    if product:
+        dins = dins.filter(created_date=created_date)
 
     table_sec = set()
-    for tr in orders:
-        table_sec=[str(tr.product)]
+    for tr in dins:
+        table_sec=[str('DI'+ tr.di_id),tr.product]
     table_data1.append(table_sec)
 
     table = Table(table_data1, repeatRows=1, colWidths=[doc.width / 7.0] * 7)
@@ -533,8 +644,10 @@ def create_supplier(request):
             postcode = forms.cleaned_data['postcode']
             email = forms.cleaned_data['email']
             phone = forms.cleaned_data['phone']
+            attn = forms.cleaned_data['attn']
+            attn_email = forms.cleaned_data['attn_email']
             supplier = Supplier.objects.create(name=name, email=email, address=address, address2=address2, address3=address3,
-                                               postcode=postcode, phone=phone)
+                                               postcode=postcode, phone=phone, attn=attn, attn_email=attn_email)
             # create_log(request, supplier)
         return redirect('supplier-list')
     context = {
@@ -582,9 +695,6 @@ class ProductListView(ListView):
         context['product'] = Product.objects.all().order_by('-id')
         return context
 
-def random_string():
-    return str(random.randint(10000, 99999))
-
 # Order views
 @login_required(login_url='login')
 def create_order(request):
@@ -625,6 +735,7 @@ def create_order(request):
                 quantity = forms.cleaned_data['quantity']
                 is_ppc = forms.cleaned_data['is_ppc']
                 new_stock = forms.cleaned_data['new_stock']
+                created_date = forms.cleaned_data['created_date']
 
                 q = Part.objects.get(id=part.id)
 
@@ -638,6 +749,7 @@ def create_order(request):
                     terms=30,
                     remarks='Follow DI',
                     new_stock=new_stock,
+                    created_date=created_date,
                 )
 
                 q.quan += quantity  # deduct quantity
@@ -667,6 +779,10 @@ class OrderListView(ListView):
             queryset = queryset.filter(supplier_id=self.request.GET.get('supplier'))
         elif self.request.GET.get('product'):
             queryset = queryset.filter(product_id=self.request.GET.get('product'))
+            
+        elif self.request.GET.get('created_date'):
+            queryset = queryset.filter(created_date=self.request.GET['created_date'])
+
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -674,16 +790,12 @@ class OrderListView(ListView):
         context['filter'] = POFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
-@login_required(login_url='login')
-def update_Order(request):
-    return render(request, 'store/updateOrder.html')
-
-
 @login_required(login_url="/login")
 def updateOrder(request, pk):
     action = 'update'
     order = Order.objects.get(id=pk)
     form = OrderForm(instance=order, initial={'new_stock': 0})
+    previous_quantity = order.quantity
 
     if request.method == 'POST':
         form = OrderForm(request.POST, instance=order)
@@ -695,6 +807,8 @@ def updateOrder(request, pk):
             q.quan += quantity  # add quantity
             q.save()
             PO = form.save()
+            create_log(request, order, object_repr="Purchase Order",
+                       change_message=f"Order Quantity {previous_quantity} to {order.quantity}")
             return redirect('order-list')
 
     context = {'action': action, 'form': form}
@@ -719,34 +833,61 @@ def create_part(request):
     form = PartForm()
 
     if request.method == 'POST':
-        forms = PartForm(request.POST)
-        if forms.is_valid():
-            supplier = forms.cleaned_data['supplier']
-            product = forms.cleaned_data['product']
-            partno = forms.cleaned_data['partno']
-            partname = forms.cleaned_data['partname']
-            stylepack = forms.cleaned_data['stylepack']
-            standardpack = forms.cleaned_data['standardpack']
-            unit = forms.cleaned_data['unit']
-            price = forms.cleaned_data['price']
-            tax = forms.cleaned_data['tax']
-            quan = forms.cleaned_data['quan']
-            limit = forms.cleaned_data['limit']
+        a = []
+        max_l = 0
+        for k, v in dict(request.POST.lists()).items():
+            if type(v) == list:
+                max_l = max(max_l, len(v))
+                a.append([(k, x) for x in v])
+            else:
+                a.append((k, v))
 
-            part = Part.objects.create(
-                supplier=supplier,
-                product=product,
-                partno=partno,
-                partname=partname,
-                stylepack=stylepack,
-                standardpack=standardpack,
-                unit=unit,
-                price=price,
-                tax=tax,
-                quan=quan,
-                limit=limit,
-            )
-            # create_log(request, part)
+        forms_data = [dict() for _ in range(max_l)]
+        for e in a:
+            if len(e) == 1:
+                k, v = e[0]
+                for d in forms_data:
+                    d[k] = v
+            else:
+                assert len(e) == max_l
+                for d, ee in zip(forms_data, e):
+                    k, v = ee
+                    d[k] = v
+
+        for form_data in forms_data:
+            forms = PartForm(form_data)
+            if forms.is_valid():
+                supplier = forms.cleaned_data['supplier']
+                product = forms.cleaned_data['product']
+                partno = forms.cleaned_data['partno']
+                partname = forms.cleaned_data['partname']
+                stylepack = forms.cleaned_data['stylepack']
+                standardpack = forms.cleaned_data['standardpack']
+                usage = forms.cleaned_data['usage']
+                variant = forms.cleaned_data['variant']
+                unit = forms.cleaned_data['unit']
+                price = forms.cleaned_data['price']
+                tax = forms.cleaned_data['tax']
+                quan = forms.cleaned_data['quan']
+                limit = forms.cleaned_data['limit']
+
+                part = Part.objects.create(
+                    supplier=supplier,
+                    product=product,
+                    partno=partno,
+                    variant=variant,
+                    usage=usage,
+                    partname=partname,
+                    stylepack=stylepack,
+                    standardpack=standardpack,
+                    unit=unit,
+                    price=price,
+                    tax=tax,
+                    quan=quan,
+                    limit=limit,
+                )
+                part.save()
+                # create_log(request, part)
             return redirect('part-list')
     context = {
         'form': form
@@ -757,10 +898,20 @@ def create_part(request):
 class PartListView(ListView):
     model = Part
     template_name = 'store/part_list.html'
+    context_object_name = 'part'
+
+    def get_queryset(self):
+        queryset = self.model.objects.all().order_by('-id')
+        if self.request.GET.get('supplier'):
+            queryset = queryset.filter(supplier_id=self.request.GET.get('supplier'))
+        elif self.request.GET.get('product'):
+            queryset = queryset.filter(product_id=self.request.GET.get('product'))
+        elif self.request.GET.get('partno'):
+            queryset = queryset.filter(partno=self.request.GET.get('partno'))
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['part'] = Part.objects.all().order_by('-id')
         context['filter'] = PartFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
@@ -852,8 +1003,7 @@ def create_deliveryorder(request):
                 )
                 o.quantity -= do_quantity  # deduct quantity
                 o.save()
-                # messages.success(request, "Delivery order created successfully")
-                # create_log(request, deliveryorder)
+
         return redirect('do-list')
     context = {
         'form': form
@@ -894,8 +1044,8 @@ def updateDO(request, pk):
             o.quantity -= do_quantity  # deduct quantity
             o.save()
             do = form.save()
-            create_log(request, do, object_repr=do.do_quantity,
-                       change_message=f"do_quantity {previous_do} to {do.do_quantity}")
+            create_log(request, do, object_repr="Delivery Order",
+                       change_message=f"DO Quantity {previous_do} to {do.do_quantity}")
             return redirect('do-list')
 
     context = {'action': action, 'form': form}
@@ -918,34 +1068,53 @@ def create_deliveryins(request):
     form = DeliveryInsForm()
 
     if request.method == 'POST':
-        forms = DeliveryInsForm(request.POST)
-        if forms.is_valid():
-            variant = forms.cleaned_data['variant']
-            product = forms.cleaned_data['product']
-            usage = forms.cleaned_data['usage']
-            part = forms.cleaned_data['part']
-            supplier = forms.cleaned_data['supplier']
-            dimension = forms.cleaned_data['dimension']
-            box = forms.cleaned_data['box']
-            remarks = forms.cleaned_data['remarks']
+        a = []
+        max_l = 0
+        for k, v in dict(request.POST.lists()).items():
+            if type(v) == list:
+                max_l = max(max_l, len(v))
+                a.append([(k, x) for x in v])
+            else:
+                a.append((k, v))
 
-            q = Part.objects.get(id=part.id)
+        forms_data = [dict() for _ in range(max_l)]
+        for e in a:
+            if len(e) == 1:
+                k, v = e[0]
+                for d in forms_data:
+                    d[k] = v
+            else:
+                assert len(e) == max_l
+                for d, ee in zip(forms_data, e):
+                    k, v = ee
+                    d[k] = v
+        for form_data in forms_data:
+            forms = DeliveryInsForm(form_data)
+            if forms.is_valid():
+                di_id = forms.cleaned_data['di_id']
+                product = forms.cleaned_data['product']
+                part = forms.cleaned_data['part']
+                supplier = forms.cleaned_data['supplier']
+                dimension = forms.cleaned_data['dimension']
+                box = forms.cleaned_data['box']
+                remarks = forms.cleaned_data['remarks']
 
-            deliveryins = DeliveryIns.objects.create(
-                variant=variant,
-                usage=usage,
-                product=product,
-                part=part,
-                supplier=supplier,
-                dimension=dimension,
-                box=box,
-                remarks=remarks,
-            )
+                q = Part.objects.get(id=part.id)
 
-            q.quan -= box  # deduct quantity
-            q.save()
-            # create_log(request, deliveryins)
-            return redirect('dins-list')
+                deliveryins = DeliveryIns.objects.create(
+                    di_id=di_id,
+                    product=product,
+                    part=part,
+                    supplier=supplier,
+                    dimension=dimension,
+                    box=box,
+                    remarks=remarks,
+                )
+
+                q.quan -= box  # deduct quantity
+                q.save()
+                # create_log(request, deliveryins)
+        return redirect('dins-list')
     context = {
         'form': form
     }
@@ -963,6 +1132,8 @@ class DeliveryInsListView(ListView):
             queryset = queryset.filter(supplier_id=self.request.GET.get('supplier'))
         elif self.request.GET.get('product'):
             queryset = queryset.filter(product_id=self.request.GET.get('product'))
+        elif self.request.GET.get('created_date'):
+            queryset = queryset.filter(created_date=self.request.GET['created_date'])
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -988,8 +1159,8 @@ def updateDI(request, pk):
             q.quan -= box
             q.save()
             din = form.save()
-            create_log(request, din, object_repr=din.box,
-                       change_message=f"QTY {previous_dins} to {din.box} in Delivery Instructions")
+            create_log(request, din, object_repr="Delivery Instructions",
+                       change_message=f"QTY {previous_dins} to {din.box}")
             return redirect('dins-list')
 
     context = {'action': action, 'form': form}

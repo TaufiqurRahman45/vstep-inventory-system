@@ -47,7 +47,8 @@
                                 <th>Address</th>
                                 <th>Email</th>
                                 <th>Phone Number</th>
-                                <!-- <th>Date</th> -->
+                                <th>Attn</th>
+                                <th>Attn Email</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -60,7 +61,8 @@
                                 <td>{{ supplier.address }} {{ supplier.address2 }}<br/> {{ supplier.address3 }} {{ supplier.postcode }}</td>
                                 <td>{{ supplier.email }}</td>
                                 <td>{{ supplier.phone }}</td>
-                                <!-- <td>{{ supplier.created_date }}</td> -->
+                                <td>{{ supplier.attn }}</td>
+                                <td>{{ supplier.attn_email }}</td>
                                 <td><a class="btn btn-primary" href="{% url 'order-list' %}">View</a></td>
                             </tr>
                             {% endfor %}

@@ -1,7 +1,10 @@
 from django import forms
 from django.forms import modelformset_factory
+from django.forms.widgets import NumberInput
 
-from .models import Product, Order, Part, DeliveryOrder,DeliveryIns
+from django.forms.widgets import NumberInput
+
+from .models import Product, Order, Part,DeliveryIns, DeliveryOrder
 
 
 class SupplierForm(forms.Form):
@@ -47,6 +50,18 @@ class SupplierForm(forms.Form):
         'data-val': 'true',
         'data-val-required': 'Please enter phone number',
     }))
+    attn = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'id': 'attn',
+        'data-val': 'true',
+        'data-val-required': 'Please enter Attn name',
+    }))
+    attn_email = forms.CharField(widget=forms.EmailInput(attrs={
+        'class': 'form-control',
+        'id': 'attn_email',
+        'data-val': 'true',
+        'data-val-required': 'Please enter Attn email',
+    }))
 
 class ProductForm(forms.ModelForm):
     class Meta:
@@ -60,8 +75,8 @@ class ProductForm(forms.ModelForm):
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['supplier', 'product', 'part', 'quantity',  'is_ppc', 'terms', 'remarks', 'new_stock', 'po_id']
-
+        fields = ['supplier', 'product', 'part', 'quantity',  'is_ppc', 'terms', 'remarks', 'new_stock', 'po_id', 'created_date']
+        created_date = forms.DateField(widget=NumberInput(attrs={'type': 'date'}))
         widgets = {
             'po_id': forms.NumberInput(attrs={'class': 'form-control', 'id': 'po_id', 'readonly':'readonly'}),
             'supplier': forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),
@@ -91,19 +106,22 @@ class OrderForm(forms.ModelForm):
 class PartForm(forms.ModelForm):
     class Meta:
         model = Part
-        fields = ['partno', 'partname', 'stylepack', 'standardpack', 'supplier', 'product', 'unit', 'price', 'tax', 'quan', 'limit']
+        fields = ['partno', 'partname', 'stylepack', 'standardpack', 'supplier', 'product', 'variant','usage','unit', 'price', 'tax', 'quan', 'limit']
 
         widgets = {
             'partno': forms.TextInput(attrs={'class': 'form-control', 'id': 'partno'}),
             'partname': forms.TextInput(attrs={'class': 'form-control', 'id': 'partname'}),
-            'stylepack': forms.TextInput(attrs={'class': 'form-control', 'id': 'stylepack'}),
+            'stylepack': forms.Select(attrs={'class': 'form-control', 'id': 'stylepack'}),
             'standardpack': forms.NumberInput(attrs={'class': 'form-control', 'id': 'standardpack'}),
             'supplier': forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),
             'product': forms.Select(attrs={'class': 'form-control', 'id': 'product'}),
             'unit': forms.NumberInput(attrs={'class': 'form-control', 'id': 'unit'}),
+            'variant': forms.Select(attrs={'class': 'form-control', 'id': 'variant'}),
+            'usage' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'usage'}),
             'price' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'price'}),
             'quan' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'quan'}),
             'limit' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'limit'}),
+            'tax' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'tax'}),
         }
 
 class DeliveryOrderForm(forms.ModelForm):
@@ -121,13 +139,12 @@ class DeliveryOrderForm(forms.ModelForm):
 class DeliveryInsForm(forms.ModelForm):
     class Meta:
         model = DeliveryIns
-        fields = ['variant','usage',  'supplier', 'dimension', 'box', 'remarks','part','product']
+        fields = [ 'supplier', 'dimension', 'part','box', 'di_id', 'remarks','product']
 
         widgets = {
+            'di_id': forms.NumberInput(attrs={'class': 'form-control', 'id': 'di_id', 'readonly':'readonly'}),
             'part': forms.Select(attrs={'class': 'form-control', 'id': 'part'}),
             'product': forms.Select(attrs={'class': 'form-control', 'id': 'product'}),
-            'variant': forms.Select(attrs={'class': 'form-control', 'id': 'variant'}),
-            'usage' : forms.NumberInput(attrs={'class': 'form-control', 'id': 'usage'}),
             'supplier': forms.Select(attrs={'class': 'form-control', 'id': 'supplier'}),
             'dimension': forms.TextInput(attrs={'class': 'form-control', 'id': 'dimension'}),
             'box': forms.NumberInput(attrs={'class': 'form-control', 'id': 'box'}),

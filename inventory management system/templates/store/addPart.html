@@ -1,6 +1,6 @@
 {% extends 'base/base.html' %}
 
-{% block title %}Add Order{% endblock title %}
+{% block title %}Add Part{% endblock title %}
 
 {% block breadcrumbs %}
 <div class="breadcrumbs">
@@ -18,7 +18,7 @@
                     <div class="page-title">
                         <ol class="breadcrumb text-right">
                             <li><a href="#">Dashboard</a></li>
-                            <li><a href="#">Part</a></li>
+                            <li><a href="#">Order</a></li>
                             <li class="active">Add</li>
                         </ol>
                     </div>
@@ -36,82 +36,178 @@
             <div class="card-header">
                 <strong class="card-title">Add Part</strong>
             </div>
-            <div class="card-body">
+            <div class="card-body1">
                 <!-- Credit Card -->
                 <div id="pay-invoice">
                     <div class="card-body">
-                        <form action="#" method="post" novalidate="novalidate">
+                        <form action="#" method="post" id="form-container" novalidate="novalidate"
+                            >
                             {% csrf_token %}
-                            <div class="form-group">
-                                <label for="supplier" class="control-label mb-1">Supplier</label>
-                                {{ form.supplier }}
-                            </div>
-                            <div class="form-group">
-                                <label for="product" class="control-label mb-1">Product</label>
-                                {{ form.product }}
-                            </div>
-                            <div class="form-group">
-                                <label for="partno" class="control-label mb-1">Part No</label>
-                                {{ form.partno }}
-                            </div>
-                            <div class="form-group">
-                                <label for="description" class="control-label mb-1">Part Name</label>
-                                {{ form.partname }}
-                            </div>
+                                <div class="order-form">
+                
+                                        <div class="row">
+                                            <div class="col-6">                                               
 
-                            <div class="form-group">
-                                <label for="style" class="control-label mb-1">Style Packaging</label>
-                                {{ form.stylepack }}
-                            </div>
+                                                <div class="form-group">
+                                                    <label for="supplier" class="control-label mb-1">Supplier</label>
+                                                    {{ form.supplier }}
+                                                </div>
+                                            </div> 
+                                            <div class="col-6">
+                                                <div class="form-group">
+                                                    <label for="product" class="control-label mb-1">Product</label>
+                                                    {{ form.product }}
+                                                </div>
+                                            </div>
+                                            
+                                            
+                                        </div>
 
-                            <div class="form-group">
-                                <label for="standard" class="control-label mb-1">Standard Packaging</label>
-                                {{ form.standardpack }}
-                            </div>
+                                        <!-- <div class="row"> 
+                                            <div class="col-4">
+                                                <div class="form-group">
+                                                    <label for="partno" class="control-label mb-1">Part No</i></label>
+                                                    {{ form.partno }}
+                                                </div>
+                                            </div> 
+                                            <div class="col-4">
+                                                <div class="form-group">
+                                                    <label for="partname" class="control-label mb-1">Part Name</i></label>
+                                                    {{ form.partname }}
+                                                </div>
+                                            </div>
+                                            <div class="col-4">
+                                                <div class="form-group">
+                                                    <label for="stylepack" class="control-label mb-1">Stylepack</i></label>
+                                                    {{ form.stylepack }}
+                                                </div>
+                                            </div> 
+                                        </div> -->
+                                               
+                                    <!-- </div> -->
 
-                            <div class="form-group">
-                                <label for="is_ppc" class="control-label mb-1">Unit per car</label>
-                                {{ form.unit }}
-                            </div>
+                                    <div class="form-expand">
 
-                            <div class="row">
-                                <div class="col-4">
-                                    <div class="form-group">
-                                        <label for="quantity" class="control-label mb-1">Price</label>
-                                        {{ form.price }}
+                                        <div class="row"> 
+                                            <div class="col-6">
+                                                <div class="form-group">
+                                                    <label for="partno" class="control-label mb-1">Part No</i></label>
+                                                    {{ form.partno }}
+                                                </div>
+                                            </div> 
+                                            <div class="col-6">
+                                                <div class="form-group">
+                                                    <label for="partname" class="control-label mb-1">Part Name</i></label>
+                                                    {{ form.partname }}
+                                                </div>
+                                            </div>
+                                             
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-3">
+                                                <div class="form-group">
+                                                    <label for="stylepack" class="control-label mb-1">Stylepack</i></label>
+                                                    {{ form.stylepack }}
+                                                </div>
+                                            </div>
+                                            <div class="col-3">
+                                                <div class="form-group">
+                                                    <label for="variant" class="control-label mb-1">Variant</i></label>
+                                                    {{ form.variant }}
+                                                </div>
+                                            </div> 
+                                            <div class="col-3">
+                                                <div class="form-group">
+                                                    <label for="standardpack" class="control-label mb-1">St.pack</i></label>
+                                                    {{ form.standardpack }}
+                                                </div>
+                                            </div> 
+                                            <div class="col-3">
+                                                <div class="form-group">
+                                                    <label for="unit" class="control-label mb-1">Unit</i></label>
+                                                    {{ form.unit }}
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="col-3">
+                                                <div class="form-group">
+                                                    <label for="usage" class="control-label mb-1">Usage</i></label>
+                                                    {{ form.usage }}
+                                                </div>
+                                            </div>
+                                            <div class="col-2">
+                                                <div class="form-group">
+                                                    <label for="price" class="control-label mb-1">Price</i></label>
+                                                    {{ form.price }}
+                                                </div>
+                                            </div>
+                                            <div class="col-2">
+                                                <div class="form-group">
+                                                    <label for="quan" class="control-label mb-1">Quantity</i></label>
+                                                    {{ form.quan }}
+                                                </div>
+                                            </div>
+                                            <div class="col-2">
+                                                <div class="form-group">
+                                                    <label for="quan" class="control-label mb-1">Limit</i></label>
+                                                    {{ form.limit }}
+                                                </div>
+                                            </div>
+                                            <div class="col-2">
+                                                <div class="form-group">
+                                                    <label for="tax" class="control-label mb-1">Tax</i></label>
+                                                    {{ form.tax }}
+                                                </div>
+                                            </div>   
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-4">
-                                    <div class="form-group">
-                                        <label for="limit" class="control-label mb-1">Tax</label>
-                                        {{ form.tax }}
-                                    </div>
-                                </div>
+                            
 
-                                <div class="col-4">
-                                    <div class="form-group">
-                                        <label for="quan" class="control-label mb-1">Quantity</label>
-                                        {{ form.quan }}
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="limit" class="control-label mb-1">Minimum Limit</label>
-                                        {{ form.limit }}
-                                    </div>
-                                </div>
-
-                            </div>
+                            <button id="add-form" type="button" style="margin-bottom: 10px">Add Another Part</button>
                             <div>
                                 <button id="payment-button" type="submit" class="btn btn-lg btn-success btn-block">
                                     <span id="payment-button-amount">Save</span>
                                 </button>
                             </div>
                         </form>
+                        <script>
+                            let orderForm = document.querySelectorAll(".form-expand")
+                            let container = document.querySelector("#form-container")
+                            let addButton = document.querySelector("#add-form")
+                            let totalForms = document.querySelector("#id_form-TOTAL_FORMS")
+
+                            let formNum = orderForm.length -
+                                1 //Get the number of the last form on the page with zero-based indexing
+                            addButton.addEventListener('click', addForm)
+
+                            function addForm(e) {
+                                e.preventDefault()
+
+                                let newForm = orderForm[0].cloneNode(true) //Clone the bird form
+                                let formRegex = RegExp(`form-(\\d){1}-`,
+                                    'g') //Regex to find all instances of the form number
+
+                                formNum++ //Increment the form number
+                                newForm.innerHTML = newForm.innerHTML.replace(formRegex,
+                                    `form-${formNum}-`) //Update the new form to have the correct form number
+                                container.insertBefore(newForm,
+                                    addButton) //Insert the new form at the end of the list of forms
+
+                                totalForms.setAttribute('value',
+                                    `${formNum + 1}`) //Increment the number of total forms in the form management
+                            }
+                        </script>
                     </div>
                 </div>
 
             </div>
         </div> <!-- .card -->
 
-    </div><!--/.col-->
+    </div>
+    <!--/.col-->
 </div>
+
+
+
 {% endblock content %}
