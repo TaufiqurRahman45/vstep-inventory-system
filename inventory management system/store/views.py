@@ -871,6 +871,7 @@ def create_part(request):
                 quan = forms.cleaned_data['quan']
                 limit = forms.cleaned_data['limit']
 
+
                 part = Part.objects.create(
                     supplier=supplier,
                     product=product,
@@ -886,9 +887,10 @@ def create_part(request):
                     quan=quan,
                     limit=limit,
                 )
+                part.quan += quan 
                 part.save()
                 # create_log(request, part)
-            return redirect('part-list')
+        return redirect('part-list')
     context = {
         'form': form
     }
