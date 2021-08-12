@@ -156,16 +156,18 @@
 
                         <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
                         <script>
-                            $("#supplier").change(function () {
+                            $("#supplier, #product").change(function () {
                                 var url = $("#form-container").attr("data-parts-url");
                                 var supplierId = $(this).val();
+                                var productId = $(this).val();
                                 console.log('changed')
 
                                 console.log(url)
                                 $.ajax({
                                     url: url,
                                     data: {
-                                        'supplier': supplierId
+                                        'supplier': supplierId,
+                                        'product': productId
                                     },
                                     success: function (data) {
                                         // console.log('got data', data);

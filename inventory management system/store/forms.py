@@ -94,10 +94,11 @@ class OrderForm(forms.ModelForm):
             super().__init__(*args, **kwargs)
             self.fields['part'].queryset = Part.objects.none()
 
-            if 'supplier' in self.data:
+            if 'supplier' and 'product' in self.data:
                 try:
                     supplier_id = int(self.data.get('supplier'))
-                    self.fields['part'].queryset = Part.objects.filter(supplier_id=supplier_id).order_by('partname')
+                    product_id = int(self.data.get('product'))
+                    self.fields['part'].queryset = Part.objects.filter(supplier_id=supplier_id, product_id=product_id).order_by('partname')
                 except (ValueError, TypeError):
                     pass 
             elif self.instance.pk:

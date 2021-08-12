@@ -765,7 +765,8 @@ def create_order(request):
 # Dependent/Chained Dropdown
 def load_parts(request):
     supplier_id = request.GET.get('supplier')
-    parts = Part.objects.filter(supplier_id=supplier_id).order_by('partname')
+    product_id = request.GET.get('product')
+    parts = Part.objects.filter(supplier_id=supplier_id, product_id=product_id).order_by('partname')
     return render(request, 'store/part_dropdown_list_options.html', {'parts': parts})
 
 class OrderListView(ListView):
