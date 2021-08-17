@@ -120,6 +120,8 @@
                             
 
                             <button id="add-form" type="button" style="margin-bottom: 10px">Add Another Order</button>
+                            <button id="remove-form" type="button" style="margin-bottom: 10px; display:inline-block;" onClick ="removeForm()">Remove Form</button>
+                            
                             <div>
                                 <button id="payment-button" type="submit" class="btn btn-lg btn-success btn-block">
                                     <span id="payment-button-amount">Save</span>
@@ -130,6 +132,7 @@
                             let orderForm = document.querySelectorAll(".form-expand")
                             let container = document.querySelector("#form-container")
                             let addButton = document.querySelector("#add-form")
+                            let removeButton = document.querySelector("#remove-form")
                             let totalForms = document.querySelector("#id_form-TOTAL_FORMS")
 
                             let formNum = orderForm.length -
@@ -151,21 +154,28 @@
 
                                 totalForms.setAttribute('value',
                                     `${formNum + 1}`) //Increment the number of total forms in the form management
+                                    
+                            }
+                            
+                            function removeForm()
+                            {
+                               $('.form-expand').last().remove()
                             }
                         </script>
 
-                        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
                         <script>
                             $("#supplier").change(function () {
                                 var url = $("#form-container").attr("data-parts-url");
                                 var supplierId = $(this).val();
+                                var productId = $(this).val();
                                 console.log('changed')
 
                                 console.log(url)
                                 $.ajax({
                                     url: url,
                                     data: {
-                                        'supplier': supplierId
+                                        'supplier': supplierId,
+                                        'product' : productId,
                                     },
                                     success: function (data) {
                                         // console.log('got data', data);
@@ -175,6 +185,7 @@
 
                             });
                         </script>
+                        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
                     </div>
                 </div>
 
