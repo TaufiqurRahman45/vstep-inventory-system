@@ -1,0 +1,5 @@
+<option value="">---------</option>
+{% for part in parts %}
+<option value="{{ part.standardpack }}">{{ part.partno }}&nbsp;&nbsp;&nbsp;{{ part.partname }}&nbsp;---------------&nbsp;&nbsp;Stock: &nbsp; {{ part.quan }} </option>
+{% endfor %}
+

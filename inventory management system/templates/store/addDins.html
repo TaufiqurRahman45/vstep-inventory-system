@@ -40,8 +40,8 @@
                 <!-- Credit Card -->
                 <div id="pay-invoice">
                     <div class="card-body">
-                        <form action="#" method="post" id="form-container" novalidate="novalidate"
-                            data-parts-url="{% url 'ajax_load_parts' %}">
+                        <form name="demoForm" action="#" method="post" id="form-container" novalidate="novalidate"
+                            data-parts-url="{% url 'ajax_load_parts_sp' %}" onchange="showData()" >
                             {% csrf_token %}
                             <div class="order-form">
 
@@ -68,7 +68,8 @@
                                         <label for="part" class="control-label mb-1">Part</label>
                                         {{ form.part }}
                                     </div>
-                                                                        
+                                    <p id="secondP">&nbsp;</p>
+                                    <p id="x">&nbsp;</p>      
 
                                     <div class="row">                                       
 
@@ -151,6 +152,28 @@
 
                             });
                         </script>
+                        <script>
+                            function showData() {
+                                var theSelect = demoForm.part;
+                                var secondP = document.getElementById('secondP');
+                                secondP.innerHTML = ('Its Standerd Pack is: ' + theSelect[theSelect.selectedIndex].value);4
+
+                                
+                                var num = theSelect[theSelect.selectedIndex].value
+                                console.log("this is" +num)
+
+                                
+                                for(var i = 1; i <= 5; i++) {
+
+                                     result = i * num;
+
+                                    console.log(result);
+                                    document.getElementById("x").innerHTML += result + ",";
+                                }
+                            }
+                        </script>
+
+                        
                     </div>
                 </div>
 

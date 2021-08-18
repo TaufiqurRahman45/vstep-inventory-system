@@ -1122,6 +1122,10 @@ def create_deliveryins(request):
     }
     return render(request, 'store/addDins.html', context)
 
+def load_parts_sp(request):
+    supplier_id = request.GET.get('supplier')
+    parts = Part.objects.filter(supplier_id=supplier_id).order_by('partname')
+    return render(request, 'store/part_sp.html', {'parts': parts})
 
 class DeliveryInsListView(ListView):
     model = DeliveryIns

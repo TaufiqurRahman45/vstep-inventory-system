@@ -39,6 +39,8 @@ urlpatterns = [
     path('logs/', logs, name='logs'),
 
     path('ajax/load-parts/', views.load_parts, name='ajax_load_parts'), # Dependent/Chained Dropdown
+
+    path('ajax/load-parts-sp/', views.load_parts_sp, name='ajax_load_parts_sp'),
     
     path('supplier-list/', SupplierListView.as_view(), name='supplier-list'),
 
