@@ -58,10 +58,6 @@
                                     <label for="product" class="control-label mb-1">Product</label>
                                     {{ form.product }}
                                 </div>
-                                
-                                
-
-                                
 
                                 <div class="form-expand">
                                     <div class="form-group">
@@ -69,7 +65,6 @@
                                         {{ form.part }}
                                     </div>
                                     <p id="secondP">&nbsp;</p>
-                                    <p id="x">&nbsp;</p>      
 
                                     <div class="row">                                       
 
@@ -156,20 +151,24 @@
                             function showData() {
                                 var theSelect = demoForm.part;
                                 var secondP = document.getElementById('secondP');
-                                secondP.innerHTML = ('Its Standerd Pack is: ' + theSelect[theSelect.selectedIndex].value);4
 
-                                
                                 var num = theSelect[theSelect.selectedIndex].value
                                 console.log("this is" +num)
+
+                                let result = [];
 
                                 
                                 for(var i = 1; i <= 5; i++) {
 
-                                     result = i * num;
+                                    result.push(i * num);
 
-                                    console.log(result);
-                                    document.getElementById("x").innerHTML += result + ",";
+
+                                    console.log("Result"+result);
                                 }
+                                secondP.innerHTML = ('Its Standerd Pack is: ' + num + " we have to choose " + result.join(", "));
+
+                                
+                                
                             }
                         </script>
 
