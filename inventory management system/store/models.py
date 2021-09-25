@@ -108,12 +108,12 @@ class DeliveryOrder(models.Model):
     do_quantity = models.PositiveIntegerField(default= 0)
     created_date = models.DateField(auto_now_add=True)
 
-class EventManager(models.Manager):
+# class EventManager(models.Manager):
 
-    def get_queryset(self):
-        return super().get_queryset().filter(
-            created_date__gte=timezone.now()-timezone.timedelta(days=1)
-        )
+#     def get_queryset(self):
+#         return super().get_queryset().filter(
+#             created_date__gte=timezone.now()-timezone.timedelta(days=1)
+#         )
 
 def di_id():
 
@@ -128,6 +128,6 @@ class DeliveryIns(models.Model):
     box = models.PositiveIntegerField(default= 0)  
     remarks = models.CharField(max_length=500, blank= True)
     created_date = models.DateTimeField(default=timezone.now)
-    objects = EventManager()
+    # objects = EventManager()
 
    

@@ -33,7 +33,7 @@ from .models import (
     Part,
     DeliveryOrder,
     DeliveryIns,
-    EventManager
+    # EventManager
 )
 from .forms import (
     SupplierForm,
@@ -790,6 +790,15 @@ class OrderListView(ListView):
         context['filter'] = POFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
+def product_list(request):
+    f = POFilter(request.GET, queryset=Order.objects.all())
+    has_filter = any(field in request.GET for field in set(f.get_fields()))
+
+    return render(request, 'store/order_list.html', {
+        'filter': f,
+        'has_filter': has_filter
+    })
+
 @login_required(login_url="/login")
 def updateOrder(request, pk):
     action = 'update'
@@ -1124,6 +1133,8 @@ def create_deliveryins(request):
     }
     return render(request, 'store/addDins.html', context)
 
+
+
 def load_parts_sp(request):
     supplier_id = request.GET.get('supplier')
     parts = Part.objects.filter(supplier_id=supplier_id).order_by('partname')
@@ -1142,13 +1153,17 @@ class DeliveryInsListView(ListView):
             queryset = queryset.filter(product_id=self.request.GET.get('product'))
         elif self.request.GET.get('created_date'):
             queryset = queryset.filter(created_date=self.request.GET['created_date'])
+        elif self.request.GET.get('part'):
+            queryset = queryset.filter(part=self.request.GET['part'])
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['filter'] = DIFilter(self.request.GET, queryset=self.get_queryset())
-        DeliveryIns._base_manager.filter(created_date__lt=timezone.now() - timezone.timedelta(days=7)).delete()
+        DeliveryIns._base_manager.filter(created_date__lt=timezone.now() - timezone.timedelta(days=1)).delete()
         return context
+
+
 
 @login_required(login_url="/login")
 def updateDI(request, pk):
