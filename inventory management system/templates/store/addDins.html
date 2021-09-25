@@ -1,6 +1,12 @@
 {% extends 'base/base.html' %}
 
+
 {% block title %}Add Delivery Intructions{% endblock title %}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
 {% block breadcrumbs %}
 <div class="breadcrumbs">
@@ -44,19 +50,23 @@
                             data-parts-url="{% url 'ajax_load_parts_sp' %}" onchange="showData()" >
                             {% csrf_token %}
                             <div class="order-form">
-
                                 <div class="form-group">
                                     <label for="di_id" class="control-label mb-1">ID</label>
                                     {{ form.di_id }}
                                 </div>
-
-                                <div class="form-group">      
-                                    <label for="supplier" class="control-label mb-1">Supplier</label>
-                                    {{ form.supplier }}
-                                </div>
-                                <div class="form-group">
-                                    <label for="product" class="control-label mb-1">Product</label>
-                                    {{ form.product }}
+                                <div class="row">                                       
+                                    <div class="col-6">
+                                        <div class="form-group">      
+                                            <label for="supplier" class="control-label mb-1">Supplier</label>
+                                            {{ form.supplier }}
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label for="product" class="control-label mb-1">Product</label>
+                                            {{ form.product }}
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="form-expand">
@@ -64,22 +74,19 @@
                                         <label for="part" class="control-label mb-1">Part</label>
                                         {{ form.part }}
                                     </div>
-                                    <p id="secondP">&nbsp;</p>
-
                                     <div class="row">                                       
-
-
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                <label for="box" class="control-label mb-1" data-toggle="tooltip" data-placement="right" title="N:B input multiplication numbers of Package">Box</i></label>
+                                                {{ form.box }}
+                                                <p style="font-size: 10px;">N:B Only input multiplication of Package. e.g Package: 2, input multiplication of 2 (2,4,6,8) </p>
+                                                <span style="font-size: 10px;"></span>
+                                            </div>
+                                        </div>
                                         <div class="col-2">
                                             <div class="form-group">
                                                 <label for="dimension" class="control-label mb-1">Dimension</i></label>
                                                 {{ form.dimension }}
-                                            </div>
-                                        </div>
-
-                                        <div class="col-2">
-                                            <div class="form-group">
-                                                <label for="box" class="control-label mb-1">Box</i></label>
-                                                {{ form.box }}
                                             </div>
                                         </div>
                                         <div class="col-2">
@@ -91,7 +98,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <button id="add-form" type="button">Add Another DI</button>
+                            <button id="add-form" class= "btn btn-info" style="margin-bottom: 8px;" type="button">Add Another DI</button>
+                            <button id="remove-form" class="btn btn-danger" type="button" style="margin-bottom: 8px; display:inline-block;" onClick ="removeForm()">Remove DI</button>
                             <div>
                                 <button id="payment-button" type="submit" class="btn btn-lg btn-success btn-block">
                                     <span id="payment-button-amount">Save</span>
@@ -102,6 +110,7 @@
                             let orderForm = document.querySelectorAll(".form-expand")
                             let container = document.querySelector("#form-container")
                             let addButton = document.querySelector("#add-form")
+                            let removeButton = document.querySelector("#remove-form")
                             let totalForms = document.querySelector("#id_form-TOTAL_FORMS")
 
                             let formNum = orderForm.length -
@@ -123,6 +132,10 @@
 
                                 totalForms.setAttribute('value',
                                     `${formNum + 1}`) //Increment the number of total forms in the form management
+                            }
+                            function removeForm()
+                            {
+                               $('.form-expand').last().remove()
                             }
                         </script>
 
@@ -156,20 +169,21 @@
                                 console.log("this is" +num)
 
                                 let result = [];
-
                                 
                                 for(var i = 1; i <= 5; i++) {
 
                                     result.push(i * num);
 
-
                                     console.log("Result"+result);
                                 }
-                                secondP.innerHTML = ('Its Standerd Pack is: ' + num + " we have to choose " + result.join(", "));
-
-                                
-                                
+                                secondP.innerHTML = ('Its Standerd Pack is: ' + num + " we have to choose " + result.join(", "));   
                             }
+                        </script>
+
+                        <script>
+                            $(document).ready(function(){
+                            $('[data-toggle="tooltip"]').tooltip();   
+                            });
                         </script>
 
                         

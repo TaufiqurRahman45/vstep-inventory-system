@@ -923,6 +923,7 @@ def updatePart(request, pk):
     action = 'update'
     part = Part.objects.get(id=pk)
     form = PartForm(instance=part)
+    previous_quan = part.quan
 
     if request.method == 'POST':
         form = PartForm(request.POST, instance=part)
@@ -944,6 +945,7 @@ def updatePart(request, pk):
                     'AVAILABLE STOCK': part.quan,
                 }
                 msg.send(fail_silently=True)
+            create_log(request, part, object_repr="Part", change_message=f"Part Quantity {previous_quan} to {part.quan}")
             return redirect('part-list')
 
     context = {'action': action, 'form': form}

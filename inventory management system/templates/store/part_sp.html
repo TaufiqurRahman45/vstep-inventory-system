@@ -1,5 +1,6 @@
+
+
 <option value="">---------</option>
 {% for part in parts %}
-<option value="{{ part.standardpack }}">{{ part.partno }}&nbsp;&nbsp;&nbsp;{{ part.partname }}&nbsp;---------------&nbsp;&nbsp;Stock: &nbsp; {{ part.quan }} </option>
+<option value="{{ part.pk }}">{{ part.partno }}------{{ part.product.name }}------{{ part.partname }}&nbsp;------&nbsp;&nbsp;Package:&nbsp;{{ part.standardpack }} </option>
 {% endfor %}
-

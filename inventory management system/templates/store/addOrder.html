@@ -43,18 +43,23 @@
                         <form action="#" method="post" id="form-container" novalidate="novalidate"
                             data-parts-url="{% url 'ajax_load_parts' %}">
                             {% csrf_token %}
-                                <div class="order-form">
-                                    <label class="control-label mb-1">Date</label>  
-                                    <input type="date" required autocomplete="off" name="created_date">
-
-                                        <div class="form-group">
-                                            <label for="po_id" class="control-label mb-1">ID</label>
-                                            {{ form.po_id }}
+                                <div class="order-form">                                    
+                                    <div class="row">
+                                        <div class="col-3"> 
+                                            <div class="form-group">
+                                                <label for="po_id" class="control-label mb-1">ID</label>
+                                                {{ form.po_id }}
+                                            </div>
                                         </div>
-                                        
+                                        <div class="col-3 mt-4"> 
+                                            <div class="form-group">
+                                                <label class="control-label mb-1">Date</label>
+                                                <input type="date" required autocomplete="off" name="created_date">
+                                            </div>
+                                        </div>                                     
+                                    </div>
                                         <div class="row">
                                             <div class="col-6">                                               
-
                                                 <div class="form-group">
                                                     <label for="supplier" class="control-label mb-1">Supplier</label>
                                                     {{ form.supplier }}
@@ -65,14 +70,7 @@
                                                     <label for="product" class="control-label mb-1">Product</label>
                                                     {{ form.product }}
                                                 </div>
-                                            </div>
-                                            
-                                            <div class="co">
-                                                <div class="form-group">
-                                                    
-                                                </div>
-                                            </div> 
-                                            
+                                            </div>                                                                                 
                                         </div>
 
                                         <div class="row"> 

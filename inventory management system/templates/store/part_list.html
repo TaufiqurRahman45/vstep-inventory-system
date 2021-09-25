@@ -46,7 +46,7 @@
                             <tr>
                                 <td class="serial">{{ forloop.counter }}</td>
                                 <td>{{ part.partno }}</td>
-                                <td>{{ part.partname }}</td>
+                                <td class="hide-text">{{ part.partname }}</td>
                                 <td>{{ part.quan }}</td>
                                 <td>{{ part.stylepack }}</td>
                                 <td>{{ part.standardpack }}</td>
@@ -66,7 +66,7 @@
                                     </td>
                                 <td>{{ part.created_date }}</td>      
                                 <td>
-                                    <a class="btn btn-sm btn-warning" href="{% url 'update_part' part.id %}" >Update</a>
+                                    <a class="btn btn-sm btn-warning mt-2" href="{% url 'update_part' part.id %}" >Update</a>
                                     <a class="btn btn-sm btn-danger"  href="{% url 'delete_part' part.id %}">Delete</a>
                                 </td>  
                             </tr>

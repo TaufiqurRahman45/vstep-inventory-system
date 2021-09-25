@@ -57,33 +57,8 @@
                                                     <label for="product" class="control-label mb-1">Product</label>
                                                     {{ form.product }}
                                                 </div>
-                                            </div>
-                                            
-                                            
+                                            </div>                                           
                                         </div>
-
-                                        <!-- <div class="row"> 
-                                            <div class="col-4">
-                                                <div class="form-group">
-                                                    <label for="partno" class="control-label mb-1">Part No</i></label>
-                                                    {{ form.partno }}
-                                                </div>
-                                            </div> 
-                                            <div class="col-4">
-                                                <div class="form-group">
-                                                    <label for="partname" class="control-label mb-1">Part Name</i></label>
-                                                    {{ form.partname }}
-                                                </div>
-                                            </div>
-                                            <div class="col-4">
-                                                <div class="form-group">
-                                                    <label for="stylepack" class="control-label mb-1">Stylepack</i></label>
-                                                    {{ form.stylepack }}
-                                                </div>
-                                            </div> 
-                                        </div> -->
-                                               
-                                    <!-- </div> -->
 
                                     <div class="form-expand">
 
@@ -163,7 +138,8 @@
                                 </div>
                             
 
-                            <button id="add-form" type="button" style="margin-bottom: 10px">Add Another Part</button>
+                            <button id="add-form" class= "btn btn-info" type="button" style="margin-bottom: 10px">Add Another Part</button>
+                            <button id="remove-form" class="btn btn-danger" type="button" style="margin-bottom: 10px; display:inline-block;" onClick ="removeForm()">Remove Part</button>
                             <div>
                                 <button id="payment-button" type="submit" class="btn btn-lg btn-success btn-block">
                                     <span id="payment-button-amount">Save</span>
@@ -174,6 +150,7 @@
                             let orderForm = document.querySelectorAll(".form-expand")
                             let container = document.querySelector("#form-container")
                             let addButton = document.querySelector("#add-form")
+                            let removeButton = document.querySelector("#remove-form")
                             let totalForms = document.querySelector("#id_form-TOTAL_FORMS")
 
                             let formNum = orderForm.length -
@@ -195,6 +172,10 @@
 
                                 totalForms.setAttribute('value',
                                     `${formNum + 1}`) //Increment the number of total forms in the form management
+                            }
+                            function removeForm()
+                            {
+                               $('.form-expand').last().remove()
                             }
                         </script>
                         <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
