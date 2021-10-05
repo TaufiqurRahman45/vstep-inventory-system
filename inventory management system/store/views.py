@@ -926,6 +926,15 @@ class PartListView(ListView):
         context['filter'] = PartFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
+def part_list(request):
+    f = PartFilter(request.GET, queryset=Part.objects.all())
+    has_filter = any(field in request.GET for field in set(f.get_fields()))
+
+    return render(request, 'store/part_list.html', {
+        'filter': f,
+        'has_filter': has_filter
+    })
+
 
 @login_required(login_url="/login")
 def updatePart(request, pk):
@@ -1150,11 +1159,9 @@ class DeliveryInsListView(ListView):
         if self.request.GET.get('supplier'):
             queryset = queryset.filter(supplier_id=self.request.GET.get('supplier'))
         elif self.request.GET.get('product'):
-            queryset = queryset.filter(product_id=self.request.GET.get('product'))
+            queryset = queryset.filter(product_id=self.request.GET.get('product'))            
         elif self.request.GET.get('created_date'):
             queryset = queryset.filter(created_date=self.request.GET['created_date'])
-        elif self.request.GET.get('part'):
-            queryset = queryset.filter(part=self.request.GET['part'])
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -1162,6 +1169,15 @@ class DeliveryInsListView(ListView):
         context['filter'] = DIFilter(self.request.GET, queryset=self.get_queryset())
         DeliveryIns._base_manager.filter(created_date__lt=timezone.now() - timezone.timedelta(days=1)).delete()
         return context
+
+def di_list(request):
+    f = DIFilter(request.GET, queryset=DeliveryIns.objects.all())
+    has_filter = any(field in request.GET for field in set(f.get_fields()))
+
+    return render(request, 'store/dins_list.html', {
+        'filter': f,
+        'has_filter': has_filter
+    })
 
 
 

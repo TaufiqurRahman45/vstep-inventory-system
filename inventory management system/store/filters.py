@@ -16,7 +16,7 @@ class DIFilter(django_filters.FilterSet):
             'placeholder': 'YYYY-MM-DD'}))
     class Meta:
         model = DeliveryIns
-        fields = ['product','supplier', 'part']
+        fields = ['product', 'supplier', 'created_date']
         
         
 
